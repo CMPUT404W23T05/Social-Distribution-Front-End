@@ -10,9 +10,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-20.04
-    name: Build and test
+    name: npm install, build and unit test
     steps:
-      - name: npm install, build and unit test
       - run: |
           npm install
           npm run build --if-present
