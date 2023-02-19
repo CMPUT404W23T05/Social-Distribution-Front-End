@@ -1,11 +1,13 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <!-- Pass a default image if none is provided -->
-        <img id = "profile-picture" class = "circle" src = https://cdn.allthings.how/wp-content/uploads/2020/10/allthings.how-how-to-change-your-profile-picture-on-google-meet-profile-photo-759x427.png alt = 'User profile picture'>
-        <span id = username>@username</span>
-        
+        <router-link to="/Settings#Profile" tag="div">
+        <img id = "profile-picture" class = "circle" :src="author.profile_image" alt = 'User profile picture'/>
+        <span id = username>@{{ author.display_name }}</span>
+        </router-link>
+
         <ul class="navbar-nav">
-            <li class = 'nav-item dropdown active'>
+            <li class = 'nav-item dropdown'>
                 <router-link to = "/Home" class = "nav-link">Home</router-link>
                 <ul class="dropdown-menu">
                     <router-link to="/Home/Inbox" class = "dropdown-item"> Inbox </router-link>
@@ -13,7 +15,7 @@
                 </ul>
             </li>
             <li class = 'nav-item'>
-                <router-link to = "/Browse" class="nav-link" > Browse </router-link>
+                <router-link to = "/Browse" class="nav-link"> Browse </router-link>
             </li>
             <li class = 'nav-item dropdown'>
                 <router-link to = "/Social" class="nav-link"> Social </router-link>
@@ -34,12 +36,14 @@
         </ul>
 
         <span id="logout">Signout</span>
-
     </nav>
 </template>
 
 <script>
-export default {}
+export default {
+  // Author json object
+  props: ['author']
+}
 </script>
 
 <style scoped>
@@ -53,7 +57,7 @@ export default {}
         padding: 2pt;
     }
 
-    .active {
+    .router-link-active {
         background-color: #4998F5;
     }
 
@@ -65,11 +69,15 @@ export default {}
 
     .dropdown:hover .dropdown-menu {
     display: block;
-    margin-top: 0;
-    padding-top: 0;
+    margin: 0 0;
+    padding: 0;
     text-align: center;
     width: 100%;
     border-radius: 0;
+    }
+
+    .dropdown-item :active {
+        background-color: #4998F5;
     }
 
     .navbar-nav {
