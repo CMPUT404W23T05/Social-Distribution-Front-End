@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  build-and-test:
+  test-and-build:
     runs-on: ubuntu-20.04
 
     steps:
@@ -16,7 +16,7 @@ jobs:
         run: |
           npm config set legacy-peer-deps true
           npm ci
-      - name: Build
-        run: npm run build --if-present
       - name: Run unit tests
         run: npm run test:unit
+      - name: Build
+        run: npm run build --if-present
