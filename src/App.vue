@@ -4,24 +4,23 @@
 </template>
 
 <script>
-  import NavBar from '@/components/NavBar.vue'
+import NavBar from '@/components/NavBar.vue'
 
-  export default{
-    data() {
-      return {
-        author: {
-          display_name:'username',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg',
-        },
-      };
-    },
-    components: {
-      NavBar
+export default {
+  data () {
+    return {
+      author: {
+        display_name: 'username',
+        profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+      }
     }
+  },
+  components: {
+    NavBar
   }
+}
 
 </script>
-
 
 <style>
 #app {
