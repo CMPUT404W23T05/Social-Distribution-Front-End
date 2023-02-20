@@ -13,7 +13,9 @@
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "core-js": "^3.8.3",
+    "markdown-it": "^13.0.1",
     "vue": "^3.2.13",
+    "vue-markdown-render": "^2.0.1",
     "vue-router": "^4.0.3"
   },
   "devDependencies": {
@@ -69,6 +71,7 @@
     "not ie 11"
   ],
   "jest": {
-    "preset": "@vue/cli-plugin-unit-jest"
+    "preset": "@vue/cli-plugin-unit-jest",
+    "transformIgnorePatterns": ["/node_modules/(?!vue-markdown-render)"]
   }
 }
