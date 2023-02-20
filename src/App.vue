@@ -1,10 +1,26 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <NavBar :author = author></NavBar>
   <router-view/>
 </template>
+
+<script>
+import NavBar from '@/components/NavBar.vue'
+
+export default {
+  data () {
+    return {
+      author: {
+        display_name: 'username',
+        profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+      }
+    }
+  },
+  components: {
+    NavBar
+  }
+}
+
+</script>
 
 <style>
 #app {

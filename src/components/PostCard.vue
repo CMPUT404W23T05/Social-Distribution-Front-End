@@ -36,7 +36,7 @@ export default {
     // Dynamically route to post page on click
     goTo () {
       return {}
-    },
+    }
   },
   components: {
     VueMarkdown

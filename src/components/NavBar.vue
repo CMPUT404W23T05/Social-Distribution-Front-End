@@ -1,9 +1,11 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <!-- Pass a default image if none is provided -->
-        <router-link to="/settings#profile" tag="div" class = "user-info">
-        <img id = "profile-picture" class = "circle" :src="author.profile_image" alt = 'User profile picture'/>
-        <span id = username>@{{ author.display_name }}</span>
+        <router-link to="/settings#profile" class = "user-info">
+            <div>
+                <img id = "profile-picture" class = "circle" :src="author.profile_image" alt = 'User profile picture'/>
+                <span id = username>@{{ author.display_name }}</span>
+            </div>
         </router-link>
 
         <ul class="navbar-nav">
