@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-20.04
     name: npm install, build and unit test
     steps:
-      - uses: chill-viking/npm-ci@latest
+      - uses: actions/checkout@v3
       - run: |
           npm config set legacy-peer-deps true
-          npm install
+          npm ci
           npm run build --if-present
           npm run test:unit
