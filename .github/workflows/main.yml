@@ -8,10 +8,12 @@ on:
 
 
 jobs:
+
   build-and-test:
     runs-on: ubuntu-20.04
     name: npm install, build and unit test
     steps:
+      - uses: chill-viking/npm-ci@latest
       - run: |
           npm config set legacy-peer-deps true
           npm install
