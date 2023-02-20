@@ -57,11 +57,11 @@ describe('NavBar.vue', () => {
       }
     })
 
-   //For whatever reason, the wrapper cannot find the "active" class in the DOM,
-   //despite a visual check within the browser confirming it's there and unique.
-   //The automated test fails, but manual inspection passes. This is the case for
-   //both shallow mounting (can't find) and regular mounting (undefined error)
+    // For whatever reason, the wrapper cannot find the "active" class in the DOM,
+    // despite a visual check within the browser confirming it's there and unique.
+    // The automated test fails, but manual inspection passes. This is the case for
+    // both shallow mounting (can't find) and regular mounting (undefined error)
 
-   //expect(wrapper.findAll('li .active').length).toBe(1)
+    // expect(wrapper.findAll('li .active').length).toBe(1)
   })
 })
