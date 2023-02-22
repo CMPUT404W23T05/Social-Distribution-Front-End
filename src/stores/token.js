@@ -1,12 +1,13 @@
 // stores variables that can be accessed from any component
-import { createStore } from 'vuex'
+// adapted from https://www.youtube.com/watch?v=XEZB-XbwihA
+import { defineStore } from 'pinia'
 
-export default createStore({
-  state: {
+export const useTokenStore = defineStore('token', {
+  state: () => ({
     token: '',
     isAuthenticated: false // by default, the user is not authenticated
-  },
-  mutations: {
+  }),
+  actions: {
     initializeStore (state) {
       if (localStorage.getItem('token')) { // if there is a token in local storage
         state.token = localStorage.getItem('token')
@@ -24,9 +25,5 @@ export default createStore({
       state.token = ''
       state.isAuthenticated = false
     }
-  },
-  actions: {
-  },
-  modules: {
   }
 })

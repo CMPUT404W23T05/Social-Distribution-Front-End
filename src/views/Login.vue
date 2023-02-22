@@ -20,6 +20,7 @@ export default {
   },
   methods: {
     submitForm (e) {
+      // eslint-disable-next-line no-unused-vars
       const formData = {
         username: this.username,
         password: this.password
