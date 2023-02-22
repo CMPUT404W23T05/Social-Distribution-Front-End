@@ -36,8 +36,9 @@
                 </ul>
             </li>
         </ul>
+        <!-- TODO: replace with actual logout -->
+        <span id="logout"><router-link to="/login">Signout</router-link></span>
 
-        <span id="logout">Signout</span>
     </nav>
 </template>
 
