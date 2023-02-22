@@ -1,59 +1,68 @@
 <template>
-    <button
-        v-for="state in states"
-        :key="state"
-        :class="['btn, {active: currentState === state}']"
-        @click="swapStates"
-    >{{ state.toUpperCase() }}</button>
-
-    <form action="FILLMEINLATER" method="POST">
-        <input type="text" class="title" name="title" id="" placeholder="Start with a title for your post" v-model="title">
-            <TextPostBody 
-                v-if="currentState==='text'"
-                v-model:toggle="this.markDownEnabled"
-                v-model:body="this.body"
-            />
-            <!-- <div id="makeImagePostBody">
-                Do this later since it's complicated (tm)
-            </div> -->
-            <button type = submit></button>
-        </form>
+  <div class="container col-6">
+    <span v-for="(state, i) in states" :key="i">
+      <button class="btn" :class= "{'active': state === currentState}" @click="updateState(state)">
+        {{state}}
+      </button>
+    </span>
+    <form action="gotothedesiredURL" method="POST">
+      <input v-model="title" class='text-input' placeholder = "Write a title for your post">
+      <TextPostBody v-if="isText" class ='text-input' v-model:body="content" v-model:toggle="markDownEnabled"/>
+    </form>
+    <button class="btn">Post</button>
+  </div>
 </template>
 
 <script>
-    import TextPostBody from '@/components/TextPostBody.vue';
+import TextPostBody from '@/components/TextPostBody.vue'
 
-    export default{
-        data() {
-            //Defaults unless overridden by creation hook
-            return {
-                states: ['text', 'image'],
-            };
-        },
-        props: ['existingPost', 'author'],
-        computed: {
-            title() {
-                return (this.existingPost ? this.existingPost.title : '')
-            },
-            body() {
-                return (this.existingPost ? this.existingPost.content : '')
-            },
-            currentState() {
-                return (this.existingPost ? this.existingPost.contentType : "text")
-            },
-            markdownEnabled() {
-                if (!this.existingPost || this.existingPost.contentType != 'text') {
-                    return true
-                }
-                else {
-                    return false
-                }    
-            }
-        },
-        components: {
-            TextPostBody,
-        }
+export default {
+  data () {
+    return {
+      states: ['text', 'image'],
+      title: '',
+      content: '',
+      markDownEnabled: false,
+      isText: true
     }
-
-
+  },
+  props: ['author'],
+  components: {
+    TextPostBody
+  },
+  methods: {
+    updateState (state) {
+      this.isText = (state === 'text')
+    }
+  },
+  computed: {
+    currentState () {
+      return (this.isText ? 'text' : 'image')
+    }
+  }
+}
 </script>
+
+<style>
+
+  .container {
+    padding-top: 25pt;
+  }
+
+  .active {
+    background-color: #4998F5;
+    color: white;
+  }
+
+  .text-input {
+    width: 100%;
+    resize: none;
+    border-radius: 0;
+  }
+
+  .btn {
+    width: 50%;
+    text-transform: capitalize;
+    border-bottom: 2pt solid #4998F5;
+  }
+</style>
