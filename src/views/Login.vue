@@ -6,7 +6,7 @@
       <label>Password: <input type="password" name="password" v-model="password"></label><br>
       <button type="submit">Login</button>
     </form>
-    <br>Don't have an account? <a href ="/signup">Sign up</a>
+    <br>Don't have an account? <router-link to="/signup">Sign up</router-link>
   </div>
 </template>
 
