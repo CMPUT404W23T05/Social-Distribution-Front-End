@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky_navbar">
         <!-- Pass a default image if none is provided -->
         <router-link to="/settings#profile" class = "user-info">
             <div>
@@ -49,6 +49,12 @@ export default {
 </script>
 
 <style scoped>
+    .sticky_navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
     #profile-picture {
         height: 32pt;
         aspect-ratio: 1 / 1;
