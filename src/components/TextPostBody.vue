@@ -1,6 +1,7 @@
 <!-- This ideally leverages multiple v-model bindings to reduce clutter in ManagePost -->
 
 <template>
+  <!--TODO: If feasible, have the markdown render as it's typed in when enabled (and then back to plain text when disabled)  -->
     <div id="makeTextPostBody">
         <textarea
         id="text-body"

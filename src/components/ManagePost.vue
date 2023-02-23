@@ -1,13 +1,21 @@
 <template>
+  <!-- TODO: Refactor so that existing posts can be passed in as props and re-use this interface -->
   <div class="container col-6">
-    <span v-for="(state, i) in states" :key="i">
-      <button class="btn" :class= "{'active': state === currentState}" @click="updateState(state)">
-        {{state}}
-      </button>
-    </span>
     <form action="gotothedesiredURL" method="POST">
+
       <input v-model="title" class='text-input' placeholder = "Write a title for your post">
-      <TextPostBody v-if="isText" class ='text-input' v-model:body="content" v-model:toggle="markDownEnabled"/>
+      <span id="privacySettings">
+        <input type="radio" name="privacy" id="private" value="private" v-model="privacySetting">
+        <label for="private">Private</label>
+        <input type="radio" name="privacy" id="friendsonly" value="friends" v-model="privacySetting">
+        <label for="private">Friends Only</label>
+        <input type="radio" name="privacy" id="public" value="public" v-model="privacySetting">
+        <label for="private">Public</label>
+      </span>
+
+      <TextPostBody class ='text-input' v-model:body="textContent" v-model:toggle="markDownEnabled"/>
+      <ImagePostBody class = 'image' v-model:imageContent="imageContent" v-model:imageMime="imageType"></ImagePostBody>
+
     </form>
     <button class="btn">Post</button>
   </div>
@@ -15,30 +23,47 @@
 
 <script>
 import TextPostBody from '@/components/TextPostBody.vue'
+import ImagePostBody from '@/components/ImagePostBody.vue'
 
 export default {
   data () {
     return {
-      states: ['text', 'image'],
       title: '',
-      content: '',
+      textContent: '',
       markDownEnabled: false,
-      isText: true
+      imageContent: '',
+      imageType: '',
+      privacySetting: 'private'
+    }
+  },
+  computed: {
+    contentTypes () {
+      const contentTypes = []
+
+      if (this.textContent && this.markDownEnabled) {
+        contentTypes.push('text/markdown')
+      } else if (this.textContent && !this.markDownEnabled) {
+        contentTypes.push('text/plain')
+      }
+
+      // Images
+      return contentTypes
     }
   },
   props: ['author'],
   components: {
-    TextPostBody
+    TextPostBody,
+    ImagePostBody
   },
   methods: {
-    updateState (state) {
-      this.isText = (state === 'text')
-    }
   },
-  computed: {
-    currentState () {
-      return (this.isText ? 'text' : 'image')
-    }
+  created () {
+    // TODO: Receive JSON from backend and unpack
+
+  },
+  unmounted () {
+    // TODO: Pack and send JSON to backend
+
   }
 }
 </script>
