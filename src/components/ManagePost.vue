@@ -14,7 +14,7 @@
       </span>
 
       <TextPostBody class ='text-input' v-model:body="textContent" v-model:toggle="markDownEnabled"/>
-      <ImagePostBody class = 'image' v-model:imageContent="imageContent" v-model:imageMime="imageType"></ImagePostBody>
+      <ImagePostBody class = 'image-upload' @update:image="(image) => imageURL64 = image"/>
 
     </form>
     <button class="btn">Post</button>
@@ -31,8 +31,7 @@ export default {
       title: '',
       textContent: '',
       markDownEnabled: false,
-      imageContent: '',
-      imageType: '',
+      imageURL64: '',
       privacySetting: 'private'
     }
   },
@@ -46,8 +45,27 @@ export default {
         contentTypes.push('text/plain')
       }
 
-      // Images
+      if (this.imageMime) {
+        contentTypes.push(this.imageMime)
+      }
+
       return contentTypes
+    },
+    rawImage64 () {
+      if (!this.imageURL64) {
+        return ''
+      }
+      else {
+        return this.imageURL64.replace('data:', '').replace(/^.+,/, '')
+      }
+    },
+    imageMime () {
+      if (!this.imageURL64) {
+        return ''
+      }
+      else {
+        return this.imageURL64.replace('data:', '').match(/^.+,/)[0].replace(',', '')
+      }
     }
   },
   props: ['author'],
@@ -56,6 +74,7 @@ export default {
     ImagePostBody
   },
   methods: {
+
   },
   created () {
     // TODO: Receive JSON from backend and unpack
