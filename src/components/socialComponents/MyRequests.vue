@@ -2,12 +2,12 @@
 <div class="list-of-profiles" id="requests">
   <h1> Your <br/> Requests</h1>
   <ul>
-    <li v-for="author in authors" :key="author.id">
-      <img :src="author.profile_image">
-      <p>{{displayUsername(author.display_name)}}</p>
+    <li v-for="request in requests" :key="request.id">
+      <img :src="request.profile_image">
+      <p>{{displayUsername(request.display_name)}}</p>
       <span>
-        <button id="accept-button">Accept</button>
-        <button id="decline-button">Decline</button>
+        <button @click="removeRequest(request.id)" id="accept-button">Accept</button>
+        <button @click="removeRequest(request.id)" id="decline-button">Decline</button>
       </span>
     </li>
   </ul>
@@ -16,16 +16,17 @@
 
 <script>
 
+import axios from 'axios'
 export default {
   data () {
     return {
-      authors: [
+      /* test authors */
+      requests: [
         {
           id: 1,
           display_name: 'request1',
           profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
         },
-
         {
           id: 2,
           display_name: 'request2',
@@ -34,12 +35,24 @@ export default {
       ]
     }
   },
+  /* testing it out with json server */
+  async created () {
+    try {
+      const res = await axios.get('http://localhost:3000/follows')
+      this.items = res.data
+    } catch (error) {
+      console.log(error)
+    }
+  },
   methods: {
     displayUsername (username) {
       return '@' + username
+    },
+    removeRequest (id) {
+      axios.delete(`http://localhost:3000/follows/${id}`)
+      this.items = this.items.filter(item => item.id !== id)
     }
   }
-
 }
 
 </script>

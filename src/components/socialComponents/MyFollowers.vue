@@ -2,9 +2,9 @@
 <div class="list-of-profiles" id="followers">
   <h1 id="followers"> Your <br/> Followers</h1>
   <ul>
-    <li v-for="author in authors" :key="author.id">
-      <img :src="author.profile_image">
-      <p>{{displayUsername(author.display_name)}}</p>
+    <li v-for="follower in followers.items" :key="follower.id">
+      <img :src="follower.profileImage">
+      <p>{{displayUsername(follower.displayName)}}</p>
     </li>
   </ul>
 </div>
@@ -15,27 +15,27 @@
 export default {
   data () {
     return {
-      authors: [
-        {
-          id: 1,
-          display_name: 'follower1',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
-        },
-
-        {
-          id: 2,
-          display_name: 'follower2',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
-        }
-      ]
+      followers: ['']
     }
   },
   methods: {
     displayUsername (username) {
       return '@' + username
+    },
+    async getData () {
+      try {
+        // get the followers of the author
+        const response = await this.$http.get('http://localhost:8000/authors/1/followers/')
+        this.followers = response.data
+      } catch (error) {
+        console.log(error)
+      }
     }
+  },
+  created () {
+    // get followers when page loads
+    this.getData()
   }
-
 }
 
 </script>
