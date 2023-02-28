@@ -6,8 +6,8 @@
       <img :src="request.profile_image">
       <p>{{displayUsername(request.display_name)}}</p>
       <span>
-        <button @click="removeRequest(request.id)" id="accept-button">Accept</button>
-        <button @click="removeRequest(request.id)" id="decline-button">Decline</button>
+        <button id="accept-button">Accept</button>
+        <button id="decline-button">Decline</button>
       </span>
     </li>
   </ul>
@@ -16,7 +16,6 @@
 
 <script>
 
-import axios from 'axios'
 export default {
   data () {
     return {
@@ -35,22 +34,9 @@ export default {
       ]
     }
   },
-  /* testing it out with json server */
-  async created () {
-    try {
-      const res = await axios.get('http://localhost:3000/follows')
-      this.items = res.data
-    } catch (error) {
-      console.log(error)
-    }
-  },
   methods: {
     displayUsername (username) {
       return '@' + username
-    },
-    removeRequest (id) {
-      axios.delete(`http://localhost:3000/follows/${id}`)
-      this.items = this.items.filter(item => item.id !== id)
     }
   }
 }
