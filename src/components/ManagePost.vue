@@ -51,7 +51,8 @@
       />
     </form>
 
-    <button class="btn">Post</button>
+    <button class="btn" @click="submitPost">Post</button>
+    <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
 </template>
 
@@ -59,6 +60,7 @@
 import TextPostBody from "@/components/TextPostBody.vue";
 import ImagePostBody from "@/components/ImagePostBody.vue";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   data() {
@@ -78,18 +80,34 @@ export default {
         isUnlisted: false,
         visibility: "private",
         // Generate when post is submitted
-        postId: null,
+        id: null,
         pubDate: null,
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
       markDownEnabled: false,
+      badSubmit: false,
     };
   },
   props: ["author", "isExistingPost"],
   components: {
     TextPostBody,
     ImagePostBody,
+  },
+  computed: {
+    validPost() {
+      return (
+        this.post.title && (this.post.imageContent || this.post.textContent)
+      );
+    },
+    errorMessage() {
+      if (!this.post.title) {
+        return "Your post needs a title!";
+      }
+      if (!this.post.imageContent && !this.post.textContent) {
+        return "Your post needs text and/or an image!";
+      }
+    },
   },
   methods: {
     setImage(imageSrc) {
@@ -132,6 +150,20 @@ export default {
       this.post.contentTypes = this.post.contentTypes.filter(
         (contentType) => !contentType.includes(substring)
       );
+    },
+
+    submitPost() {
+      if (this.validPost) {
+        const uniqueID = uuidv4();
+        this.post.id = uniqueID;
+        axios
+          .post("http://localhost:3000/posts", this.$data.post)
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
+        this.$router.push("/");
+      } else {
+        this.badSubmit = true;
+      }
     },
   },
   mounted() {
