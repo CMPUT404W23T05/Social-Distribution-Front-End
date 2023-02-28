@@ -1,10 +1,12 @@
 <template>
-  <NavBar :author = author></NavBar>
-  <router-view/>
+  <NavBar :author="author"></NavBar>
+  <ManagePost :author="author"></ManagePost>
+  <router-view />
 </template>
 
 <script>
 import NavBar from '@/components/NavBar.vue'
+import ManagePost from './components/ManagePost.vue'
 
 export default {
   data () {
@@ -16,10 +18,10 @@ export default {
     }
   },
   components: {
-    NavBar
+    NavBar,
+    ManagePost
   }
 }
-
 </script>
 
 <style>

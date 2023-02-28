@@ -12,7 +12,7 @@
           type="radio"
           name="privacy"
           id="private"
-          value="private"
+          value="PRIVATE"
           v-model="post.visibility"
         />
         <label for="private">Private</label>
@@ -20,7 +20,7 @@
           type="radio"
           name="privacy"
           id="friendsonly"
-          value="friends"
+          value="FRIENDS"
           v-model="post.visibility"
         />
         <label for="private">Friends Only</label>
@@ -28,7 +28,7 @@
           type="radio"
           name="privacy"
           id="public"
-          value="public"
+          value="PUBLIC"
           v-model="post.visibility"
         />
         <label for="private">Public</label>
@@ -36,7 +36,7 @@
 
       <TextPostBody
         class="text-input"
-        :body="post.textContent"
+        :body="post.content"
         :toggle="markDownEnabled"
         @change-text-post="({ body, toggle }) => setText(body, toggle)"
       />
@@ -67,21 +67,23 @@ export default {
     return {
       // Initialize a blank post
       post: {
-        objectType: "post",
+        type: "post",
         title: "",
-        postSource: "",
-        postOrigin: "",
+        source: "http://somethinghere.ca",
+        origin: "http://somethingelse.com",
         description: "",
         contentTypes: [],
-        textContent: "",
-        imageContent: "",
-        commentCount: 0,
-        comments: [],
-        isUnlisted: false,
+        content: "",
+        image: "",
+        count: 0,
+        comments:
+          "http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments",
+        unlisted: false,
         visibility: "private",
+        author: "lldbryq22g093jsn5sul7i339b6fljzxpd8tld",
         // Generate when post is submitted
         id: null,
-        pubDate: null,
+        //pubDate: null,
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
@@ -96,15 +98,13 @@ export default {
   },
   computed: {
     validPost() {
-      return (
-        this.post.title && (this.post.imageContent || this.post.textContent)
-      );
+      return this.post.title && (this.post.image || this.post.content);
     },
     errorMessage() {
       if (!this.post.title) {
         return "Your post needs a title!";
       }
-      if (!this.post.imageContent && !this.post.textContent) {
+      if (!this.post.image && !this.post.content) {
         return "Your post needs text and/or an image!";
       }
     },
@@ -115,12 +115,10 @@ export default {
       this.sanitizeContentTypes("image");
 
       if (imageSrc === "") {
-        this.post.imageContent = imageSrc;
+        this.post.image = imageSrc;
       } else {
         // a2Wt29qw021t...
-        this.post.imageContent = imageSrc
-          .replace("data:", "")
-          .replace(/^.+,/, "");
+        this.post.image = imageSrc.replace("data:", "").replace(/^.+,/, "");
 
         const imageMimeType = imageSrc
           .replace("data:", "")
@@ -131,7 +129,7 @@ export default {
       }
     },
     setText(body, toggle) {
-      this.post.textContent = body;
+      this.post.content = body;
       this.sanitizeContentTypes("text");
       if (body && toggle) {
         this.post.contentTypes.push("text/markdown");
@@ -157,7 +155,7 @@ export default {
         const uniqueID = uuidv4();
         this.post.id = uniqueID;
         axios
-          .post("http://localhost:3000/posts", this.$data.post)
+          .post("http://localhost:8000/api/create-post/", this.$data.post)
           .then((res) => console.log(res))
           .catch((err) => console.log(err));
         this.$router.push("/");
