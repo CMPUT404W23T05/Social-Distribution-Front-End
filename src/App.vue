@@ -1,6 +1,5 @@
 <template>
   <NavBar :author="author"></NavBar>
-  <ManagePost :author="author"></ManagePost>
   <router-view />
 </template>
 
