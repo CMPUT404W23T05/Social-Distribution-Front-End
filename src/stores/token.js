@@ -8,22 +8,22 @@ export const useTokenStore = defineStore('token', {
     isAuthenticated: false // by default, the user is not authenticated
   }),
   actions: {
-    initializeStore (state) {
+    initializeStore () {
       if (localStorage.getItem('token')) { // if there is a token in local storage
-        state.token = localStorage.getItem('token')
-        state.isAuthenticated = true // the user is authenticated
+        this.token = localStorage.getItem('token')
+        this.isAuthenticated = true // the user is authenticated
       } else {
-        state.token = ''
-        state.isAuthenticated = false
+        this.token = ''
+        this.isAuthenticated = false
       }
     },
-    setToken (state, token) { // set the token in local storage when the user logs in
-      state.token = token
-      state.isAuthenticated = true
+    setToken (token) { // set the token in local storage when the user logs in
+      this.token = token
+      this.isAuthenticated = true
     },
-    removeToken (state) { // remove the token from local storage when the user logs out
-      state.token = ''
-      state.isAuthenticated = false
+    removeToken () { // remove the token from local storage when the user logs out
+      this.token = ''
+      this.isAuthenticated = false
     }
   }
 })

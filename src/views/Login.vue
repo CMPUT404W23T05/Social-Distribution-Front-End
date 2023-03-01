@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { useTokenStore } from '@/stores/token'
 import axios from 'axios'
 export default {
   name: 'LogIn',
@@ -34,8 +35,8 @@ export default {
           console.log(response)
 
           const token = response.data.auth_token
-
-          this.$store.commit('setToken', token)
+          const store = useTokenStore()
+          store.setToken(token)
           axios.defaults.headers.common.Authorization = `Token ${token}`
 
           localStorage.setItem('token', token)
