@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'LogIn',
   data () {
@@ -26,8 +27,24 @@ export default {
         username: this.username,
         password: this.password
       }
+      // Send formData to backend
+      axios
+        .post('token/login', formData)
+        .then(response => {
+          console.log(response)
+
+          const token = response.data.auth_token
+
+          this.$store.commit('setToken', token)
+          axios.defaults.headers.common.Authorization = `Token ${token}`
+
+          localStorage.setItem('token', token)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
-    // TODO: Send formData to backend
+
   }
 }
 

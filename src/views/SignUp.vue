@@ -11,6 +11,7 @@
   </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'sign-up',
   data () {
@@ -21,13 +22,23 @@ export default {
   },
   methods: {
     submitForm (e) {
-      // eslint-disable-next-line no-unused-vars
+      // key value pairs of username and password
       const formData = {
         username: this.username,
         password: this.password
       }
+      // TODO: Send formData to backend
+      axios
+        .post('/users/', formData)
+        .then(response => {
+          this.$router.push('/login') // redirect to login page
+          console.log(response)
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
-    // TODO: Send formData to backend
+
   }
 }
 

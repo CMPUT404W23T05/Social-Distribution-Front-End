@@ -6,6 +6,7 @@
 <script>
 import NavBar from '@/components/NavBar.vue'
 import { useTokenStore } from '@/stores/token.js'
+import axios from 'axios'
 
 export default {
   name: 'App',
@@ -14,6 +15,11 @@ export default {
     // eslint-disable-next-line no-unused-vars
     const token = tokenStore.token // get the token from the store
     // TODO: attach token to request header
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Token ${token}`
+    } else {
+      axios.defaults.headers.common.Authorization = 'null'
+    }
   },
   data () {
     return {
