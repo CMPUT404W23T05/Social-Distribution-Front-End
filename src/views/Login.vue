@@ -33,13 +33,14 @@ export default {
         .post('token/login', formData)
         .then(response => {
           console.log(response)
-
+          // store token in local storage
           const token = response.data.auth_token
           const store = useTokenStore()
           store.setToken(token)
           axios.defaults.headers.common.Authorization = `Token ${token}`
-
           localStorage.setItem('token', token)
+          // go to home page
+          this.$router.push('/')
         })
         .catch(error => {
           console.log(error)
