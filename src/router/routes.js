@@ -7,7 +7,7 @@ import SignUp from '../views/SignUp.vue'
 export default [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/login'
   },
   {
     path: '/home',
