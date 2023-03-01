@@ -1,5 +1,5 @@
 <template>
-  <NavBar :author = author></NavBar>
+  <NavBar :author = author v-if="loggedIn"></NavBar>
   <router-view/>
 </template>
 
@@ -31,6 +31,11 @@ export default {
   },
   components: {
     NavBar
+  },
+  computed: {
+    loggedIn () {
+      return this.$route.name !== 'login' && this.$route.name !== 'signup'
+    }
   }
 
 }

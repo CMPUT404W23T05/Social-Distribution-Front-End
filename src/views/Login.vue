@@ -40,7 +40,7 @@ export default {
           axios.defaults.headers.common.Authorization = `Token ${token}`
           localStorage.setItem('token', token)
           // go to home page
-          this.$router.push('/')
+          this.$router.push('/home')
         })
         .catch(error => {
           console.log(error)
