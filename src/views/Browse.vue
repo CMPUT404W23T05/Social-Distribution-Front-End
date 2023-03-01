@@ -9,10 +9,13 @@
       <div class="border_date">
         <h7>date</h7>
       </div>
+      <!-- <h1>{{ moment().format("MMM DD YYYY") }}</h1> -->
+      <h1>{{ moment("2011", "YYYY").fromNow() }}</h1>
       <div class="posts_section margin_set">
-        <div class="single_card" v-for="obj in auth_post" :key="obj.author.id">
+        <div class="single_card" v-for="post in posts" :key="post.id">
+          <h1>{{ moment(post.published).fromNow() }}</h1>
           <Post class="card"
-            :author="obj.author" :post="obj.post"
+            :author="post.author" :post="post"
           />
         </div>
       </div>
@@ -71,6 +74,7 @@
   
 <script>
 import Post from '../components/PostCard.vue'
+var moment = require('moment');
 
   export default {
     name: 'BrowsePage',
@@ -79,21 +83,18 @@ import Post from '../components/PostCard.vue'
     },
     data(){
       return{
-        posts:[],
-        authors:[],
-        
+        moment:moment,
+        posts:[]        
       }
     },
     computed: {
-      auth_post(){
-        const auth_post = []
-        for (let i = 0, len = Math.max(this.authors.length, this.posts.length); i < len; i++) {
-          auth_post.push({
-            author: this.authors[i] || 'no auhtors',
-            post: this.posts[i] || 'no posts'
-          })
-        }
-        return auth_post
+      trydate() {
+        return moment.format()
+      }
+    },
+    methods: {
+      oldestPost: {
+
       }
     },
     created(){
@@ -103,8 +104,8 @@ import Post from '../components/PostCard.vue'
           title:"A post title about a post about web dev",
           id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
           source:"http://lastplaceigotthisfrom.com/posts/yyyyy",
-          origin:"http://whereitcamefrom.com/posts/zzzzz",
-          description:"This post discusses stuff -- brief",
+          // origin:"http://whereitcamefrom.com/posts/zzzzz",
+          // description:"This post discusses stuff -- brief",
           contentType:"text/plain",
           content:"Þā wæs on burgum B",
           author:{
@@ -116,37 +117,27 @@ import Post from '../components/PostCard.vue'
             github: "http://github.com/laracroft",
             profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
           },
-          categories:["web","tutorial"],
-          count: 1023,
-          comments:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-          commentsSrc:{
-            type:"comments",
-            page:1,
-            size:5,
-            post:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-            id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-            comments:[
-              {
-                type:"comment",
-                author:{
-                  type:"author",
-                  id:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-                  url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-                  host:"http://127.0.0.1:5454/",
-                  displayName:"Greg Johnson",
-                  github: "http://github.com/gjohnson",
-                  profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
-                },
-                comment:"Sick Olde English",
-                contentType:"text/markdown",
-                published:"2015-03-09T13:07:04+00:00",
-                id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-              }
-            ]
+          published:"2015-03-09T13:07:04+00:00"
+        },
+        {
+          type:"post",
+          title:"newly demo post",
+          id:"http://127.0.0.1:5454/authors/9de/posts/76",
+          source:"http://lastplaceigotthisfrom.com/posts/yyyyy",
+          // origin:"http://whereitcamefrom.com/posts/zzzzz",
+          // description:"This post discusses stuff -- brief",
+          contentType:"text/plain",
+          content:"Hey yo",
+          author:{
+            type:"author",
+            id:"http://127.0.0.1:5454/authors/9de",
+            host:"http://127.0.0.1:5454/",
+            displayName:"Lara Croft",
+            url:"http://127.0.0.1:5454/authors/9de",
+            github: "http://github.com/laracroft",
+            profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
           },
-          published:"2015-03-09T13:07:04+00:00",
-          visibility:"PUBLIC",
-          unlisted:false
+          published:"2022-03-09T13:07:04+00:00"
         },
         {
           type:"post",
@@ -164,61 +155,10 @@ import Post from '../components/PostCard.vue'
             displayName:"Lara Croft",
             url:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
             github: "http://github.com/laracroft",
-            profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
+            profileImage: "https://imgur.com/gallery/2oNSn3C.jpeg"
           },
-          categories:["web","tutorial"],
-          count: 1023,
-          comments:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-          commentsSrc:{
-            type:"comments",
-            page:1,
-            size:5,
-            post:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-            id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-            comments:[
-              {
-                type:"comment",
-                author:{
-                  type:"author",
-                  id:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-                  url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-                  host:"http://127.0.0.1:5454/",
-                  displayName:"Greg Johnson",
-                  github: "http://github.com/gjohnson",
-                  profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
-                },
-                comment:"Sick Olde English",
-                contentType:"text/markdown",
-                published:"2015-03-09T13:07:04+00:00",
-                id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-              }
-            ]
-          },
-          published:"2015-03-09T13:07:04+00:00",
-          visibility:"PUBLIC",
-          unlisted:false
-        }
-        
-      ],
-      this.authors = [
-        {
-          type:"author",
-          id: 1,
-          url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
-          host:"http://127.0.0.1:5454/",
-          displayName:"Greg Johnson",
-          github:"http://github.com/gjohnson",
-          profileImage:"https://i.imgur.com/k7XVwpB.jpeg"
-        },
-        {
-          type:"author",
-          id: 2,
-          url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f",
-          host:"http://127.0.0.1:5454/",
-          displayName:"Rita skeeter",
-          github:"http://github.com/rskeeter",
-          profileImage:"https://imgur.com/gallery/2oNSn3C.jpeg"
-        }
+          published:"2015-03-09T13:07:04+00:00"
+        } 
       ]
     }
   }
@@ -316,3 +256,81 @@ import Post from '../components/PostCard.vue'
     width: 33%;
   }
 </style>
+
+<!-- computed: {
+  auth_post(){
+    const auth_post = []
+    for (let i = 0, len = Math.max(this.authors.length, this.posts.length); i < len; i++) {
+      auth_post.push({
+        author: this.authors[i] || 'no auhtors',
+        post: this.posts[i] || 'no posts'
+      })
+    }
+    return auth_post
+  }
+}, -->
+
+<!-- 
+// categories:["web","tutorial"],
+// count: 1023,
+// comments:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+// commentsSrc:{
+//   type:"comments",
+//   page:1,
+//   size:5,
+//   post:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+//   id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+//   comments:[
+//     {
+//       type:"comment",
+//       author:{
+//         type:"author",
+//         id:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+//         url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+//         host:"http://127.0.0.1:5454/",
+//         displayName:"Greg Johnson",
+//         github: "http://github.com/gjohnson",
+//         profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
+//       },
+//       comment:"Sick Olde English",
+//       contentType:"text/markdown",
+//       published:"2015-03-09T13:07:04+00:00",
+//       id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+//     }
+//   ]
+// },
+// published:"2015-03-09T13:07:04+00:00",
+// visibility:"PUBLIC",
+// unlisted:false -->
+
+<!-- categories:["web","tutorial"],
+          count: 1023,
+          comments:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+          commentsSrc:{
+            type:"comments",
+            page:1,
+            size:5,
+            post:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
+            id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
+            comments:[
+              {
+                type:"comment",
+                author:{
+                  type:"author",
+                  id:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                  url:"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                  host:"http://127.0.0.1:5454/",
+                  displayName:"Greg Johnson",
+                  github: "http://github.com/gjohnson",
+                  profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
+                },
+                comment:"Sick Olde English",
+                contentType:"text/markdown",
+                published:"2015-03-09T13:07:04+00:00",
+                id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+              }
+            ]
+          },
+          published:"2015-03-09T13:07:04+00:00",
+          visibility:"PUBLIC",
+          unlisted:false -->
