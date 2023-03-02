@@ -1,4 +1,5 @@
 <template>
+  <h1>Manage your posts here</h1>
   <div class="manage-posts">
     <!-- Replace with a component later on -->
     <div class="card-list">
@@ -7,15 +8,24 @@
         :key="post.id"
         :post="post"
         :author="tempAuthor"
-        @hover="previewAction(index, post)"
-        @click="performAction(index, post)"
-      ></Card>
+      >
+        <template #footer>
+          <button type="button" class="edit-button">Edit</button>
+          <span class="divider">|</span>
+          <button
+            type="button"
+            class="delete-button"
+            @click="displayDelPrompt(post, index)"
+          >
+            Delete
+          </button>
+        </template>
+      </Card>
       <div v-if="!posts">You haven't made any posts yet!</div>
     </div>
 
     <PopUpPrompt
       v-if="showPrompt"
-      @dismissPrompt="(toggleStatus) => (allowPrompt = toggleStatus)"
       @clickOut="showPrompt = false"
       @acceptPrompt="deletePost"
     >
@@ -40,12 +50,9 @@ import axios from "axios";
 export default {
   data() {
     return {
-      mode: "Edit",
       posts: [],
       selectedPost: { post: null, index: NaN },
-      allowPrompt: true,
       showPrompt: false,
-      showManage: false,
       tempAuthor: {
         display_name: "Tommy",
         profile_image:
@@ -55,20 +62,18 @@ export default {
     };
   },
   methods: {
-    performAction(index, post) {
+    displayDelPrompt(post, index) {
       this.selectedPost = { post: post, index: index };
-      if (this.mode === "Edit") {
-        this.showManage = true;
-      } else {
-        this.allowPrompt
-          ? (this.showPrompt = true)
-          : this.deletePost(this.selectedPost);
-      }
+      this.showPrompt = true;
     },
+
     deletePost(post, index) {
       this.posts = this.posts.splice(index, 1);
       axios.delete(`/api/authors/${this.author.id}/${post.id}`);
       this.showPrompt = false;
+    },
+    doSomething() {
+      console.log("Delete is pressed!");
     },
   },
   mounted() {
@@ -90,6 +95,6 @@ export default {
 .card-list {
   display: flex;
   flex-wrap: wrap;
-  margin: 15pt 20%;
+  margin: 15pt 10%;
 }
 </style>

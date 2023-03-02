@@ -1,5 +1,9 @@
 <template>
-  <div class="card-body card">
+  <div
+    class="card-body card"
+    @mouseover="hovered = true"
+    @mouseleave="hovered = false"
+  >
     <h3 class="post-title">{{ post.title }}</h3>
     <div class="content-container">
       <p class="text-content" v-if="post.content">{{ post.content }}</p>
@@ -10,19 +14,21 @@
         :alt="post.description"
       />
     </div>
-    <span class="footer card-footer text-muted">
-      <img
-        class="profile-image"
-        :src="author.profile_image"
-        :alt="author.profile_name"
-      />
-      <h4 id="username">@{{ author.display_name }}</h4>
-      <span
-        class="content-types"
-        v-for="content in post.ContentTypes"
-        :key="content"
-        >{{ content }}</span
-      >
+    <span :class="{ open: hovered }" class="footer card-footer text-muted">
+      <slot name="footer">
+        <img
+          class="profile-image"
+          :src="author.profile_image"
+          :alt="author.profile_name"
+        />
+        <h6 id="username">@{{ author.display_name }}</h6>
+        <span
+          class="content-types"
+          v-for="content in post.ContentTypes"
+          :key="content"
+          >{{ content }}
+        </span>
+      </slot>
     </span>
   </div>
 </template>
@@ -30,8 +36,13 @@
 <script>
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
-  props: ['author', 'post']
-}
+  props: ["author", "post"],
+  data() {
+    return {
+      hovered: false,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -61,12 +72,22 @@ export default {
   word-wrap: break-word;
   text-overflow: ellipsis;
   overflow: hidden;
-  padding: 5pt;
 }
 
 .footer {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  height: 0;
+  transition: all 1s;
+}
+
+.footer.open {
   display: flex;
-  align-items: center;
+  height: 30%;
+  width: 100%;
+  margin-left: 0;
+  justify-content: space-evenly;
 }
 
 .profile-image {
@@ -78,6 +99,9 @@ export default {
 
 .card {
   width: 15%;
-  min-width: 300pt;
+  min-width: 200pt;
+  max-width: 300pt;
+  margin: 5pt;
+  padding: 5pt 0;
 }
 </style>

@@ -6,25 +6,26 @@
         No, Take me back!
       </button>
       <button class="accept btn">Yep!</button>
-      <input
+      <!-- <input
         type="checkbox"
         checked="false"
         id="dismiss"
         @click="($event) => $emit('dismissPrompt', $event.target.checked)"
       />
-      <label for="dismiss">Don't show me again</label>
+      <label for="dismiss">Don't show me again</label> -->
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  emits: ['dismissPrompt']
-}
+  emits: ["dismissPrompt"],
+};
 </script>
 
 <style scoped>
 .pop-up {
+  position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
@@ -32,7 +33,6 @@ export default {
   z-index: 99;
   backdrop-filter: blur(2pt);
   backdrop-filter: brightness(45%);
-
   display: flex;
   align-items: center;
   justify-content: center;
