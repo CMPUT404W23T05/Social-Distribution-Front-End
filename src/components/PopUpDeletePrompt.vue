@@ -19,8 +19,8 @@
 
 <script>
 export default {
-  emits: ["dismissPrompt"],
-};
+  emits: ['dismissPrompt']
+}
 </script>
 
 <style scoped>

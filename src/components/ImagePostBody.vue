@@ -64,16 +64,18 @@ export default {
 
 <style>
 .image-upload {
-  max-width: 100%;
-  object-fit: contain;
+  max-width: 100pt;
+  max-height: 100pt;
+  object-fit: scale-down;
   text-align: center;
   justify-content: center;
+  border-radius: 3pt;
 }
 
 .image-cancel {
-  position: absolute;
-  top: 16pt;
-  right: 8pt;
+  position: relative;
+  bottom: 100pt;
+  left: 50pt;
   border-radius: 50%;
   background-color: red;
 }

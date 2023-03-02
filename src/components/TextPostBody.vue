@@ -48,7 +48,6 @@ export default {
       this.emitStatus();
     },
     emitStatus() {
-      console.log("Emitting!!!");
       this.$emit("changeTextPost", {
         body: this.localBody,
         toggle: this.localToggle,
