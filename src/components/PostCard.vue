@@ -76,6 +76,8 @@ export default {
     .card-body {
         height: 140pt;
         text-align: left;
-        text-overflow: false;
+        text-transform: capitalize;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>
