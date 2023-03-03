@@ -5,6 +5,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import axios from 'axios'
 
+axios.defaults.baseURL = 'http://localhost:8000/api' // API URL
+
 const app = createApp(App)
-app.use(router).mount('#app')
+app.use(router, axios).mount('#app')
 app.config.globalProperties.$http = axios
