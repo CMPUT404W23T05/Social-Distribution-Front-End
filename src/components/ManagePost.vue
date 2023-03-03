@@ -1,6 +1,7 @@
 <template>
   <!-- TODO: Refactor so that existing posts can be passed in as props and re-use this interface -->
   <div class="container col-6">
+    <button type="button" class="exit" @click="$emit('endManage')">X</button>
     <form action="gotothedesiredURL" method="POST">
       <input
         v-model="post.title"
@@ -37,11 +38,12 @@
       <TextPostBody
         class="text-input"
         :body="post.content"
-        :toggle="markDownEnabled"
+        :toggle="markdownEnabled"
         @change-text-post="({ body, toggle }) => setText(body, toggle)"
       />
       <ImagePostBody
         class="image-upload"
+        :image="post.image"
         @update:image="(imageSrc) => setImage(imageSrc)"
       />
       <input
@@ -89,7 +91,6 @@ export default {
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
-      markDownEnabled: false,
       badSubmit: false,
     };
   },
@@ -108,6 +109,10 @@ export default {
       } else if (!this.post.image && !this.post.content) {
         return "Your post needs text and/or an image!";
       }
+    },
+    markdownEnabled() {
+      return (this.markdownEnabled =
+        this.post.contentTypes.includes("text/markdown"));
     },
   },
   methods: {
@@ -148,11 +153,14 @@ export default {
 
     submitPost() {
       if (this.validPost) {
+        //Convert to string for backend
+        this.post.contentTypes = this.post.contentTypes.toString();
+
         if (this.existingPost) {
           console.log(`Going to id ${this.post.id}`);
           axios
             .put(`http://localhost:3000/posts/${this.post.id}`, this.post)
-            .then((res) => this.$emit("succesfulPost"))
+            .then((res) => this.$emit("endManage"))
             .catch((err) => console.log(err));
         } else {
           const uniqueID = uuidv4();
@@ -173,10 +181,12 @@ export default {
   mounted() {
     if (this.existingPost) {
       this.post = structuredClone(this.existingPost);
-      this.markdownEnabled = this.post.contentTypes.includes("text/markdown");
+
+      //Convert from string from backend
+      this.post.contentTypes = this.post.contentTypes.split(",");
     }
   },
-  emits: ["succesfulPost"],
+  emits: ["endManage"],
 };
 </script>
 

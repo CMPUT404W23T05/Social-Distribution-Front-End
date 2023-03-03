@@ -38,7 +38,7 @@
       v-if="showManage"
       :author="tempAuthor"
       :existingPost="selectedPost"
-      @succesful-post="refreshPosts"
+      @end-manage="refreshPosts"
     ></ManagePost>
   </div>
 </template>

@@ -6,9 +6,11 @@
   >
     <h3 class="post-title">{{ post.title }}</h3>
     <div class="content-container">
-      <p v-if="markdownEnabled" class="text-content">
-        <vue-markdown :source="post.content"></vue-markdown>
-      </p>
+      <vue-markdown
+        v-if="markdownEnabled"
+        class="text-content"
+        :source="post.content"
+      ></vue-markdown>
       <!-- Post is plain text -->
       <p v-else-if="post.content" class="text-content">{{ post.content }}</p>
       <img
@@ -38,6 +40,8 @@
 </template>
 
 <script>
+import VueMarkdown from "vue-markdown-render";
+
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
   props: ["author", "post"],
@@ -51,6 +55,7 @@ export default {
       return this.post.contentTypes.includes("text/markdown");
     },
   },
+  components: { VueMarkdown },
 };
 </script>
 

@@ -19,47 +19,53 @@ export default {
   data: function () {
     return {
       imageUploaded: false,
-      loadedFile: ''
-    }
+      loadedFile: "",
+    };
   },
   methods: {
-    loadImage (event) {
-      const file = event.target.files[0]
-      const reader = new FileReader()
+    loadImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
       reader.onloadend = () => {
-        this.loadedFile = reader.result
-        this.imageUploaded = true
-        this.$emit('update:image', this.loadedFile)
-      }
-      reader.readAsDataURL(file)
+        this.loadedFile = reader.result;
+        this.imageUploaded = true;
+        this.$emit("update:image", this.loadedFile);
+      };
+      reader.readAsDataURL(file);
     },
-    clearImage (event) {
-      this.imageUploaded = false
-      this.loadedFile = ''
-      event.src = ''
-      this.$emit('update:image', this.loadedFile)
-    }
+    clearImage(event) {
+      this.imageUploaded = false;
+      this.loadedFile = "";
+      event.src = "";
+      this.$emit("update:image", this.loadedFile);
+    },
   },
   computed: {
-    imageBase64 () {
+    imageBase64() {
       if (!this.loadedFile) {
-        return ''
+        return "";
       }
-      return this.loadedFile.replace('data:', '').replace(/^.+,/, '')
+      return this.loadedFile.replace("data:", "").replace(/^.+,/, "");
     },
-    imageMime () {
+    imageMime() {
       if (!this.loadedFile) {
-        return ''
+        return "";
       }
       return this.loadedFile
-        .replace('data:', '')
+        .replace("data:", "")
         .match(/^.+,/)[0]
-        .replace(',', '')
+        .replace(",", "");
+    },
+  },
+  mounted() {
+    if (this.image) {
+      this.imageUploaded = true;
+      this.loadedFile = this.image;
     }
   },
-  props: ['image'],
-  emits: ['update:image']
-}
+  props: ["image"],
+  emits: ["update:image"],
+};
 </script>
 
 <style>
