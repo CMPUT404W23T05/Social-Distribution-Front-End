@@ -1,12 +1,26 @@
 <template>
-  <NavBar :author = author></NavBar>
+  <NavBar :author = author v-if="loggedIn"></NavBar>
   <router-view/>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar.vue'
+import { useTokenStore } from '@/stores/token.js'
+import axios from 'axios'
 
 export default {
+  name: 'App',
+  beforeCreate () {
+    const tokenStore = useTokenStore() // initialize the store
+    // eslint-disable-next-line no-unused-vars
+    const token = tokenStore.token // get the token from the store
+    // TODO: attach token to request header
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Token ${token}`
+    } else {
+      axios.defaults.headers.common.Authorization = 'null'
+    }
+  },
   data () {
     return {
       author: {
@@ -17,7 +31,13 @@ export default {
   },
   components: {
     NavBar
+  },
+  computed: {
+    loggedIn () {
+      return this.$route.name !== 'login' && this.$route.name !== 'signup'
+    }
   }
+
 }
 
 </script>

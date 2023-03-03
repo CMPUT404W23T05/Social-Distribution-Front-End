@@ -36,15 +36,32 @@
                 </ul>
             </li>
         </ul>
+        <!-- TODO: replace with actual logout -->
+        <span id="logout"><button @click="logout">Logout</button></span>
 
-        <span id="logout">Signout</span>
     </nav>
 </template>
 
 <script>
+import { useTokenStore } from '@/stores/token'
+import axios from 'axios'
 export default {
   // Author json object
-  props: ['author']
+  props: ['author'],
+  methods: {
+    logout () {
+      const token = useTokenStore()
+      token.removeToken() // remove token from store
+      localStorage.removeItem('token') // remove token from local storage
+      // post to remove token from server
+      axios.post('token/logout').then(response => {
+        console.log(response)
+        this.$router.push('/login') // go to login page
+      }).catch(error => {
+        console.log(error)
+      })
+    }
+  }
 }
 </script>
 
