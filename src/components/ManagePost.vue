@@ -61,140 +61,142 @@
 </template>
 
 <script>
-import TextPostBody from "@/components/TextPostBody.vue";
-import ImagePostBody from "@/components/ImagePostBody.vue";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
+import TextPostBody from '@/components/TextPostBody.vue'
+import ImagePostBody from '@/components/ImagePostBody.vue'
+import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
-  data() {
+  data () {
     return {
       // Initialize a blank post
       post: {
-        type: "post",
-        title: "",
-        source: "http://somethinghere.ca",
-        origin: "http://somethingelse.com",
-        description: "",
+        type: 'post',
+        title: '',
+        source: 'http://somethinghere.ca',
+        origin: 'http://somethingelse.com',
+        description: '',
         contentTypes: [],
-        content: "",
-        image: "",
+        content: '',
+        image: '',
         count: 0,
         comments:
-          "http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments",
+          'http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments',
         unlisted: false,
-        visibility: "private",
-        author: "lldbryq22g093jsn5sul7i339b6fljzxpd8tld",
+        visibility: 'private',
+        author: 'lldbryq22g093jsn5sul7i339b6fljzxpd8tld',
         // Generate when post is submitted
-        id: null,
+        id: null
         // pubDate: null,
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
-      badSubmit: false,
-    };
+      badSubmit: false
+    }
   },
-  props: ["author", "existingPost"],
+  props: ['author', 'existingPost'],
   components: {
     TextPostBody,
-    ImagePostBody,
+    ImagePostBody
   },
   computed: {
-    validPost() {
-      return this.post.title && (this.post.image || this.post.content);
+    validPost () {
+      return this.post.title && (this.post.image || this.post.content)
     },
-    errorMessage() {
+    errorMessage () {
       if (!this.post.title) {
-        return "Your post needs a title!";
+        return 'Your post needs a title!'
       } else if (!this.post.image && !this.post.content) {
-        return "Your post needs text and/or an image!";
-      }
+        return 'Your post needs text and/or an image!'
+      } else return ''
     },
-    markdownEnabled() {
-      return (this.markdownEnabled =
-        this.post.contentTypes.includes("text/markdown"));
-    },
+    markdownEnabled () {
+      return this.post.contentTypes.includes('text/markdown')
+    }
   },
   methods: {
-    setImage(imageSrc) {
+    setImage (imageSrc) {
       // data:img/jpeg;base64=..
-      this.sanitizeContentTypes("image");
+      this.sanitizeContentTypes('image')
 
-      if (imageSrc === "") {
-        this.post.image = imageSrc;
+      if (imageSrc === '') {
+        this.post.image = imageSrc
       } else {
         // a2Wt29qw021t...
-        this.post.image = imageSrc.replace("data:", "").replace(/^.+,/, "");
+        this.post.image = imageSrc.replace('data:', '').replace(/^.+,/, '')
 
         const imageMimeType = imageSrc
-          .replace("data:", "")
+          .replace('data:', '')
           .match(/^.+,/)[0]
-          .replace(",", "");
+          .replace(',', '')
         // img/jpeg;base64
-        this.post.contentTypes.push(imageMimeType);
+        this.post.contentTypes.push(imageMimeType)
       }
     },
-    setText(body, toggle) {
-      this.post.content = body;
-      this.sanitizeContentTypes("text");
+    setText (body, toggle) {
+      this.post.content = body
+      this.sanitizeContentTypes('text')
       if (body && toggle) {
-        this.post.contentTypes.push("text/markdown");
+        this.post.contentTypes.push('text/markdown')
       } else if (body && !toggle) {
-        this.post.contentTypes.push("text/plain");
+        this.post.contentTypes.push('text/plain')
       }
     },
 
-    sanitizeContentTypes(substring) {
+    sanitizeContentTypes (substring) {
       // Helper function to remove an exisiting MIME type before pushing updated one
       this.post.contentTypes = this.post.contentTypes.filter(
         (contentType) => !contentType.includes(substring)
-      );
+      )
     },
 
-    submitPost() {
-      //Note: PUT and POST are opposite of convention to adhere to spec
-      //PUT -> Make a new post
-      //POST -> Edit a post
+    submitPost () {
+      // Note: PUT and POST are opposite of convention to adhere to spec
+      // PUT -> Make a new post
+      // POST -> Edit a post
       if (this.validPost) {
-        //Convert to string for backend
-        this.post.contentTypes = this.post.contentTypes.toString();
+        // Convert to string for backend
+        this.post.contentTypes = this.post.contentTypes.toString()
 
+        // TODO: PUT and PUSH will need to be swapped around for the actual API call
         if (this.existingPost) {
-          console.log(`Going to id ${this.post.id}`);
+          console.log(`Going to id ${this.post.id}`)
+          //  replace w/ '/posts/${this.post.id}'
           axios
-            .post(`/posts/${this.post.id}`, this.post)
-            .then((res) => this.$emit("endManage"))
+            .put(`/posts/${this.post.id}`, this.post)
+            .then((res) => console.log(res))
             .catch((err) => {
-              alert("Couldn't edit the post!");
-              console.log(err);
-            });
+              alert("Couldn't edit the post!")
+              console.log(err)
+            })
         } else {
-          const uniqueID = uuidv4();
-          this.post.id = uniqueID;
+          const uniqueID = uuidv4()
+          this.post.id = uniqueID
+          //  replace w/ /create-post/
           axios
-            .put("/create-post/", this.post)
-            .then((res) => this.$emit("endManage"))
+            .post('/posts', this.post)
+            .then((res) => console.log(res))
             .catch((err) => {
-              alert("Couldn't make the post!");
-              console.log(err);
-            });
+              alert("Couldn't make the post!")
+              console.log(err)
+            })
         }
-        this.$emit("endManage");
+        this.$emit('endManage')
       } else {
-        this.badSubmit = true;
+        this.badSubmit = true
       }
-    },
-  },
-  mounted() {
-    if (this.existingPost) {
-      this.post = structuredClone(this.existingPost);
-
-      //Convert from string from backend
-      this.post.contentTypes = this.post.contentTypes.split(",");
     }
   },
-  emits: ["endManage"],
-};
+  mounted () {
+    if (this.existingPost) {
+      this.post = structuredClone(this.existingPost)
+
+      // Convert from string from backend
+      this.post.contentTypes = this.post.contentTypes.split(',')
+    }
+  },
+  emits: ['endManage']
+}
 </script>
 
 <style scoped>

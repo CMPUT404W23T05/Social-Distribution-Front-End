@@ -26,55 +26,55 @@
 
 <script>
 export default {
-  props: ["body", "toggle"],
-  data() {
+  props: ['body', 'toggle'],
+  data () {
     return {
-      localBody: "",
-      localToggle: false,
-    };
+      localBody: '',
+      localToggle: false
+    }
   },
   computed: {
-    markDownMessage() {
-      return this.localToggle ? "Markdown Enabled!" : "Markdown Disabled!";
-    },
+    markDownMessage () {
+      return this.localToggle ? 'Markdown Enabled!' : 'Markdown Disabled!'
+    }
   },
   methods: {
-    updateToggle(event) {
-      this.localToggle = event.target.checked;
-      this.emitStatus();
+    updateToggle (event) {
+      this.localToggle = event.target.checked
+      this.emitStatus()
     },
-    updateBody(event) {
-      this.localBody = event.target.value;
-      this.emitStatus();
+    updateBody (event) {
+      this.localBody = event.target.value
+      this.emitStatus()
     },
-    emitStatus() {
-      this.$emit("changeTextPost", {
+    emitStatus () {
+      this.$emit('changeTextPost', {
         body: this.localBody,
-        toggle: this.localToggle,
-      });
-    },
+        toggle: this.localToggle
+      })
+    }
   },
-  emits: ["change-text-post"],
+  emits: ['change-text-post'],
   watch: {
     body: {
       immediate: true,
-      handler(newValue, oldValue) {
-        this.localBody = newValue;
-      },
+      handler (newValue, oldValue) {
+        this.localBody = newValue
+      }
     },
     toggle: {
       immediate: true,
-      handler(newValue, oldValue) {
-        this.localToggle = newValue;
-      },
-    },
-  },
-  mounted() {
-    if (this.toggle) {
-      this.localToggle = this.toggle;
+      handler (newValue, oldValue) {
+        this.localToggle = newValue
+      }
     }
   },
-};
+  mounted () {
+    if (this.toggle) {
+      this.localToggle = this.toggle
+    }
+  }
+}
 </script>
 
 <style>

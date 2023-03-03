@@ -40,23 +40,23 @@
 </template>
 
 <script>
-import VueMarkdown from "vue-markdown-render";
+import VueMarkdown from 'vue-markdown-render'
 
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
-  props: ["author", "post"],
-  data() {
+  props: ['author', 'post'],
+  data () {
     return {
-      hovered: false,
-    };
+      hovered: false
+    }
   },
   computed: {
-    markdownEnabled() {
-      return this.post.contentTypes.includes("text/markdown");
-    },
+    markdownEnabled () {
+      return this.post.contentTypes.includes('text/markdown')
+    }
   },
-  components: { VueMarkdown },
-};
+  components: { VueMarkdown }
+}
 </script>
 
 <style scoped>

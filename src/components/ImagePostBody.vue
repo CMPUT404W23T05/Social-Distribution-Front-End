@@ -8,7 +8,7 @@
       @change="loadImage"
     />
     <div v-else-if="imageUploaded" class="image-container">
-      <img class="image-upload" :src="loadedFile" />
+      <img class="image-upload" v-bind:src="loadedFile" />
       <button class="btn image-cancel" @click="clearImage">x</button>
     </div>
   </div>
@@ -19,53 +19,36 @@ export default {
   data: function () {
     return {
       imageUploaded: false,
-      loadedFile: "",
-    };
-  },
-  methods: {
-    loadImage(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.loadedFile = reader.result;
-        this.imageUploaded = true;
-        this.$emit("update:image", this.loadedFile);
-      };
-      reader.readAsDataURL(file);
-    },
-    clearImage(event) {
-      this.imageUploaded = false;
-      this.loadedFile = "";
-      event.src = "";
-      this.$emit("update:image", this.loadedFile);
-    },
-  },
-  computed: {
-    imageBase64() {
-      if (!this.loadedFile) {
-        return "";
-      }
-      return this.loadedFile.replace("data:", "").replace(/^.+,/, "");
-    },
-    imageMime() {
-      if (!this.loadedFile) {
-        return "";
-      }
-      return this.loadedFile
-        .replace("data:", "")
-        .match(/^.+,/)[0]
-        .replace(",", "");
-    },
-  },
-  mounted() {
-    if (this.image) {
-      this.imageUploaded = true;
-      this.loadedFile = this.image;
+      loadedFile: ''
     }
   },
-  props: ["image"],
-  emits: ["update:image"],
-};
+  methods: {
+    loadImage (event) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        this.loadedFile = reader.result
+        this.imageUploaded = true
+        this.$emit('update:image', this.loadedFile)
+      }
+      reader.readAsDataURL(file)
+    },
+    clearImage (event) {
+      this.imageUploaded = false
+      this.loadedFile = ''
+      event.src = ''
+      this.$emit('update:image', this.loadedFile)
+    }
+  },
+  mounted () {
+    if (this.image) {
+      this.imageUploaded = true
+      this.loadedFile = this.image
+    }
+  },
+  props: ['image'],
+  emits: ['update:image']
+}
 </script>
 
 <style>

@@ -5,7 +5,6 @@
 
 <script>
 import NavBar from '@/components/NavBar.vue'
-import ManagePost from './components/ManagePost.vue'
 
 export default {
   data () {
@@ -17,8 +16,7 @@ export default {
     }
   },
   components: {
-    NavBar,
-    ManagePost
+    NavBar
   }
 }
 </script>

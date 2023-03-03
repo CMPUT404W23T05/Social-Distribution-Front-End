@@ -7,7 +7,7 @@
     </button>
     <div class="card-list">
       <Card
-        v-for="(post, index) in posts"
+        v-for="(post) in posts"
         :key="post.id"
         :post="post"
         :author="tempAuthor"
@@ -44,85 +44,83 @@
 </template>
 
 <script>
-import ManagePost from "@/components/ManagePost.vue";
-import Card from "@/components/RevisedCard.vue";
-import PopUpPrompt from "@/components/PopUpPrompt.vue";
-import axios from "axios";
+import ManagePost from '@/components/ManagePost.vue'
+import Card from '@/components/RevisedCard.vue'
+import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       posts: [],
       selectedPost: null,
       showManage: false,
       showPrompt: false,
       tempAuthor: {
-        display_name: "Tommy",
-        profile_image:
-          "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
-        profile_name: "Tommy1321",
-      },
-    };
+        id: 'p1ck1e5'
+      }
+    }
   },
   methods: {
-    deletePost() {
-      //TO BE: `/api/authors/${this.author.id}/${post.id}`
+    deletePost () {
+      // TO BE: `/api/authors/${this.author.id}/${post.id}`
       axios
         .delete(`/posts/${this.selectedPost.id}`)
         .then((res) => {
-          console.log(res.data);
-          this.posts = this.posts.filter((post) => post != this.selectedPost);
+          console.log(res.data)
+          this.posts = this.posts.filter((post) => post !== this.selectedPost)
         })
         .catch((err) => {
-          alert("Couldn't delete post!");
-          console.log(err);
-        });
-      this.closePrompt();
+          alert("Couldn't delete post!")
+          console.log(err)
+        })
+      this.closePrompt()
     },
 
-    getPosts() {
+    getPosts () {
       axios
-        .get("/posts/")
+        .get('/posts/')
         .then((res) => {
-          this.posts = res.data;
-          console.log(res);
+          this.posts = res.data
+          console.log(res)
         })
         .catch((err) => {
-          alert("Couldn't get posts!");
-          console.log(err);
-          this.posts = [];
-        });
+          alert("Couldn't get posts!")
+          console.log(err)
+          this.posts = []
+        })
     },
 
-    manage(post) {
-      this.setSelected(post);
-      this.showManage = true;
+    manage (post) {
+      this.setSelected(post)
+      this.showManage = true
     },
 
-    displayPrompt(post) {
-      this.setSelected(post);
-      this.showPrompt = true;
+    displayPrompt (post) {
+      this.setSelected(post)
+      this.showPrompt = true
     },
 
-    setSelected(post) {
-      this.selectedPost = post;
+    setSelected (post) {
+      this.selectedPost = post
     },
 
-    refreshPosts() {
-      this.getPosts();
-      this.$forceUpdate;
-      this.showManage = false;
+    refreshPosts () {
+      console.log('refreshing!')
+      this.getPosts()
+      this.$forceUpdate()
+      this.showManage = false
     },
 
-    closePrompt() {
-      this.showPrompt = false;
-    },
+    closePrompt () {
+      this.showPrompt = false
+    }
   },
-  mounted() {
-    this.getPosts();
+  mounted () {
+    this.getPosts()
   },
-  components: { ManagePost, Card, PopUpPrompt },
-};
+  components: { ManagePost, Card, PopUpPrompt }
+}
 </script>
 
 <style>
