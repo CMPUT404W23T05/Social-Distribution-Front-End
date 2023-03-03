@@ -2,9 +2,9 @@
 <div class="list-of-profiles" id="followees">
   <h1> Your <br/> Followees</h1>
   <ul>
-    <li v-for="author in authors" :key="author.id">
-      <img :src="author.profile_image">
-      <p>{{displayUsername(author.display_name)}}</p>
+    <li v-for="author in test_followees" :key="author.uid">
+      <img :src="author.profileImage">
+      <p>{{displayUsername(author.displayName)}}</p>
     </li>
   </ul>
 </div>
@@ -15,17 +15,18 @@
 export default {
   data () {
     return {
-      authors: [
+      followees: [''],
+      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/following/',
+      test_followees: [
         {
           id: 1,
-          display_name: 'followee1',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+          displayName: 'followee1',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
         },
-
         {
           id: 2,
-          display_name: 'followee2',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+          displayName: 'followee2',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
         }
       ]
     }
@@ -33,7 +34,20 @@ export default {
   methods: {
     displayUsername (username) {
       return '@' + username
+    },
+    async getData () {
+      try {
+        // who is the author following?
+        const response = await this.$http.get(this.get_link)
+        this.followees = response.data
+      } catch (error) {
+        console.log(error)
+      }
     }
+  },
+  created () {
+    // get followees when page loads
+    // this.getData()
   }
 
 }

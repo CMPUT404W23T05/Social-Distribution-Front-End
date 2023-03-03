@@ -2,9 +2,9 @@
 <div class="list-of-profiles" id="friends">
   <h1> Your <br/> Friends</h1>
   <ul>
-    <li v-for="author in authors" :key="author.id">
-      <img :src="author.profile_image">
-      <p>{{displayUsername(author.display_name)}}</p>
+    <li v-for="author in test_friends" :key="author.id">
+      <img :src="author.profileImage">
+      <p>{{displayUsername(author.displayName)}}</p>
     </li>
   </ul>
 </div>
@@ -15,17 +15,18 @@
 export default {
   data () {
     return {
-      authors: [
+      friends: [''],
+      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/friends/',
+      test_friends: [
         {
           id: 1,
-          display_name: 'friend1',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+          displayName: 'friend1',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
         },
-
         {
           id: 2,
-          display_name: 'friend2',
-          profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
+          displayName: 'friend2',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
         }
       ]
     }
@@ -33,7 +34,20 @@ export default {
   methods: {
     displayUsername (username) {
       return '@' + username
+    },
+    async getData () {
+      try {
+        // get the friends of the author
+        const response = await this.$http.get(this.get_link)
+        this.friends = response.data
+      } catch (error) {
+        console.log(error)
+      }
     }
+  },
+  created () {
+    // get friends when page loads
+    // this.getData()
   }
 
 }
