@@ -16,7 +16,7 @@
       <img
         class="image-content"
         v-if="post.image"
-        :src="post.image"
+        :src="'localhost:8080/media/images/' + post.image"
         :alt="post.description"
       />
     </div>
@@ -24,13 +24,13 @@
       <slot name="footer">
         <img
           class="profile-image"
-          :src="author.profile_image"
-          :alt="author.profile_name"
+          :src="author.profileImage"
+          :alt="author.profileName"
         />
-        <h6 id="username">@{{ author.display_name }}</h6>
+        <h6 id="username">@{{ author.displayName }}</h6>
         <span
           class="content-types"
-          v-for="content in post.ContentTypes"
+          v-for="content in post.ContentType"
           :key="content"
           >{{ content }}
         </span>
@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     markdownEnabled () {
-      return this.post.contentTypes.includes('text/markdown')
+      return this.post.contentType.includes('text/markdown')
     }
   },
   components: { VueMarkdown }

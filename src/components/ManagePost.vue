@@ -76,7 +76,7 @@ export default {
         source: 'http://somethinghere.ca',
         origin: 'http://somethingelse.com',
         description: '',
-        contentTypes: [],
+        contentType: [],
         content: '',
         image: '',
         count: 0,
@@ -84,10 +84,10 @@ export default {
           'http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments',
         unlisted: false,
         visibility: 'private',
-        author: 'lldbryq22g093jsn5sul7i339b6fljzxpd8tld',
+        author: '',
         // Generate when post is submitted
-        id: null
-        // pubDate: null,
+        id: null,
+        published: '2023-03-01T21:18:38.908794Z'
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
@@ -111,7 +111,7 @@ export default {
       } else return ''
     },
     markdownEnabled () {
-      return this.post.contentTypes.includes('text/markdown')
+      return this.post.contentType.includes('text/markdown')
     }
   },
   methods: {
@@ -130,22 +130,22 @@ export default {
           .match(/^.+,/)[0]
           .replace(',', '')
         // img/jpeg;base64
-        this.post.contentTypes.push(imageMimeType)
+        this.post.contentType.push(imageMimeType)
       }
     },
     setText (body, toggle) {
       this.post.content = body
       this.sanitizeContentTypes('text')
       if (body && toggle) {
-        this.post.contentTypes.push('text/markdown')
+        this.post.contentType.push('text/markdown')
       } else if (body && !toggle) {
-        this.post.contentTypes.push('text/plain')
+        this.post.contentType.push('text/plain')
       }
     },
 
     sanitizeContentTypes (substring) {
       // Helper function to remove an exisiting MIME type before pushing updated one
-      this.post.contentTypes = this.post.contentTypes.filter(
+      this.post.contentType = this.post.contentType.filter(
         (contentType) => !contentType.includes(substring)
       )
     },
@@ -156,14 +156,14 @@ export default {
       // POST -> Edit a post
       if (this.validPost) {
         // Convert to string for backend
-        this.post.contentTypes = this.post.contentTypes.toString()
+        this.post.contentType = this.post.contentType.toString()
 
         // TODO: PUT and PUSH will need to be swapped around for the actual API call
         if (this.existingPost) {
-          console.log(`Going to id ${this.post.id}`)
-          //  replace w/ '/posts/${this.post.id}'
+          console.log(this.post)
+          console.log(`/authors/${this.post.author}/posts/${this.post.id}/`)
           axios
-            .put(`/posts/${this.post.id}`, this.post)
+            .post(`/authors/${this.post.author}/posts/${this.post.id}/`, this.post)
             .then((res) => console.log(res))
             .catch((err) => {
               alert("Couldn't edit the post!")
@@ -172,9 +172,9 @@ export default {
         } else {
           const uniqueID = uuidv4()
           this.post.id = uniqueID
-          //  replace w/ /create-post/
+          console.log(this.post)
           axios
-            .post('/posts', this.post)
+            .post(`/authors/${this.post.author}/posts/create-post/`, this.post)
             .then((res) => console.log(res))
             .catch((err) => {
               alert("Couldn't make the post!")
@@ -190,10 +190,10 @@ export default {
   mounted () {
     if (this.existingPost) {
       this.post = structuredClone(this.existingPost)
-
       // Convert from string from backend
-      this.post.contentTypes = this.post.contentTypes.split(',')
+      this.post.contentType = this.post.contentType.split(',')
     }
+    this.post.author = this.author.id
   },
   emits: ['endManage']
 }

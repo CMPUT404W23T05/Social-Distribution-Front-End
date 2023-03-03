@@ -57,15 +57,16 @@ export default {
       showManage: false,
       showPrompt: false,
       tempAuthor: {
-        id: 'p1ck1e5'
+        id: '22dea0b0-5e3b-445f-86f5-86fe91be0790',
+        displayName: 'Test Author 1',
+        profileImage: 'https://i.imgur.com/k7XVwpB.jpeg'
       }
     }
   },
   methods: {
     deletePost () {
-      // TO BE: `/api/authors/${this.author.id}/${post.id}`
       axios
-        .delete(`/posts/${this.selectedPost.id}`)
+        .delete(`/authors/${this.tempAuthor.id}/posts/${this.selectedPost.id}`)
         .then((res) => {
           console.log(res.data)
           this.posts = this.posts.filter((post) => post !== this.selectedPost)
@@ -79,7 +80,7 @@ export default {
 
     getPosts () {
       axios
-        .get('/posts/')
+        .get(`/authors/${this.tempAuthor.id}/posts/`)
         .then((res) => {
           this.posts = res.data
           console.log(res)
