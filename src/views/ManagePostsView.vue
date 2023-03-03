@@ -68,26 +68,29 @@ export default {
     deletePost() {
       //TO BE: `/api/authors/${this.author.id}/${post.id}`
       axios
-        .delete(`http://localhost:3000/posts/${this.selectedPost.id}`)
+        .delete(`/posts/${this.selectedPost.id}`)
         .then((res) => {
           console.log(res.data);
           this.posts = this.posts.filter((post) => post != this.selectedPost);
         })
         .catch((err) => {
+          alert("Couldn't delete post!");
           console.log(err);
         });
       this.closePrompt();
     },
 
     getPosts() {
-      // Eventually: `/api/authors/${this.author.id}/posts`
       axios
-        .get("http://localhost:3000/posts/")
+        .get("/posts/")
         .then((res) => {
           this.posts = res.data;
+          console.log(res);
         })
         .catch((err) => {
+          alert("Couldn't get posts!");
           console.log(err);
+          this.posts = [];
         });
     },
 

@@ -152,6 +152,9 @@ export default {
     },
 
     submitPost() {
+      //Note: PUT and POST are opposite of convention to adhere to spec
+      //PUT -> Make a new post
+      //POST -> Edit a post
       if (this.validPost) {
         //Convert to string for backend
         this.post.contentTypes = this.post.contentTypes.toString();
@@ -159,20 +162,24 @@ export default {
         if (this.existingPost) {
           console.log(`Going to id ${this.post.id}`);
           axios
-            .put(`http://localhost:3000/posts/${this.post.id}`, this.post)
+            .post(`/posts/${this.post.id}`, this.post)
             .then((res) => this.$emit("endManage"))
-            .catch((err) => console.log(err));
+            .catch((err) => {
+              alert("Couldn't edit the post!");
+              console.log(err);
+            });
         } else {
           const uniqueID = uuidv4();
           this.post.id = uniqueID;
           axios
-            // /create-post/
-            //"http://localhost:8000/api/create-post/
-            .post("http://localhost:3000/posts/", this.post)
-            .then((res) => this.$emit("succesfulPost"))
-            .catch((err) => console.log(err));
+            .put("/create-post/", this.post)
+            .then((res) => this.$emit("endManage"))
+            .catch((err) => {
+              alert("Couldn't make the post!");
+              console.log(err);
+            });
         }
-        console.log("You made a change to the postings!");
+        this.$emit("endManage");
       } else {
         this.badSubmit = true;
       }
