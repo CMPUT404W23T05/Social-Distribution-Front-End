@@ -6,7 +6,11 @@
   >
     <h3 class="post-title">{{ post.title }}</h3>
     <div class="content-container">
-      <p class="text-content" v-if="post.content">{{ post.content }}</p>
+      <p v-if="markdownEnabled" class="text-content">
+        <vue-markdown :source="post.content"></vue-markdown>
+      </p>
+      <!-- Post is plain text -->
+      <p v-else-if="post.content" class="text-content">{{ post.content }}</p>
       <img
         class="image-content"
         v-if="post.image"
@@ -41,6 +45,11 @@ export default {
     return {
       hovered: false,
     };
+  },
+  computed: {
+    markdownEnabled() {
+      return this.post.contentTypes.includes("text/markdown");
+    },
   },
 };
 </script>
@@ -84,8 +93,9 @@ export default {
 
 .footer.open {
   display: flex;
-  height: 30%;
+  height: 25%;
   width: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
   margin-left: 0;
   justify-content: space-evenly;
 }

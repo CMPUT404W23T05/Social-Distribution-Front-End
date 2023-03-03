@@ -59,128 +59,125 @@
 </template>
 
 <script>
-import TextPostBody from '@/components/TextPostBody.vue'
-import ImagePostBody from '@/components/ImagePostBody.vue'
-import axios from 'axios'
-import { v4 as uuidv4 } from 'uuid'
+import TextPostBody from "@/components/TextPostBody.vue";
+import ImagePostBody from "@/components/ImagePostBody.vue";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
-  data () {
+  data() {
     return {
       // Initialize a blank post
       post: {
-        type: 'post',
-        title: '',
-        source: 'http://somethinghere.ca',
-        origin: 'http://somethingelse.com',
-        description: '',
+        type: "post",
+        title: "",
+        source: "http://somethinghere.ca",
+        origin: "http://somethingelse.com",
+        description: "",
         contentTypes: [],
-        content: '',
-        image: '',
+        content: "",
+        image: "",
         count: 0,
         comments:
-          'http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments',
+          "http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments",
         unlisted: false,
-        visibility: 'private',
-        author: 'lldbryq22g093jsn5sul7i339b6fljzxpd8tld',
+        visibility: "private",
+        author: "lldbryq22g093jsn5sul7i339b6fljzxpd8tld",
         // Generate when post is submitted
-        id: null
+        id: null,
         // pubDate: null,
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
       markDownEnabled: false,
-      badSubmit: false
-    }
+      badSubmit: false,
+    };
   },
-  props: ['author', 'existingPost'],
+  props: ["author", "existingPost"],
   components: {
     TextPostBody,
-    ImagePostBody
+    ImagePostBody,
   },
   computed: {
-    validPost () {
-      return this.post.title && (this.post.image || this.post.content)
+    validPost() {
+      return this.post.title && (this.post.image || this.post.content);
     },
-    errorMessage () {
+    errorMessage() {
       if (!this.post.title) {
-        return 'Your post needs a title!'
+        return "Your post needs a title!";
       } else if (!this.post.image && !this.post.content) {
-        return 'Your post needs text and/or an image!'
-      } else {
-        return 'Something weird is happening...'
+        return "Your post needs text and/or an image!";
       }
-    }
+    },
   },
   methods: {
-    setImage (imageSrc) {
+    setImage(imageSrc) {
       // data:img/jpeg;base64=..
-      this.sanitizeContentTypes('image')
+      this.sanitizeContentTypes("image");
 
-      if (imageSrc === '') {
-        this.post.image = imageSrc
+      if (imageSrc === "") {
+        this.post.image = imageSrc;
       } else {
         // a2Wt29qw021t...
-        this.post.image = imageSrc.replace('data:', '').replace(/^.+,/, '')
+        this.post.image = imageSrc.replace("data:", "").replace(/^.+,/, "");
 
         const imageMimeType = imageSrc
-          .replace('data:', '')
+          .replace("data:", "")
           .match(/^.+,/)[0]
-          .replace(',', '')
+          .replace(",", "");
         // img/jpeg;base64
-        this.post.contentTypes.push(imageMimeType)
+        this.post.contentTypes.push(imageMimeType);
       }
     },
-    setText (body, toggle) {
-      this.post.content = body
-      this.sanitizeContentTypes('text')
+    setText(body, toggle) {
+      this.post.content = body;
+      this.sanitizeContentTypes("text");
       if (body && toggle) {
-        this.post.contentTypes.push('text/markdown')
+        this.post.contentTypes.push("text/markdown");
       } else if (body && !toggle) {
-        this.post.contentTypes.push('text/plain')
+        this.post.contentTypes.push("text/plain");
       }
     },
 
-    sanitizeContentTypes (substring) {
+    sanitizeContentTypes(substring) {
       // Helper function to remove an exisiting MIME type before pushing updated one
       this.post.contentTypes = this.post.contentTypes.filter(
         (contentType) => !contentType.includes(substring)
-      )
+      );
     },
 
-    submitPost () {
+    submitPost() {
       if (this.validPost) {
         if (this.existingPost) {
-          console.log(`Going to id ${this.existingPost.id}`)
+          console.log(`Going to id ${this.post.id}`);
           axios
-            .put(
-              `http://localhost:3000/posts/${this.existingPost.id}`,
-              this.$data.post
-            )
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err))
+            .put(`http://localhost:3000/posts/${this.post.id}`, this.post)
+            .then((res) => this.$emit("succesfulPost"))
+            .catch((err) => console.log(err));
         } else {
-          const uniqueID = uuidv4()
-          this.post.id = uniqueID
+          const uniqueID = uuidv4();
+          this.post.id = uniqueID;
           axios
             // /create-post/
-            .post('http://localhost:8000/api/create-post/', this.$data.post)
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err))
+            //"http://localhost:8000/api/create-post/
+            .post("http://localhost:3000/posts/", this.post)
+            .then((res) => this.$emit("succesfulPost"))
+            .catch((err) => console.log(err));
         }
-
-        this.$router.go(this.$router.currentRoute)
+        console.log("You made a change to the postings!");
       } else {
-        this.badSubmit = true
+        this.badSubmit = true;
       }
+    },
+  },
+  mounted() {
+    if (this.existingPost) {
+      this.post = structuredClone(this.existingPost);
+      this.markdownEnabled = this.post.contentTypes.includes("text/markdown");
     }
   },
-  mounted () {
-    if (this.existingPost) {
-      this.post = this.existingPost
-    }
-  }
-}
+  emits: ["succesfulPost"],
+};
 </script>
 
 <style scoped>
@@ -196,11 +193,6 @@ div .container {
   padding-top: 25pt;
   background-color: #fff;
   border-radius: 5pt;
-}
-
-.active {
-  background-color: #4998f5;
-  color: white;
 }
 
 .text-input {
