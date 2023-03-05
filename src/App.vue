@@ -1,5 +1,5 @@
 <template>
-  <NavBar :author = author v-if="loggedIn"></NavBar>
+  <NavBar v-if="loggedIn"></NavBar>
   <router-view/>
 </template>
 
@@ -11,22 +11,14 @@ import axios from 'axios'
 export default {
   name: 'App',
   beforeCreate () {
-    const tokenStore = useTokenStore() // initialize the store
-    // eslint-disable-next-line no-unused-vars
+    const tokenStore = useTokenStore() // get the token store
+    tokenStore.initializeStore() // initialize the store
     const token = tokenStore.token // get the token from the store
-    // TODO: attach token to request header
+    //  attach token to request header
     if (token) {
       axios.defaults.headers.common.Authorization = `Token ${token}`
     } else {
       axios.defaults.headers.common.Authorization = 'null'
-    }
-  },
-  data () {
-    return {
-      author: {
-        display_name: 'username',
-        profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
-      }
     }
   },
   components: {

@@ -3,8 +3,8 @@
         <!-- Pass a default image if none is provided -->
         <router-link to="/settings#profile" class = "user-info">
             <div>
-                <img id = "profile-picture" class = "circle" :src="author.profile_image" alt = 'User profile picture'/>
-                <span id = username>@{{ author.display_name }}</span>
+                <img id = "profile-picture" class = "circle" :src="getProfilePicture" alt = 'User profile picture'/>
+                <span id = username>@{{ getDisplayName }}</span>
             </div>
         </router-link>
 
@@ -38,6 +38,7 @@
         </ul>
         <!-- TODO: replace with actual logout -->
         <span id="logout"><button @click="logout">Logout</button></span>
+        <button @click="updateUsername" >Update</button>
 
     </nav>
 </template>
@@ -48,27 +49,47 @@ import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 export default {
   // Author json object
-  props: ['author'],
   methods: {
     logout () {
-      const token = useTokenStore()
-      token.removeToken() // remove token from store
-      localStorage.removeItem('token') // remove token from local storage
       // post to remove token from server
       axios.post('token/logout').then(response => {
         console.log(response)
+        const token = useTokenStore()
+        token.removeToken() // remove token from store
+        localStorage.removeItem('token') // remove token from local
+        // remove user from local storage and store
+        localStorage.removeItem('user')
+        useUserStore().removeUser()
         this.$router.push('/login') // go to login page
+        // reset axios header
+        axios.defaults.headers.common.Authorization = ''
       }).catch(error => {
         console.log(error)
       })
-      // remove user from local storage and store
-      localStorage.removeItem('user')
-      useUserStore().removeUser()
-      // reset axios header
-      axios.defaults.headers.common.Authorization = ''
+    }
+  },
+  computed: {
+    getDisplayName () {
+      const userStore = useUserStore()
+      const user = userStore.user
+      if (user.author) {
+        return user.author.displayName
+      } else {
+        return ''
+      }
+    },
+    getProfilePicture () {
+      const userStore = useUserStore()
+      const user = userStore.user
+      if (user.author) {
+        return user.author.profileImage
+      } else {
+        return 'http://i.imgur.com/k7XVwpB.jpeg' // default image
+      }
     }
   }
 }
+
 </script>
 
 <style scoped>
