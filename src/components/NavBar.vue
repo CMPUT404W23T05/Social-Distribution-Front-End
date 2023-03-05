@@ -44,6 +44,7 @@
 
 <script>
 import { useTokenStore } from '@/stores/token'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 export default {
   // Author json object
@@ -60,6 +61,11 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+      // remove user from local storage and store
+      localStorage.removeItem('user')
+      useUserStore().removeUser()
+      // reset axios header
+      axios.defaults.headers.common.Authorization = ''
     }
   }
 }

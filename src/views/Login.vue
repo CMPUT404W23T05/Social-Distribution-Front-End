@@ -12,6 +12,7 @@
 
 <script>
 import { useTokenStore } from '@/stores/token'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 export default {
   name: 'LogIn',
@@ -33,12 +34,26 @@ export default {
         .post('token/login', formData)
         .then(response => {
           console.log(response)
+
           // store token in local storage
           const token = response.data.auth_token
           const store = useTokenStore()
           store.setToken(token)
           axios.defaults.headers.common.Authorization = `Token ${token}`
           localStorage.setItem('token', token)
+
+          // store user in local storage
+          axios.get('users/me')
+            .then(response => {
+              const user = response.data
+              const store = useUserStore()
+              store.setUser(user)
+              localStorage.setItem('user', JSON.stringify(user))
+            })
+            .catch(error => {
+              console.log(error)
+            })
+
           // go to home page
           this.$router.push('/home')
         })
