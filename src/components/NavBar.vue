@@ -69,16 +69,16 @@ export default {
     }
   },
   computed: {
-    getDisplayName () {
+    getDisplayName () { // get display name from user store
       const userStore = useUserStore()
       const user = userStore.user
       if (user.author) {
         return user.author.displayName
       } else {
-        return ''
+        return '' // default name
       }
     },
-    getProfilePicture () {
+    getProfilePicture () { // get profile picture from user store
       const userStore = useUserStore()
       const user = userStore.user
       if (user.author) {
