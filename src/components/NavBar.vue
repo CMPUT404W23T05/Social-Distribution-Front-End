@@ -38,7 +38,6 @@
         </ul>
         <!-- TODO: replace with actual logout -->
         <span id="logout"><button @click="logout">Logout</button></span>
-        <button @click="updateUsername" >Update</button>
 
     </nav>
 </template>
