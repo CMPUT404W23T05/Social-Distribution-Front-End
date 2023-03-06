@@ -8,4 +8,6 @@ import axios from 'axios'
 
 axios.defaults.baseURL = 'http://localhost:8000/api' // API URL
 
-createApp(App).use(router, axios).use(createPinia()).mount('#app')
+const app = createApp(App)
+app.use(router, axios).use(createPinia()).mount('#app')
+app.config.globalProperties.$http = axios
