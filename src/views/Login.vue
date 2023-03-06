@@ -1,9 +1,10 @@
 <template>
   <h1>Login</h1>
-  <div class="log-in">
-    <form @submit.prevent="submitForm" style="display: inline;">
-      <label>Username: <input type="text" name="username" v-model="username"></label><br>
-      <label>Password: <input type="password" name="password" v-model="password"></label><br>
+  <div class="form-group">
+    <form @submit.prevent="submitForm">
+      <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
+      <label>Username: <input class="form-control" type="text" name="username" v-model="username"></label><br>
+      <label>Password: <input class="form-control" type="password" name="password" v-model="password"></label><br>
       <button type="submit">Login</button>
     </form>
     <br>Don't have an account? <router-link to="/signup">Sign up</router-link>
@@ -14,12 +15,14 @@
 import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
+import { errorFromResponse } from '@/util/authErrorHandler'
 export default {
   name: 'LogIn',
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      authError: ''
     }
   },
   methods: {
@@ -45,6 +48,7 @@ export default {
           // store user in local storage
           axios.get('users/me')
             .then(response => {
+              this.authError = '' // clear error message
               const user = response.data
               const store = useUserStore()
               store.setUser(user)
@@ -59,6 +63,9 @@ export default {
         })
         .catch(error => {
           console.log(error)
+          const errorString = errorFromResponse(error.response)
+          // alert(errorString)
+          this.authError = errorString
         })
     }
 
