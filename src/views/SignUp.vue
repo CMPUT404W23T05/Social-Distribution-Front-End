@@ -3,9 +3,9 @@
     <div class="form-group authForm">
       <form @submit.prevent="submitForm" >
         <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
-        <div class="input-group"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div><br>
-      <div class="input-group"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔒</span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div><br>
-      <div class="input-group"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔐</span></div><input class="form-control" type="password" name="password" v-model="confirmPassword"  placeholder="Confirm password"></div><br>
+        <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
+      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔒</span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div>
+      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔐</span></div><input class="form-control" type="password" name="password" v-model="confirmPassword"  placeholder="Confirm password"></div>
         <button class="btn btn-primary" type="submit">Sign Up</button>
       </form>
 <br>Already have an account? <router-link to="/login">Log in</router-link>
