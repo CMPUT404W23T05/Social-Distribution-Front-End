@@ -39,12 +39,12 @@
         class="text-input"
         :body="post.content"
         :toggle="markdownEnabled"
-        @change-text-post="({ body, toggle }) => setText(body, toggle)"
+        @change-text-post="(text) => setText(text)"
       />
       <ImagePostBody
         class="image-upload"
         :image="post.image"
-        @update:image="(imageSrc) => setImage(imageSrc)"
+        @image-uploaded="(image) => setImage(image)"
       />
       <input
         v-model="post.description"
@@ -53,7 +53,7 @@
       />
     </form>
 
-    <button class="btn" @click="submitPost">Post</button>
+    <button type="submit" class="btn" @click="submitPost">Post</button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
 
@@ -67,24 +67,27 @@ import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
+  components: {
+    TextPostBody,
+    ImagePostBody
+  },
   data () {
     return {
       // Initialize a blank post
       post: {
         type: 'post',
         title: '',
-        source: 'http://somethinghere.ca',
-        origin: 'http://somethingelse.com',
+        source: 'http://wherethispostcamefrom',
+        origin: 'http://wherethispostactuallycamefrom',
         description: '',
         contentType: [],
         content: '',
-        image: '',
+        image: null,
         count: 0,
-        comments:
-          'http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments',
+        comments: '',
         unlisted: false,
         visibility: 'private',
-        author: '',
+        author: this.author,
         // Generate when post is submitted
         id: null,
         published: '2023-03-01T21:18:38.908794Z'
@@ -95,10 +98,7 @@ export default {
     }
   },
   props: ['author', 'existingPost'],
-  components: {
-    TextPostBody,
-    ImagePostBody
-  },
+
   computed: {
     validPost () {
       return this.post.title && (this.post.image || this.post.content)
@@ -112,58 +112,45 @@ export default {
     },
     markdownEnabled () {
       return this.post.contentType.includes('text/markdown')
+    },
+    contentTypeAsStr () {
+      return this.post.contentType.toString()
     }
   },
   methods: {
-    setImage (imageSrc) {
-      // data:img/jpeg;base64=..
-      this.sanitizeContentTypes('image')
-
-      if (imageSrc === '') {
-        this.post.image = imageSrc
-      } else {
-        // a2Wt29qw021t...
-        this.post.image = imageSrc.replace('data:', '').replace(/^.+,/, '')
-
-        const imageMimeType = imageSrc
-          .replace('data:', '')
-          .match(/^.+,/)[0]
-          .replace(',', '')
-        // img/jpeg;base64
-        this.post.contentType.push(imageMimeType)
-      }
-    },
-    setText (body, toggle) {
-      this.post.content = body
+    setText (text) {
+      this.post.content = text.body
       this.sanitizeContentTypes('text')
-      if (body && toggle) {
-        this.post.contentType.push('text/markdown')
-      } else if (body && !toggle) {
-        this.post.contentType.push('text/plain')
+      this.appendMime(text.mime)
+    },
+
+    setImage (image) {
+      this.post.image = image.raw64
+      this.sanitizeContentTypes('image')
+      this.appendMime(image.mime)
+    },
+
+    appendMime (mime) {
+      this.sanitizeContentTypes(mime)
+      if (mime) {
+        this.post.contentType.push(mime)
       }
     },
 
-    sanitizeContentTypes (substring) {
+    sanitizeContentTypes (mimeSuper) {
       // Helper function to remove an exisiting MIME type before pushing updated one
       this.post.contentType = this.post.contentType.filter(
-        (contentType) => !contentType.includes(substring)
+        (contentType) => !contentType.includes(mimeSuper)
       )
     },
 
     submitPost () {
-      // Note: PUT and POST are opposite of convention to adhere to spec
-      // PUT -> Make a new post
-      // POST -> Edit a post
       if (this.validPost) {
-        // Convert to string for backend
-        this.post.contentType = this.post.contentType.toString()
-
-        // TODO: PUT and PUSH will need to be swapped around for the actual API call
         if (this.existingPost) {
           console.log(this.post)
-          console.log(`/authors/${this.post.author}/posts/${this.post.id}/`)
+          console.log(`/authors/${this.post.author.id}/posts/${this.post.id}/`)
           axios
-            .post(`/authors/${this.post.author}/posts/${this.post.id}/`, this.post)
+            .post(`/authors/${this.post.author.id}/posts/${this.post.id}/`, this.post)
             .then((res) => console.log(res))
             .catch((err) => {
               alert("Couldn't edit the post!")
@@ -174,7 +161,7 @@ export default {
           this.post.id = uniqueID
           console.log(this.post)
           axios
-            .post(`/authors/${this.post.author}/posts/create-post/`, this.post)
+            .post(`/authors/${this.post.author.id}/posts/create-post/`, this.post)
             .then((res) => console.log(res))
             .catch((err) => {
               alert("Couldn't make the post!")
@@ -190,10 +177,9 @@ export default {
   mounted () {
     if (this.existingPost) {
       this.post = structuredClone(this.existingPost)
-      // Convert from string from backend
+      // Convert to array from string from backend
       this.post.contentType = this.post.contentType.split(',')
     }
-    this.post.author = this.author.id
   },
   emits: ['endManage']
 }

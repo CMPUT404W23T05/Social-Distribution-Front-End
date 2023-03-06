@@ -27,6 +27,7 @@
 <script>
 export default {
   props: ['body', 'toggle'],
+  emits: ['change-text-post'],
   data () {
     return {
       localBody: '',
@@ -36,6 +37,15 @@ export default {
   computed: {
     markDownMessage () {
       return this.localToggle ? 'Markdown Enabled!' : 'Markdown Disabled!'
+    },
+    textMime () {
+      if (this.localToggle && this.localBody) {
+        return 'text/markdown'
+      } else if (!this.localToggle && this.localBody) {
+        return 'text/plain'
+      } else {
+        return null
+      }
     }
   },
   methods: {
@@ -50,27 +60,13 @@ export default {
     emitStatus () {
       this.$emit('changeTextPost', {
         body: this.localBody,
-        toggle: this.localToggle
+        mime: this.textMime
       })
     }
   },
-  emits: ['change-text-post'],
-  watch: {
-    body: {
-      immediate: true,
-      handler (newValue, oldValue) {
-        this.localBody = newValue
-      }
-    },
-    toggle: {
-      immediate: true,
-      handler (newValue, oldValue) {
-        this.localToggle = newValue
-      }
-    }
-  },
   mounted () {
-    if (this.toggle) {
+    if (this.body) {
+      this.localBody = this.body
       this.localToggle = this.toggle
     }
   }

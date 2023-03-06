@@ -16,7 +16,7 @@
       <img
         class="image-content"
         v-if="post.image"
-        :src="'localhost:8080/media/images/' + post.image"
+        :src="post.image"
         :alt="post.description"
       />
     </div>
