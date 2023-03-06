@@ -1,11 +1,11 @@
 <template>
   <h1>Login</h1>
-  <div class="form-group">
+  <div class="form-group authForm">
     <form @submit.prevent="submitForm">
       <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
-      <label>Username: <input class="form-control" type="text" name="username" v-model="username"></label><br>
-      <label>Password: <input class="form-control" type="password" name="password" v-model="password"></label><br>
-      <button type="submit">Login</button>
+      <div class="input-group"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div><br>
+      <div class="input-group"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔒</span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div><br>
+      <button class="btn btn-primary" type="submit">Login</button>
     </form>
     <br>Don't have an account? <router-link to="/signup">Sign up</router-link>
   </div>
@@ -73,3 +73,7 @@ export default {
 }
 
 </script>
+
+<style>
+@import "@/styles/auth.css";
+</style>
