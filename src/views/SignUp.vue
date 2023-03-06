@@ -1,6 +1,7 @@
 <template>
-    <h1>Sign Up</h1>
+  <div class="d-flex min-vh-100">
     <div class="form-group authForm">
+      <h1>Sign Up</h1>
       <form @submit.prevent="submitForm" >
         <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
         <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
@@ -10,6 +11,7 @@
       </form>
 <br>Already have an account? <router-link to="/login">Log in</router-link>
     </div>
+  </div>
   </template>
 
 <script>
