@@ -64,10 +64,18 @@ export default {
       })
     }
   },
-  mounted () {
-    if (this.body) {
-      this.localBody = this.body
-      this.localToggle = this.toggle
+  watch: {
+    body: {
+      immediate: true,
+      handler (newValue, oldValue) {
+        this.localBody = newValue
+      }
+    },
+    toggle: {
+      immediate: true,
+      handler (newValue, oldValue) {
+        this.localToggle = newValue
+      }
     }
   }
 }

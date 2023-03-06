@@ -24,7 +24,7 @@
           value="FRIENDS"
           v-model="post.visibility"
         />
-        <label for="private">Friends Only</label>
+        <label for="friendsonly">Friends Only</label>
         <input
           type="radio"
           name="privacy"
@@ -32,7 +32,7 @@
           value="PUBLIC"
           v-model="post.visibility"
         />
-        <label for="private">Public</label>
+        <label for="public">Public</label>
       </span>
 
       <TextPostBody
@@ -77,18 +77,18 @@ export default {
       post: {
         type: 'post',
         title: '',
-        source: 'http://wherethispostcamefrom',
-        origin: 'http://wherethispostactuallycamefrom',
+        source: 'http://wherethispostcamefrom.yummy/',
+        origin: 'http://wherethispostactuallycamefrom.yucky/',
         description: '',
         contentType: [],
         content: '',
         image: null,
         count: 0,
-        comments: '',
         unlisted: false,
-        visibility: 'private',
+        visibility: 'PRIVATE',
         author: this.author,
         // Generate when post is submitted
+        comments: null, // url from server
         id: null,
         published: '2023-03-01T21:18:38.908794Z'
       },
@@ -146,6 +146,8 @@ export default {
 
     submitPost () {
       if (this.validPost) {
+        this.post.contentType = this.contentTypeAsStr
+
         if (this.existingPost) {
           console.log(this.post)
           console.log(`/authors/${this.post.author.id}/posts/${this.post.id}/`)

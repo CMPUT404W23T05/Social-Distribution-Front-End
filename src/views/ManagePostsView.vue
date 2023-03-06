@@ -26,7 +26,7 @@
           </button>
         </template>
       </Card>
-      <div v-if="!posts">You haven't made any posts yet!</div>
+      <div v-if="posts.length === 0">You haven't made any posts yet!</div>
     </div>
 
     <PopUpPrompt v-if="showPrompt" @dismiss="closePrompt" @accept="deletePost">
@@ -57,9 +57,13 @@ export default {
       showManage: false,
       showPrompt: false,
       tempAuthor: {
-        id: '22dea0b0-5e3b-445f-86f5-86fe91be0790',
+        type: 'author',
+        id: '580131fa-0d8f-4d6f-acfc-b6356387e422',
         displayName: 'Test Author 1',
-        profileImage: 'https://i.imgur.com/k7XVwpB.jpeg'
+        profileImage: 'https://i.imgur.com/k7XVwpB.jpeg',
+        url: 'http://someurlhere.ca/',
+        github: 'http://mygithub.com',
+        host: 'http://127.0.0.1:8080/'
       }
     }
   },
