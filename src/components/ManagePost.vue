@@ -63,6 +63,7 @@
 <script>
 import TextPostBody from '@/components/TextPostBody.vue'
 import ImagePostBody from '@/components/ImagePostBody.vue'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -77,8 +78,8 @@ export default {
       post: {
         type: 'post',
         title: '',
-        source: 'http://wherethispostcamefrom.yummy/',
-        origin: 'http://wherethispostactuallycamefrom.yucky/',
+        source: 'http://placeholder_url_for_now.yummy/',
+        origin: 'http://another_placeholder_url_for_now.yucky/',
         description: '',
         contentType: [],
         content: '',
@@ -86,18 +87,17 @@ export default {
         count: 0,
         unlisted: false,
         visibility: 'PRIVATE',
-        author: this.author,
+        author: null, // User loaded from store on mount
         // Generate when post is submitted
         comments: null, // url from server
         id: null,
-        published: '2023-03-01T21:18:38.908794Z'
+        published: null
       },
-      // Won't appear in contentTypes until post is made to validate that text is entered
-      // Otherwise a purely image-post may erroneously have type text/markdown
+      // Used to validate the validaty of the post
       badSubmit: false
     }
   },
-  props: ['author', 'existingPost'],
+  props: ['existingPost'],
 
   computed: {
     validPost () {
@@ -184,9 +184,16 @@ export default {
       } else {
         this.badSubmit = true
       }
+    },
+
+    getAuthorFromStore () {
+      const userStore = useUserStore()
+      userStore.initializeStore()
+      return userStore.user
     }
   },
   mounted () {
+    this.post.author = this.getAuthorFromStore()
     if (this.existingPost) {
       this.post = structuredClone(this.existingPost)
       // Convert to array from string from backend
