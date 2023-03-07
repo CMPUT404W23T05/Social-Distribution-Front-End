@@ -8,6 +8,8 @@ export function errorToString (error) {
         return acc.concat(formattedFieldNames[key] + ': ' + data[key].join('\n'))
       }, [])
       return allErrors.join('\n\n')
+    } else {
+      return response.statusText
     }
   } else {
     return error.message
