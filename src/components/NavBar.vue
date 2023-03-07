@@ -98,8 +98,12 @@ export default {
       }
     },
     alreadyLoggedIn () {
-      console.log(this.$route.hash)
-      return this.$route.hash === '#loggedin'
+      const defined = typeof this.$route !== 'undefined' && this.$route !== null
+      if (defined && 'hash' in this.$route) {
+        return this.$route.hash === '#loggedin'
+      } else {
+        return false
+      }
     }
   }
 }

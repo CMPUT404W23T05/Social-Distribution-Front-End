@@ -29,6 +29,7 @@ describe('NavBar.vue', () => {
     }
     const userStore = useUserStore()
     userStore.setUser(user)
+    localStorage.setItem('user', JSON.stringify(user))
     router = createRouter({
       history: createWebHistory(),
       inkActiveClass: 'active',
