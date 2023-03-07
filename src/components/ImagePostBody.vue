@@ -43,9 +43,12 @@ export default {
         : null
     }
   },
-  mounted () {
-    if (this.image) {
-      this.encodeURLBase64(this.image)
+  watch: {
+    image: {
+      immediate: true,
+      handler (newValue) {
+        this.imageSrc = newValue
+      }
     }
   },
 
@@ -56,9 +59,11 @@ export default {
       this.blobToBase64(file)
     },
     encodeURLBase64 (url) {
+      // Not used for now since image field is raw64
       // Converts an image from an http scheme (e.g http://127.0.0.1/api/image/...) to its base64 dataURL
       axios.get(url, { responseType: 'blob' })
         .then(res => {
+          console.log('Got blob!')
           this.blobToBase64(res.data)
         })
         .catch(err => {

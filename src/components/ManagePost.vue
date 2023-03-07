@@ -43,7 +43,7 @@
       />
       <ImagePostBody
         class="image-upload"
-        :image="post.image"
+        :image="imageDataURL"
         @image-uploaded="(image) => setImage(image)"
       />
       <input
@@ -101,11 +101,12 @@ export default {
 
   computed: {
     validPost () {
-      return this.post.title && (this.post.image || this.post.content)
+      const length = this.post.title.length
+      return length <= 30 && length > 0 && (this.post.image || this.post.content)
     },
     errorMessage () {
       if (!this.post.title) {
-        return 'Your post needs a title!'
+        return 'Your post needs a title between 1 and 30 characters!'
       } else if (!this.post.image && !this.post.content) {
         return 'Your post needs text and/or an image!'
       } else return ''
@@ -115,6 +116,15 @@ export default {
     },
     contentTypeAsStr () {
       return this.post.contentType.toString()
+    },
+    imageDataURL () {
+      if (this.existingPost && this.existingPost.image) {
+        const imageMime = this.post.contentType.find(type => type.includes('image'))
+        // Template literals give undefined in child component
+        return String.raw`data:${imageMime},${this.post.image}`
+      } else {
+        return null
+      }
     }
   },
   methods: {

@@ -7,13 +7,13 @@
     </button>
     <div class="card-list">
       <Card
-        v-for="(post) in posts"
+        v-for="(post, index) in posts"
         :key="post.id"
         :post="post"
         :author="tempAuthor"
       >
         <template #footer>
-          <button type="button" class="edit-button btn" @click="manage(post)">
+          <button type="button" class="edit-button btn" @click="manage(post, index)">
             Edit
           </button>
           <span class="divider"></span>
@@ -82,7 +82,7 @@ export default {
       this.closePrompt()
     },
 
-    getPosts () {
+    async getPosts () {
       axios
         .get(`/authors/${this.tempAuthor.id}/posts/`)
         .then((res) => {
@@ -110,9 +110,9 @@ export default {
       this.selectedPost = post
     },
 
-    refreshPosts () {
+    async refreshPosts () {
       console.log('refreshing!')
-      this.getPosts()
+      await this.getPosts()
       this.$forceUpdate()
       this.showManage = false
     },

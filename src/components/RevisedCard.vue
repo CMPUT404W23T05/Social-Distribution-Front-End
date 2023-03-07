@@ -16,7 +16,7 @@
       <img
         class="image-content"
         v-if="post.image"
-        :src="post.image"
+        :src="imageURL"
         :alt="post.description"
       />
     </div>
@@ -53,6 +53,9 @@ export default {
   computed: {
     markdownEnabled () {
       return this.post.contentType.includes('text/markdown')
+    },
+    imageURL () {
+      return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
     }
   },
   components: { VueMarkdown }
@@ -77,7 +80,7 @@ export default {
 .image-content {
   width: auto;
   height: auto;
-  max-width: 100%;
+  max-width: 50%;
   max-height: 100%;
   object-fit: contain;
 }
