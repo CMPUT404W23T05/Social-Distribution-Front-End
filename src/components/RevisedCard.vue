@@ -44,6 +44,7 @@ import VueMarkdown from 'vue-markdown-render'
 
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
+  components: { VueMarkdown }
   props: ['author', 'post'],
   data () {
     return {
@@ -57,8 +58,7 @@ export default {
     imageURL () {
       return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
     }
-  },
-  components: { VueMarkdown }
+  }
 }
 </script>
 
@@ -80,7 +80,7 @@ export default {
 .image-content {
   width: auto;
   height: auto;
-  max-width: 50%;
+  max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }

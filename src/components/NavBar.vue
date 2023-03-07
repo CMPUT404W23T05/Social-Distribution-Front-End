@@ -12,19 +12,33 @@
         <span id="username">@{{ author.display_name }}</span>
       </div>
     </router-link>
-
-    <ul class="navbar-nav">
-      <li class="nav-item dropdown">
-        <router-link :to="{ name: 'homepage' }" class="nav-link"
-          >Home</router-link
-        >
-        <ul class="dropdown-menu">
-          <router-link to="/home/inbox" class="dropdown-item">
-            Inbox
-          </router-link>
-          <router-link :to="{ name: 'manageposts' }" class="dropdown-item">
-            Manage Posts
-          </router-link>
+        <ul class="navbar-nav">
+            <li class = 'nav-item dropdown'>
+                <router-link :to="{ name: 'homepage' }" class = "nav-link">Home</router-link>
+                <ul class="dropdown-menu">
+                    <router-link to="/home/inbox" class = "dropdown-item"> Inbox </router-link>
+                    <router-link :to="{ name: 'manageposts'}" class = "dropdown-item"> Manage Posts </router-link>
+                </ul>
+            </li>
+            <li class = 'nav-item'>
+                <router-link to = "/browse" class="nav-link"> Browse </router-link>
+            </li>
+            <li class = 'nav-item dropdown'>
+                <router-link to = "/social" class="nav-link"> Social </router-link>
+                <ul class="dropdown-menu">
+                    <router-link :to="{name: 'SocialPage', hash:'#requests'}"  class = "dropdown-item">Requests</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#friends'}" class = "dropdown-item">Friends</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#followers'}"  class = "dropdown-item">Followers</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#followees'}"  class = "dropdown-item">Followees</router-link>
+                </ul>
+            </li>
+            <li class = 'nav-item dropdown'>
+                <router-link to = "/Settings" class="nav-link"> Settings </router-link>
+                <ul class="dropdown-menu">
+                    <router-link to="/settings#profile" class = "dropdown-item">Profile</router-link>
+                    <router-link to="/settings#preferences" class = "dropdown-item">Preferences</router-link>
+                </ul>
+            </li>
         </ul>
       </li>
       <li class="nav-item">
