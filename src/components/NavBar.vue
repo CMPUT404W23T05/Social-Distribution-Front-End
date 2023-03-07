@@ -37,14 +37,14 @@
             </li>
         </ul>
         <!-- TODO: replace with actual logout -->
-        <span id="logout"><button class="btn btn-primary" @click="logout">Logout</button></span>
+        <span id="logout"><button class="btn btn-primary" @click="logout">Log out</button></span>
 
     </nav>
 
     <div class="justify-content-center d-flex" v-if="alreadyLoggedIn">
       <!-- alert for redirect from login/signup page -->
     <div class="alert alert-primary fade show w-50 p-2 m-3 d-flex justify-content-center login-alert position-absolute" role="alert">
-      <div class="flex-grow-1">You are already logged in. To switch accounts, please <a @click="logout" href="#" class="alert-link">log out</a>.</div>
+      <div class="flex-grow-1">You are already logged in. To switch accounts, please <a @click="logout" href="#" class="alert-link">log&nbsp;out</a>.</div>
       <button type="button" class="btn-close py-1" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   </div>
