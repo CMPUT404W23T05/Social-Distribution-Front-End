@@ -70,15 +70,18 @@ export default {
   computed: {
     getDisplayName () { // get display name from user store
       const userStore = useUserStore()
+      userStore.initializeStore()
       const user = userStore.user
       if (user.author) {
         return user.author.displayName
       } else {
+        console.log('No user found')
         return '' // default name
       }
     },
     getProfilePicture () { // get profile picture from user store
       const userStore = useUserStore()
+      userStore.initializeStore()
       const user = userStore.user
       if (user.author) {
         return user.author.profileImage
