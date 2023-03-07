@@ -37,7 +37,7 @@
             </li>
         </ul>
         <!-- TODO: replace with actual logout -->
-        <span id="logout"><button @click="logout">Logout</button></span>
+        <span id="logout"><button class="btn btn-primary" @click="logout">Logout</button></span>
 
     </nav>
 </template>
