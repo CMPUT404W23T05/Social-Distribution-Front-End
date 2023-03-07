@@ -4,51 +4,26 @@
       <h1 style="text-align: left;">Public Posts</h1>
     </div>
 
-    <div class="dated_section">
-      <div class="border_date">
-        <h7>{{ moment().format("YYYY MMM DD") }}</h7>
-      </div>
-      <div class="posts_section margin_set">
-        <div v-for="post in todaysPosts" :key="post.id">
-          <Post class="card" :author="post.author" :post="post" />
+    <div v-for="(postSection, index) in postSections" :key="index">
+      <div class="dated_section" v-if="postSection.posts.length > 0">
+        <div class="border_date">
+          <h7 v-if="index === 0">{{ postSection.dateLabel }}</h7>
+          <h7 v-else-if="index === 1">{{ postSection.dateLabel }}</h7>
+          <h7 v-else-if="index === 2">{{ postSection.dateLabel }}</h7>
+          <h7 v-else-if="index === 3">{{ postSection.dateLabel }}</h7>
+          <h7 v-else-if="index === 4">{{ postSection.dateLabel }}</h7>
+          <h7 v-else-if="index === 5">{{ postSection.dateLabel }}</h7>
         </div>
-      </div>
-    </div>
-
-    <div class="dated_section">
-      <div class="border_date">
-        <h7>{{ moment().subtract(1, 'day').format("YYYY MMM DD") }}</h7>
-      </div>
-      <div class="posts_section margin_set">
-        <div v-for="post in yesterdaysPosts" :key="post.id">
-          <Post class="card" :author="post.author" :post="post" />
-        </div>
-      </div>
-    </div>
-
-    <div class="dated_section">
-      <div class="border_date">
-        <h7>{{ moment().subtract(2, 'days').format("YYYY MMM DD") }}</h7>
-      </div>
-      <div class="posts_section margin_set">
-        <div v-for="post in daysBeforeYesterdaysPosts" :key="post.id">
-          <Post class="card" :author="post.author" :post="post" />
-        </div>
-      </div>
-    </div>
-
-    <div class="dated_section">
-      <div class="border_date">
-        <h7>A Month Ago</h7>
-      </div>
-      <div class="posts_section margin_set">
-        <div v-for="post in lastMonthPosts" :key="post.id">
-          <Post class="card" :author="post.author" :post="post" />
+        <div class="posts_section margin_set">
+          <div v-for="post in postSection.posts" :key="post.id">
+            <!-- <h6 v-if="index === 2">{{ post.published }}</h6> -->
+            <Post class="card" :author="post.author" :post="post" />
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <div class="search_box">
 
     <form class="search_bar" method="post">
@@ -85,22 +60,28 @@
     <div class="search_box_texts">
       <h6>Sort by</h6>
     </div>
-    <div class="logo_groups" style="justify-content: flex-start;">
-      <div class="logo_options" style="padding-right: 12%;">
-        <img class="icon" src="..\assets\date.png">
+    <div style="display: flex; align-items: center;">
+      <div style="margin-right: 8px;">
+        <button @click="reverseOrder = !reverseOrder" style="border:none; background:none;">
+          <img style="height: 20%; width: 20%;" class="icon" src="..\assets\arrows.png">
+        </button>
       </div>
+      <div style="margin-right: 8px;">
+        <img style="height: 20%; width: 20%;" class="icon" src="..\assets\calendar.png">
+      </div>
+      <div style="border-left: 1px solid #ccc; height: 16px; margin-left: 8px;"></div>
     </div>
 
   </div>
   
   <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-
     
   </template>
   
 <script>
 import Post from '../components/PostCard.vue'
 var moment = require('moment')
+import axios from "axios"
 
   export default {
     name: 'BrowsePage',
@@ -111,254 +92,70 @@ var moment = require('moment')
       return{
         moment:moment,
         day_today: moment().format("YYYY MMM DD"),
-        posts:[]        
+        posts:[],
+        postSections:[],
+        reverseOrder: false      
       }
     },
     computed: {
-      trydate() {
-        return moment.format()
-      },
-      todaysPosts() {
-        return this.posts.filter(post => moment(post.published).isSame(moment(), 'day'));
-      },
-      yesterdaysPosts() {
-        return this.posts.filter(post => moment(post.published).isSame(moment().subtract(1, 'day'), 'day'));
-      },
-      daysBeforeYesterdaysPosts() {
-        return this.posts.filter(post => moment(post.published).isSame(moment().subtract(2, 'days'), 'day'));
-      },
-      lastMonthPosts() {
-        return this.posts.filter(post => moment(post.published).isBefore(moment().subtract(1, 'month').startOf('month')));
-      }
-    },
-    methods: {
-      oldestPost: {
+      postSections() {
+        const today = moment();
+        const yesterday = moment().subtract(1, 'day');
+        const twoDaysAgo = moment().subtract(2, 'days');
+        const oneWeekAgo = moment().subtract(1, 'week');
+        const oneMonthAgo = moment().subtract(1, 'month');
+
+        const postSections = [
+          {
+            dateLabel: today.format("YYYY MMM DD"),
+            posts: this.posts.filter(post => moment(post.published).isSame(today, 'day'))
+          },
+          {
+            dateLabel: yesterday.format("YYYY MMM DD"),
+            posts: this.posts.filter(post => moment(post.published).isSame(yesterday, 'day'))
+          },
+          {
+            dateLabel: twoDaysAgo.format("YYYY MMM DD"),
+            posts: this.posts.filter(post => moment(post.published).isSame(twoDaysAgo, 'day'))
+          },
+          {
+            dateLabel: 'This Week',
+            posts: this.posts.filter(post => moment(post.published).isBetween(oneWeekAgo, twoDaysAgo))
+          },
+          {
+            dataLabel: 'A Month Ago',
+            posts: this.posts.filter(post => moment(post.published).isBetween(oneMonthAgo, oneWeekAgo))
+          },
+          {
+            dataLabel: 'Earlier',
+            posts: this.posts.filter(post => moment(post.published).isBefore(oneMonthAgo))
+          }
+        ];
+        
+        if (this.reverseOrder) {
+          postSections.reverse();
+        } 
+
+        return postSections;
 
       }
     },
-    created(){
-      this.posts = [
-        {
-          type:"post",
-          title:"A post title about a post about web dev",
-          id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e",
-          source:"http://lastplaceigotthisfrom.com/posts/yyyyy",
-          contentType:"text/plain",
-          content:"Þā wæs on burgum B",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-            host:"http://127.0.0.1:5454/",
-            displayName:"Lara Croft",
-            url:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-            github: "http://github.com/laracroft",
-            profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
-          },
-          published:"2023-02-01T13:07:04+00:00"
-        },
-        {
-          type:"post",
-          title:"newly demo post",
-          id:"http://127.0.0.1:5454/authors/9de/posts/76",
-          source:"http://lastplaceigotthisfrom.com/posts/yyyyy",
-          // origin:"http://whereitcamefrom.com/posts/zzzzz",
-          // description:"This post discusses stuff -- brief",
-          contentType:"text/plain",
-          content:"Hey yo",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/9de",
-            host:"http://127.0.0.1:5454/",
-            displayName:"Lara Croft",
-            url:"http://127.0.0.1:5454/authors/9de",
-            github: "http://github.com/laracroft",
-            profileImage: "https://i.imgur.com/k7XVwpB.jpeg"
-          },
-          published:"2022-03-09T13:07:04+00:00"
-        },
-        {
-          type:"post",
-          title:"A post title to duplicate",
-          id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bb",
-          source:"http://lastplaceigotthisfrom.com/posts/yyyyy",
-          origin:"http://whereitcamefrom.com/posts/zzzzz",
-          description:"This post discusses stuff -- brief",
-          contentType:"text/plain",
-          content:"Þā wæs on burgum B",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-            host:"http://127.0.0.1:5454/",
-            displayName:"Lara Croft",
-            url:"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-            github: "http://github.com/laracroft",
-            profileImage: "https://imgur.com/gallery/2oNSn3C.jpeg"
-          },
-          published:"2023-02-28T13:07:04+00:00"
-        },
-        {
-          type:"post",
-          title:"My Thoughts on Climate Change",
-          id:"http://127.0.0.1:5454/authors/1/posts/abc",
-          source:"http://example.com/posts/123",
-          origin:"http://example.com/posts/123",
-          description:"A brief overview of my opinion on climate change",
-          contentType:"text/plain",
-          content:"Climate change is a real threat to our planet and we need to take action to reduce our carbon footprint",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/1",
-            host:"http://127.0.0.1:5454/",
-            displayName:"John Smith",
-            url:"http://127.0.0.1:5454/authors/1",
-            github: "http://github.com/johnsmith",
-            profileImage: "https://imgur.com/gallery/2oNSn3C.jpeg"
-          },
-          published:"2022-02-28T10:00:00+00:00"
-        },
-        {
-          type:"post",
-          title:"The Best Vegan Restaurants in Town",
-          id:"http://127.0.0.1:5454/authors/2/posts/def",
-          source:"http://example.com/posts/456",
-          origin:"http://example.com/posts/456",
-          description:"A list of my favorite vegan restaurants in the city",
-          contentType:"text/plain",
-          content:"1. Veggie Grill\n2. Native Foods\n3. Cafe Gratitude",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/2",
-            host:"http://127.0.0.1:5454/",
-            displayName:"Jane Doe",
-            url:"http://127.0.0.1:5454/authors/2",
-            github: "http://github.com/janedoe",
-            profileImage: "https://imgur.com/gallery/2oNSn3C.jpeg"
-          },
-          published:"2023-02-27T15:30:00+00:00"
-        },
-        {
-          type:"post",
-          title:"My Experience with Remote Work",
-          id:"http://127.0.0.1:5454/authors/3/posts/ghi",
-          source:"http://example.com/posts/789",
-          origin:"http://example.com/posts/789",
-          description:"A personal reflection on my experience with remote work",
-          contentType:"text/plain",
-          content:"Working remotely has its challenges, but overall it has been a positive experience for me",
-          author:{
-            type:"author",
-            id:"http://127.0.0.1:5454/authors/3",
-            host:"http://127.0.0.1:5454/",
-            displayName:"Sarah Johnson",
-            url:"http://127.0.0.1:5454/authors/3",
-            github: "http://github.com/sarahjohnson",
-            profileImage: "https://imgur.com/gallery/2oNSn3C.jpeg"
-          },
-          published:"2023-02-26T09:15:00+00:00"
-        },
-        {
-          type: "post",
-          title: "The Benefits of Meditation",
-          id: "http://example.com/posts/1",
-          source: "http://example.com/posts/1",
-          origin: "http://example.com/posts/1",
-          description: "Learn about the many benefits of meditation and why it's important to make time for it in your daily life.",
-          contentType: "text/plain",
-          content: "Meditation has been shown to reduce stress and anxiety, improve focus and concentration, and promote feelings of calm and well-being. By taking just a few minutes each day to meditate, you can experience these benefits for yourself.",
-          author: {
-          type: "author",
-          id: "http://example.com/authors/1",
-          host: "http://example.com/",
-          displayName: "John Smith",
-          url: "http://example.com/authors/1",
-          twitter: "https://twitter.com/johnsmith",
-          profileImage: "https://example.com/images/johnsmith.jpg"
-          },
-          published: "2023-03-01T10:30:00+00:00"
-        },
-        {
-          type: "post",
-          title: "10 Tips for a Successful Job Interview",
-          id: "http://example.com/posts/2",
-          source: "http://example.com/posts/2",
-          origin: "http://example.com/posts/2",
-          description: "Preparing for a job interview can be nerve-wracking, but these 10 tips will help you feel confident and ready to ace your interview.",
-          contentType: "text/plain",
-          content: "Research the company, dress professionally, practice your answers to common interview questions, arrive early, and follow up with a thank-you note. By doing these things, you'll be well-prepared and poised to impress your interviewer.",
-          author: {
-          type: "author",
-          id: "http://example.com/authors/2",
-          host: "http://example.com/",
-          displayName: "Jane Doe",
-          url: "http://example.com/authors/2",
-          linkedin: "https://www.linkedin.com/in/janedoe/",
-          profileImage: "https://example.com/images/janedoe.jpg"
-          },
-          published: "2022-02-27T14:15:00+00:00"
-        },
-        {
-          type: "post",
-          title: "The Best Ways to Stay Active in the Winter",
-          id: "http://example.com/posts/3",
-          source: "http://example.com/posts/3",
-          origin: "http://example.com/posts/3",
-          description: "Don't let the winter weather keep you from staying active. Try these tips to keep moving and stay healthy during the colder months.",
-          contentType: "text/plain",
-          content: "Find an indoor workout that you enjoy, bundle up and go for a walk or run, try a winter sport like skiing or snowboarding, or join a fitness class. By staying active, you'll improve your mood, boost your energy levels, and stay healthy all winter long.",
-          author: {
-          type: "author",
-          id: "http://example.com/authors/3",
-          host: "http://example.com/",
-          displayName: "Tom Jones",
-          url: "http://example.com/authors/3",
-          instagram: "https://www.instagram.com/tomjonesfitness/",
-          profileImage: "https://example.com/images/tomjones.jpg"
-          },
-          published: "2022-02-26T09:00:00+00:00"
-        },
-        {
-          type: "post",
-          title: "The Benefits of Meditation",
-          id: "http://127.0.0.1:5454/authors/6d5f6a75c12e8f97bcbbd34cc908f1baba40658e/posts/1a2b3c4d5e6f",
-          source: "http://example.com/posts/abcdef",
-          origin: "http://example.com/posts/abcdef",
-          description: "A brief overview of the benefits of daily meditation",
-          contentType: "text/plain",
-          content: "Meditation has been shown to reduce stress, improve focus, and boost overall well-being.",
-          author: {
-            type: "author",
-            id: "http://127.0.0.1:5454/authors/6d5f6a75c12e8f97bcbbd34cc908f1baba40658e",
-            host: "http://127.0.0.1:5454/",
-            displayName: "John Doe",
-            url: "http://127.0.0.1:5454/authors/6d5f6a75c12e8f97bcbbd34cc908f1baba40658e",
-            github: "http://github.com/johndoe",
-            profileImage: "https://example.com/profile-images/johndoe.jpeg"
-          },
-          published: "2022-02-15T08:30:00+00:00"
-        },
-        {
-          type: "post",
-          title: "The Future of Virtual Reality",
-          id: "http://127.0.0.1:5454/authors/8e7d6c5b4a3f2e1d0c9b8a798765432112345678/posts/abcdef12345",
-          source: "http://example.com/posts/xyz",
-          origin: "http://example.com/posts/xyz",
-          description: "An in-depth analysis of the latest advancements in virtual reality technology and its future potential",
-          contentType: "text/plain",
-          content: "Virtual reality is poised to revolutionize the way we work, play, and interact with each other. With the development of new hardware and software, the possibilities are endless.",
-          author: {
-            type: "author",
-            id: "http://127.0.0.1:5454/authors/8e7d6c5b4a3f2e1d0c9b8a798765432112345678",
-            host: "http://127.0.0.1:5454/",
-            displayName: "Jane Smith",
-            url: "http://127.0.0.1:5454/authors/8e7d6c5b4a3f2e1d0c9b8a798765432112345678",
-            github: "http://github.com/janesmith",
-            profileImage: "https://example.com/profile-images/janesmith.jpeg"
-          },
-          published: "2022-02-28T16:45:00+00:00"
-        }
-      ]
-    }
-  }
+    methods: {
+      getPosts() {
+      axios
+        .get("http://localhost:8000/api/authors/22dea0b0-5e3b-445f-86f5-86fe91be0790/posts/")
+        .then((res) => {
+          this.posts = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
+    },
+    mounted() {
+    this.getPosts();
+    },
+  };
 </script>
 
 <style scoped>
