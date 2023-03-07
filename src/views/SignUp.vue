@@ -40,6 +40,10 @@ export default {
         this.password = ''
         this.confirmPassword = ''
       } else {
+        if (localStorage.getItem('token') !== null) {
+          localStorage.removeItem('token') // remove any old tokens from local
+          console.log('Removed existing token')
+        }
         axios
           .post('/users/', formData)
           .then(response => {

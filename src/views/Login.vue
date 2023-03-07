@@ -34,6 +34,10 @@ export default {
         username: this.username,
         password: this.password
       }
+      if (localStorage.getItem('token') !== null) {
+        localStorage.removeItem('token') // remove any old tokens from local
+        console.log('Removed existing token')
+      }
       // Send formData to backend
       axios
         .post('token/login', formData)
