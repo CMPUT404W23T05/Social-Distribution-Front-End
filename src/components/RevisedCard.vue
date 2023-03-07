@@ -44,7 +44,7 @@ import VueMarkdown from 'vue-markdown-render'
 
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
-  components: { VueMarkdown }
+  components: { VueMarkdown },
   props: ['author', 'post'],
   data () {
     return {

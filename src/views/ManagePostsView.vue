@@ -14,7 +14,7 @@
       >
         <template #footer>
           <button type="button" class="edit-button btn" @click="manage(post, index)">
-            Edit
+            ✐
           </button>
           <span class="divider"></span>
           <button
@@ -22,7 +22,7 @@
             class="delete-button btn"
             @click="displayPrompt(post)"
           >
-            Delete
+          🔨
           </button>
         </template>
       </Card>
@@ -110,9 +110,9 @@ export default {
       this.selectedPost = post
     },
 
-    async refreshPosts () {
+    refreshPosts () {
       console.log('refreshing!')
-      await this.getPosts()
+      this.getPosts()
       this.$forceUpdate()
       this.showManage = false
     },
