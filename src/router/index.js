@@ -22,6 +22,8 @@ router.beforeEach((to, from) => {
   const exceptions = ['login', 'signup']
   if (!token.isAuthenticated && !exceptions.includes(to.name)) {
     return '/login'
+  } else if (token.isAuthenticated && exceptions.includes(to.name)) {
+    return '/home#loggedin' // if the user is logged in and tries to access login or signup, redirect to home
   }
 })
 export default router
