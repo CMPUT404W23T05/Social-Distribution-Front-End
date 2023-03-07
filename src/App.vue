@@ -1,24 +1,36 @@
 <template>
-  <NavBar :author="author"></NavBar>
-  <router-view />
+  <NavBar v-if="loggedIn"></NavBar>
+  <router-view/>
 </template>
 
 <script>
 import NavBar from '@/components/NavBar.vue'
+import { useTokenStore } from '@/stores/token.js'
+import axios from 'axios'
 
 export default {
-  data () {
-    return {
-      author: {
-        display_name: 'username',
-        profile_image: 'http://i.imgur.com/k7XVwpB.jpeg'
-      }
+  name: 'App',
+  beforeCreate () {
+    const tokenStore = useTokenStore() // get the token store
+    tokenStore.initializeStore() // initialize the store
+    const token = tokenStore.token // get the token from the store
+    //  attach token to request header
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Token ${token}`
+    } else {
+      axios.defaults.headers.common.Authorization = 'null'
     }
   },
   components: {
     NavBar
+  },
+  computed: {
+    loggedIn () {
+      return this.$route.name !== 'login' && this.$route.name !== 'signup'
+    }
   }
 }
+
 </script>
 
 <style>
