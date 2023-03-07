@@ -12,7 +12,7 @@ describe('NavBar.vue', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-
+    // TODO: update mock data to match new backend schema
     const author = {
       id: 12345,
       home_host: 'this node',
