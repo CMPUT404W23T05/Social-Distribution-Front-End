@@ -51,10 +51,10 @@ describe('NavBar.vue', () => {
     expect(profileImage.attributes().alt).toContain('profile picture')
   })
 
-  it('redirects / to /login', async () => {
+  it('redirects / to /home', async () => {
     router.push('/')
     await router.isReady()
-    expect(router.currentRoute.value.path).toContain('login')
+    expect(router.currentRoute.value.path).toContain('home')
   })
 
   it('tracks exactly one active link', async () => {

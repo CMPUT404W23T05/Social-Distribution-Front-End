@@ -7,7 +7,7 @@ import SocialView from '../views/SocialView.vue'
 export default [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/home'
   },
   {
     path: '/home',
