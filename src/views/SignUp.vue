@@ -16,7 +16,7 @@
 
 <script>
 import axios from 'axios'
-import { errorFromResponse } from '@/util/authErrorHandler'
+import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'sign-up',
   data () {
@@ -49,8 +49,7 @@ export default {
           })
           .catch(error => {
             console.log(error)
-            const response = error.response
-            const errorString = errorFromResponse(response)
+            const errorString = errorToString(error)
             this.authError = errorString
           })
       }

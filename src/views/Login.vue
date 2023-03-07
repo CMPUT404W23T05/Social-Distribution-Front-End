@@ -17,7 +17,7 @@
 import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
-import { errorFromResponse } from '@/util/authErrorHandler'
+import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'LogIn',
   data () {
@@ -65,7 +65,7 @@ export default {
         })
         .catch(error => {
           console.log(error)
-          const errorString = errorFromResponse(error.response)
+          const errorString = errorToString(error)
           // alert(errorString)
           this.authError = errorString
         })
