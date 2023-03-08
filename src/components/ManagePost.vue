@@ -9,7 +9,7 @@
         placeholder="Write a title for your post"
       />
       <span id="privacySettings">
-        <input
+        <input disabled
           type="radio"
           name="privacy"
           id="private"
@@ -17,7 +17,7 @@
           v-model="post.visibility"
         />
         <label for="private">Private</label>
-        <input
+        <input disabled
           type="radio"
           name="privacy"
           id="friendsonly"
