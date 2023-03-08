@@ -70,68 +70,76 @@
 
   </div>
   </template>
-  
+
 <script>
 import Post from '../components/RevisedCard.vue'
-var moment = require('moment')
-import axios from "axios"
+import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+const moment = require('moment')
 
-  export default {
-    name: 'BrowsePage',
-    components:{
-      Post,
-    },
-    data(){
-      return{
-        moment:moment,
-        posts:[],
-        reverseOrder: false      
+export default {
+  name: 'BrowsePage',
+  components: {
+    Post
+  },
+  data () {
+    return {
+      moment: moment,
+      posts: [],
+      reverseOrder: false,
+      author: null
+    }
+  },
+  computed: {
+    postSections () {
+      const sections = []
+      const groupedPosts = this.posts.reduce((acc, post) => {
+        const date = moment(post.published).format('YYYY-MM-DD')
+        if (acc[date]) {
+          acc[date].push(post)
+        } else {
+          acc[date] = [post]
+        }
+        return acc
+      }, {})
+
+      for (const date in groupedPosts) {
+        const section = {
+          dateLabel: moment(date).format('YYYY MMM DD'),
+          posts: groupedPosts[date]
+        }
+        sections.push(section)
       }
-    },
-    computed: {
-      postSections() {
-        const sections = [];
-        const groupedPosts = this.posts.reduce((acc, post) => {
-          const date = moment(post.published).format('YYYY-MM-DD');
-          if (acc[date]) {
-            acc[date].push(post);
-          } else {
-            acc[date] = [post];
-          }
-          return acc;
-        }, {});
-        
-        for (const date in groupedPosts) {
-          const section = {
-            dateLabel: moment(date).format("YYYY MMM DD"),
-            posts: groupedPosts[date],
-          };
-          sections.push(section);
-        }
-        
-        if (this.reverseOrder) {
-          sections.reverse();
-        }
 
-        return sections;
-      },
-    },
-    methods: {
-      getPosts() {
+      if (this.reverseOrder) {
+        sections.reverse()
+      }
+
+      return sections
+    }
+  },
+  methods: {
+    getPosts () {
       axios
-        .get("http://localhost:8000/api/authors/22dea0b0-5e3b-445f-86f5-86fe91be0790/posts/")
+        .get(`/authors/${this.author.id}/posts/`)
         .then((res) => {
-          this.posts = res.data;
+          this.posts = res.data
         })
         .catch((err) => {
-          console.log(err);
-        });
-      }
+          console.log(err)
+        })
     },
-    mounted() {
-    this.getPosts();
-    },
-  };
+    getAuthorFromStore () {
+      const userStore = useUserStore()
+      userStore.initializeStore()
+      this.author = userStore.user.author
+    }
+  },
+  mounted () {
+    this.getAuthorFromStore()
+    this.getPosts()
+  }
+}
 </script>
 
 <style scoped>
@@ -209,4 +217,3 @@ import axios from "axios"
     width: 33%;
   }
 </style>
-
