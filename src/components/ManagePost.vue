@@ -54,7 +54,7 @@
       />
     </form>
 
-    <button type="submit" class="btn" @click="submitPost">Post</button>
+    <button type="submit" class="btn btn-primary" @click="submitPost">Post</button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
 
