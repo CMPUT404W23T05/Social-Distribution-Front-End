@@ -13,7 +13,7 @@
                 <router-link :to="{ name: 'homepage' }" class = "nav-link">Home</router-link>
                 <ul class="dropdown-menu">
                     <router-link to="/home/inbox" class = "dropdown-item"> Inbox </router-link>
-                    <router-link to="/home/managePosts" class = "dropdown-item"> Manage Posts </router-link>
+                    <router-link :to="{ name: 'manageposts'}" class = "dropdown-item"> Manage Posts </router-link>
                 </ul>
             </li>
             <li class = 'nav-item'>

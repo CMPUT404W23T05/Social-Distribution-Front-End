@@ -38,19 +38,19 @@
       v-if="showManage"
       :author="tempAuthor"
       :existingPost="selectedPost"
-      @succesful-post="refreshPosts"
+      @end-manage="refreshPosts"
     ></ManagePost>
   </div>
 </template>
 
 <script>
-import ManagePost from "@/components/ManagePost.vue";
-import Card from "@/components/RevisedCard.vue";
-import PopUpPrompt from "@/components/PopUpPrompt.vue";
-import axios from "axios";
+import ManagePost from '@/components/ManagePost.vue'
+import Card from '@/components/RevisedCard.vue'
+import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       posts: [
     //   {
@@ -96,69 +96,75 @@ export default {
       showManage: false,
       showPrompt: false,
       tempAuthor: {
-        display_name: "Tommy",
-        profile_image:
-          "https://assets.pokemon.com/assets/cms2/img/pokedex/full/025.png",
-        profile_name: "Tommy1321",
-      },
-    };
+        type: 'author',
+        id: '580131fa-0d8f-4d6f-acfc-b6356387e422',
+        displayName: 'Test Author 1',
+        profileImage: 'https://i.imgur.com/k7XVwpB.jpeg',
+        url: 'http://someurlhere.ca/',
+        github: 'http://mygithub.com',
+        host: 'http://127.0.0.1:8080/'
+      }
+    }
   },
   methods: {
-    deletePost() {
-      //TO BE: `/api/authors/${this.author.id}/${post.id}`
+    deletePost () {
       axios
-        .delete(`http://localhost:8000/posts/${this.selectedPost.id}`)
+        .delete(`/authors/${this.tempAuthor.id}/posts/${this.selectedPost.id}`)
         .then((res) => {
-          console.log(res.data);
-          this.posts = this.posts.filter((post) => post != this.selectedPost);
+          console.log(res.data)
+          this.posts = this.posts.filter((post) => post !== this.selectedPost)
         })
         .catch((err) => {
-          console.log(err);
-        });
-      this.closePrompt();
+          alert("Couldn't delete post!")
+          console.log(err)
+        })
+      this.closePrompt()
     },
 
-    getPosts() {
-      // Eventually: `/api/authors/${this.author.id}/posts`
+    async getPosts () {
       axios
         .get("http://localhost:8000/api/authors/22dea0b0-5e3b-445f-86f5-86fe91be0790/posts/")
         .then((res) => {
-          this.posts = res.data;
+          this.posts = res.data
+          console.log(res)
         })
         .catch((err) => {
-          console.log(err);
-        });
+          alert("Couldn't get posts!")
+          console.log(err)
+          this.posts = []
+        })
     },
 
-    manage(post) {
-      this.setSelected(post);
-      this.showManage = true;
+    manage (post) {
+      this.setSelected(post)
+      this.showManage = true
     },
 
-    displayPrompt(post) {
-      this.setSelected(post);
-      this.showPrompt = true;
+    displayPrompt (post) {
+      this.setSelected(post)
+      this.showPrompt = true
     },
 
-    setSelected(post) {
-      this.selectedPost = post;
+    setSelected (post) {
+      this.selectedPost = post
     },
 
-    refreshPosts() {
-      this.getPosts();
-      this.$forceUpdate;
-      this.showManage = false;
+    refreshPosts () {
+      console.log('refreshing!')
+      this.getPosts()
+      this.$forceUpdate()
+      this.showManage = false
     },
 
-    closePrompt() {
-      this.showPrompt = false;
-    },
+    closePrompt () {
+      this.showPrompt = false
+    }
   },
-  mounted() {
-    this.getPosts();
+  mounted () {
+    this.getPosts()
   },
-  components: { ManagePost, Card, PopUpPrompt },
-};
+  components: { ManagePost, Card, PopUpPrompt }
+}
 </script>
 
 <style scoped>

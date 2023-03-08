@@ -1,6 +1,7 @@
 <template>
   <!-- TODO: Refactor so that existing posts can be passed in as props and re-use this interface -->
   <div class="container col-6">
+    <button type="button" class="exit" @click="$emit('endManage')">X</button>
     <form action="gotothedesiredURL" method="POST">
       <input
         v-model="post.title"
@@ -23,7 +24,7 @@
           value="FRIENDS"
           v-model="post.visibility"
         />
-        <label for="private">Friends Only</label>
+        <label for="friendsonly">Friends Only</label>
         <input
           type="radio"
           name="privacy"
@@ -31,18 +32,19 @@
           value="PUBLIC"
           v-model="post.visibility"
         />
-        <label for="private">Public</label>
+        <label for="public">Public</label>
       </span>
 
       <TextPostBody
         class="text-input"
         :body="post.content"
-        :toggle="markDownEnabled"
-        @change-text-post="({ body, toggle }) => setText(body, toggle)"
+        :toggle="markdownEnabled"
+        @change-text-post="(text) => setText(text)"
       />
       <ImagePostBody
         class="image-upload"
-        @update:image="(imageSrc) => setImage(imageSrc)"
+        :image="imageDataURL"
+        @image-uploaded="(image) => setImage(image)"
       />
       <input
         v-model="post.description"
@@ -51,7 +53,7 @@
       />
     </form>
 
-    <button class="btn" @click="submitPost">Post</button>
+    <button type="submit" class="btn" @click="submitPost">Post</button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
 
@@ -59,125 +61,140 @@
 </template>
 
 <script>
-import TextPostBody from "@/components/TextPostBody.vue";
-import ImagePostBody from "@/components/ImagePostBody.vue";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
+import TextPostBody from '@/components/TextPostBody.vue'
+import ImagePostBody from '@/components/ImagePostBody.vue'
+import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
-  data() {
+  components: {
+    TextPostBody,
+    ImagePostBody
+  },
+  data () {
     return {
       // Initialize a blank post
       post: {
-        type: "post",
-        title: "",
-        source: "http://somethinghere.ca",
-        origin: "http://somethingelse.com",
-        description: "",
-        contentTypes: [],
-        content: "",
-        image: "",
+        type: 'post',
+        title: '',
+        source: 'http://wherethispostcamefrom.yummy/',
+        origin: 'http://wherethispostactuallycamefrom.yucky/',
+        description: '',
+        contentType: [],
+        content: '',
+        image: null,
         count: 0,
-        comments:
-          "http://127.0.0.1:5454/authors/lldbryq22g093jsn5sul7i339b6fljzxpd8tld/posts/764efa885fdb1e11bd426/comments",
         unlisted: false,
-        visibility: "private",
-        author: "lldbryq22g093jsn5sul7i339b6fljzxpd8tld",
+        visibility: 'PRIVATE',
+        author: this.author,
         // Generate when post is submitted
+        comments: null, // url from server
         id: null,
-        // pubDate: null,
+        published: '2023-03-01T21:18:38.908794Z'
       },
       // Won't appear in contentTypes until post is made to validate that text is entered
       // Otherwise a purely image-post may erroneously have type text/markdown
-      markDownEnabled: false,
-      badSubmit: false,
-    };
-  },
-  props: ["author", "existingPost"],
-  components: {
-    TextPostBody,
-    ImagePostBody,
-  },
-  computed: {
-    validPost() {
-      return this.post.title && (this.post.image || this.post.content);
-    },
-    errorMessage() {
-      if (!this.post.title) {
-        return "Your post needs a title!";
-      } else if (!this.post.image && !this.post.content) {
-        return "Your post needs text and/or an image!";
-      }
-    },
-  },
-  methods: {
-    setImage(imageSrc) {
-      // data:img/jpeg;base64=..
-      this.sanitizeContentTypes("image");
-
-      if (imageSrc === "") {
-        this.post.image = imageSrc;
-      } else {
-        // a2Wt29qw021t...
-        this.post.image = imageSrc.replace("data:", "").replace(/^.+,/, "");
-
-        const imageMimeType = imageSrc
-          .replace("data:", "")
-          .match(/^.+,/)[0]
-          .replace(",", "");
-        // img/jpeg;base64
-        this.post.contentTypes.push(imageMimeType);
-      }
-    },
-    setText(body, toggle) {
-      this.post.content = body;
-      this.sanitizeContentTypes("text");
-      if (body && toggle) {
-        this.post.contentTypes.push("text/markdown");
-      } else if (body && !toggle) {
-        this.post.contentTypes.push("text/plain");
-      }
-    },
-
-    sanitizeContentTypes(substring) {
-      // Helper function to remove an exisiting MIME type before pushing updated one
-      this.post.contentTypes = this.post.contentTypes.filter(
-        (contentType) => !contentType.includes(substring)
-      );
-    },
-
-    submitPost() {
-      if (this.validPost) {
-        if (this.existingPost) {
-          console.log(`Going to id ${this.post.id}`);
-          axios
-            .put(`http://localhost:3000/posts/${this.post.id}`, this.post)
-            .then((res) => this.$emit("succesfulPost"))
-            .catch((err) => console.log(err));
-        } else {
-          const uniqueID = uuidv4();
-          this.post.id = uniqueID;
-          axios
-            // /create-post/
-            //"http://localhost:8000/api/create-post/
-            .post("http://localhost:3000/posts/", this.post)
-            .then((res) => this.$emit("succesfulPost"))
-            .catch((err) => console.log(err));
-        }
-        console.log("You made a change to the postings!");
-      } else {
-        this.badSubmit = true;
-      }
-    },
-  },
-  mounted() {
-    if (this.existingPost) {
-      this.post = structuredClone(this.existingPost);
-      this.markdownEnabled = this.post.contentTypes.includes("text/markdown");
+      badSubmit: false
     }
   },
-  emits: ["succesfulPost"],
-};
+  props: ['author', 'existingPost'],
+
+  computed: {
+    validPost () {
+      const length = this.post.title.length
+      return length <= 30 && length > 0 && (this.post.image || this.post.content)
+    },
+    errorMessage () {
+      if (!this.post.title) {
+        return 'Your post needs a title between 1 and 30 characters!'
+      } else if (!this.post.image && !this.post.content) {
+        return 'Your post needs text and/or an image!'
+      } else return ''
+    },
+    markdownEnabled () {
+      return this.post.contentType.includes('text/markdown')
+    },
+    contentTypeAsStr () {
+      return this.post.contentType.toString()
+    },
+    imageDataURL () {
+      if (this.existingPost && this.existingPost.image) {
+        const imageMime = this.post.contentType.find(type => type.includes('image'))
+        // Template literals give undefined in child component
+        return String.raw`data:${imageMime},${this.post.image}`
+      } else {
+        return null
+      }
+    }
+  },
+  methods: {
+    setText (text) {
+      this.post.content = text.body
+      this.sanitizeContentTypes('text')
+      this.appendMime(text.mime)
+    },
+
+    setImage (image) {
+      this.post.image = image.raw64
+      this.sanitizeContentTypes('image')
+      this.appendMime(image.mime)
+    },
+
+    appendMime (mime) {
+      this.sanitizeContentTypes(mime)
+      if (mime) {
+        this.post.contentType.push(mime)
+      }
+    },
+
+    sanitizeContentTypes (mimeSuper) {
+      // Helper function to remove an exisiting MIME type before pushing updated one
+      this.post.contentType = this.post.contentType.filter(
+        (contentType) => !contentType.includes(mimeSuper)
+      )
+    },
+
+    submitPost () {
+      if (this.validPost) {
+        this.post.contentType = this.contentTypeAsStr
+
+        if (this.existingPost) {
+          console.log(this.post)
+          console.log(`/authors/${this.post.author.id}/posts/${this.post.id}/`)
+          axios
+            .post(`/authors/${this.post.author.id}/posts/${this.post.id}/`, this.post)
+            .then((res) => console.log(res))
+            .catch((err) => {
+              alert("Couldn't edit the post!")
+              console.log(err)
+            })
+        } else {
+          const uniqueID = uuidv4()
+          this.post.id = uniqueID
+          console.log(this.post)
+          axios
+            .post(`/authors/${this.post.author.id}/posts/create-post/`, this.post)
+            .then((res) => console.log(res))
+            .catch((err) => {
+              alert("Couldn't make the post!")
+              console.log(err)
+            })
+        }
+        this.$emit('endManage')
+      } else {
+        this.badSubmit = true
+      }
+    }
+  },
+  mounted () {
+    if (this.existingPost) {
+      this.post = structuredClone(this.existingPost)
+      // Convert to array from string from backend
+      this.post.contentType = this.post.contentType.split(',')
+    }
+  },
+  emits: ['endManage']
+}
 </script>
 
 <style scoped>

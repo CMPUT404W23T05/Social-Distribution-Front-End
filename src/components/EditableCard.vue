@@ -20,17 +20,17 @@
 </template>
 
 <script>
-import Card from "@/components/RevisedCard.vue";
+import Card from '@/components/RevisedCard.vue'
 
 export default {
-  data() {
+  data () {
     return {
-      isHovered: false,
-    };
+      isHovered: false
+    }
   },
-  props: ["author", "post"],
-  components: { Card },
-};
+  props: ['author', 'post'],
+  components: { Card }
+}
 </script>
 
 <style scoped>

@@ -12,8 +12,8 @@
 
 <script>
 export default {
-  emits: ["dismiss", "accept"],
-};
+  emits: ['dismiss', 'accept']
+}
 </script>
 
 <style scoped>

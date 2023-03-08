@@ -16,11 +16,6 @@ export default [
     component: Home
   },
   {
-    path: '/home/manage-posts',
-    name: 'manageposts',
-    component: ManagePost
-  },
-  {
     path: '/login',
     name: 'login',
     component: LogIn
@@ -29,6 +24,11 @@ export default [
     path: '/signup',
     name: 'signup',
     component: SignUp
+  },
+  {
+    path: '/home/manage-posts',
+    name: 'manageposts',
+    component: ManagePost
   },
   {
     path: '/social',
