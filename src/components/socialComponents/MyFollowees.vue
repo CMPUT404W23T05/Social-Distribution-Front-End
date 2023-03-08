@@ -2,9 +2,11 @@
 <div class="list-of-profiles" id="followees">
   <h1> Your <br/> Followees</h1>
   <ul>
-    <li v-for="author in test_followees" :key="author.uid">
+    <li v-for="author in test_followees" :key="author.id">
+      <template v-if="author">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
+    </template>
     </li>
   </ul>
 </div>
@@ -15,7 +17,8 @@
 export default {
   data () {
     return {
-      followees: [''],
+      // for author in followees
+      followees: null,
       get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/following/',
       test_followees: [
         {
@@ -47,7 +50,7 @@ export default {
   },
   created () {
     // get followees when page loads
-    // this.getData()
+    this.getData()
   }
 
 }

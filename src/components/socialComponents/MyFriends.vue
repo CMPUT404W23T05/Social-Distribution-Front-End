@@ -3,8 +3,10 @@
   <h1> Your <br/> Friends</h1>
   <ul>
     <li v-for="author in test_friends" :key="author.id">
+      <template v-if="author">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
+      </template>
     </li>
   </ul>
 </div>
@@ -15,6 +17,7 @@
 export default {
   data () {
     return {
+      // for author in friends
       friends: [''],
       get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/friends/',
       test_friends: [
@@ -47,7 +50,7 @@ export default {
   },
   created () {
     // get friends when page loads
-    // this.getData()
+    this.getData()
   }
 
 }

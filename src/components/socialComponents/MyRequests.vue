@@ -2,13 +2,15 @@
 <div class="list-of-profiles" id="requests">
   <h1> Your <br/> Requests</h1>
   <ul>
-    <li v-for="author in test_requests" :key="author.id">
-      <img :src="author.profileImage">
-      <p>{{displayUsername(author.displayName)}}</p>
+    <li v-for="author in requests" :key="author.actor.id">
+      <template v-if="author">
+      <img :src="author.actor.profileImage">
+      <p>{{displayUsername(author.actor.displayName)}}</p>
       <span>
-        <button id="accept-button">Accept</button>
-        <button id="decline-button">Decline</button>
+        <button @click="updateRequest('accept', getIdFromUrl(author.actor.id))" id="accept-button">Accept</button>
+        <button @click="updateRequest('decline', getIdFromUrl(author.actor.id))" id="decline-button">Decline</button>
       </span>
+      </template>
     </li>
   </ul>
 </div>
@@ -19,8 +21,9 @@
 export default {
   data () {
     return {
-      requests: [''],
-      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/requests/',
+      requests: null,
+      get_request_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/requests/',
+      get_follower_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/followers/',
       test_requests: [
         {
           id: 1,
@@ -39,9 +42,20 @@ export default {
     displayUsername (username) {
       return '@' + username
     },
+    getIdFromUrl (url) {
+      return url.split('/')[4]
+    },
+    updateRequest (selection, authorId) {
+      if (selection === 'accept') {
+        // if accepted, add the follower
+        this.$http.put(this.get_follower_link + authorId + '/')
+      }
+      // will get deleted regardless
+      this.$http.delete(this.get_request_link + authorId + '/')
+    },
     async getData () {
       try {
-        const response = await this.$http.get(this.get_link)
+        const response = await this.$http.get(this.get_request_link)
         this.requests = response.data
       } catch (error) {
         console.log(error)
@@ -50,7 +64,7 @@ export default {
   },
   created () {
     // get requests when page loads
-    // this.getData()
+    this.getData()
   }
 }
 
