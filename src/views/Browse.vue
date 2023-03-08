@@ -113,6 +113,9 @@ export default {
 
       if (this.reverseOrder) {
         sections.reverse()
+        for (const date in groupedPosts) {
+          groupedPosts[date].reverse()
+        }
       }
 
       return sections
