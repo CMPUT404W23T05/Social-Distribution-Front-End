@@ -1,23 +1,19 @@
 <template>
   <div class="main_center">
-    <div class="margin_set" id="heading" style="margin-top: 1%;">
+    <div class="margin_set" style="margin-top: 1%;">
       <h1 style="text-align: left;">Public Posts</h1>
     </div>
 
     <div v-for="(postSection, index) in postSections" :key="index">
-      <div class="dated_section" v-if="postSection.posts.length > 0">
-        <div class="border_date">
-          <h7 v-if="index === 0">{{ postSection.dateLabel }}</h7>
-          <h7 v-else-if="index === 1">{{ postSection.dateLabel }}</h7>
-          <h7 v-else-if="index === 2">{{ postSection.dateLabel }}</h7>
-          <h7 v-else-if="index === 3">{{ postSection.dateLabel }}</h7>
-          <h7 v-else-if="index === 4">{{ postSection.dateLabel }}</h7>
-          <h7 v-else-if="index === 5">{{ postSection.dateLabel }}</h7>
-        </div>
-        <div class="posts_section margin_set">
-          <div v-for="post in postSection.posts" :key="post.id">
-            <!-- <h6 v-if="index === 2">{{ post.published }}</h6> -->
-            <Post class="card" :author="post.author" :post="post" />
+      <div style="padding: 3% 3% 3% 3%;">
+        <div class="dated_section" v-if="postSection.posts.length > 0">
+          <div class="border_date">
+            <h7>{{ postSection.dateLabel }}</h7>
+          </div>
+          <div class="posts_section margin_set">
+            <div v-for="post in postSection.posts" :key="post.id">
+              <Post :author="post.author" :post="post" />
+            </div>
           </div>
         </div>
       </div>
@@ -73,13 +69,10 @@
     </div>
 
   </div>
-  
-  <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    
   </template>
   
 <script>
-import Post from '../components/PostCard.vue'
+import Post from '../components/RevisedCard.vue'
 var moment = require('moment')
 import axios from "axios"
 
@@ -91,54 +84,37 @@ import axios from "axios"
     data(){
       return{
         moment:moment,
-        day_today: moment().format("YYYY MMM DD"),
         posts:[],
-        postSections:[],
         reverseOrder: false      
       }
     },
     computed: {
       postSections() {
-        const today = moment();
-        const yesterday = moment().subtract(1, 'day');
-        const twoDaysAgo = moment().subtract(2, 'days');
-        const oneWeekAgo = moment().subtract(1, 'week');
-        const oneMonthAgo = moment().subtract(1, 'month');
-
-        const postSections = [
-          {
-            dateLabel: today.format("YYYY MMM DD"),
-            posts: this.posts.filter(post => moment(post.published).isSame(today, 'day'))
-          },
-          {
-            dateLabel: yesterday.format("YYYY MMM DD"),
-            posts: this.posts.filter(post => moment(post.published).isSame(yesterday, 'day'))
-          },
-          {
-            dateLabel: twoDaysAgo.format("YYYY MMM DD"),
-            posts: this.posts.filter(post => moment(post.published).isSame(twoDaysAgo, 'day'))
-          },
-          {
-            dateLabel: 'This Week',
-            posts: this.posts.filter(post => moment(post.published).isBetween(oneWeekAgo, twoDaysAgo))
-          },
-          {
-            dataLabel: 'A Month Ago',
-            posts: this.posts.filter(post => moment(post.published).isBetween(oneMonthAgo, oneWeekAgo))
-          },
-          {
-            dataLabel: 'Earlier',
-            posts: this.posts.filter(post => moment(post.published).isBefore(oneMonthAgo))
+        const sections = [];
+        const groupedPosts = this.posts.reduce((acc, post) => {
+          const date = moment(post.published).format('YYYY-MM-DD');
+          if (acc[date]) {
+            acc[date].push(post);
+          } else {
+            acc[date] = [post];
           }
-        ];
+          return acc;
+        }, {});
+        
+        for (const date in groupedPosts) {
+          const section = {
+            dateLabel: moment(date).format("YYYY MMM DD"),
+            posts: groupedPosts[date],
+          };
+          sections.push(section);
+        }
         
         if (this.reverseOrder) {
-          postSections.reverse();
-        } 
+          sections.reverse();
+        }
 
-        return postSections;
-
-      }
+        return sections;
+      },
     },
     methods: {
       getPosts() {
@@ -159,8 +135,41 @@ import axios from "axios"
 </script>
 
 <style scoped>
+  .posts_section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 2% 2% 2% 2%;
+  }
+  .dated_section {
+    border-top: 2px solid #006a9b;
+  }
+  .border_date {
+    width:140px;
+    margin-top:-14px;
+    margin-left:52px;
+    background-color: rgb(255, 255, 255);
+  }
+  .main_center {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12%;
+    margin-right: 25%;
+    width: 62%;
+  }
+  .margin_set {
+    margin-bottom: 1%;
+  }
+  .single_card {
+    min-width: 120pt;
+    min-height: 144pt;
+    aspect-ratio: 5/6;
+    max-width: 120pt;
+    max-height: 144pt;
+    margin: 1%;
+  }
   .icon {
-    height: 90%;
+    height: 70%;
     width: 85%;
     display: inline;
   }
@@ -177,76 +186,27 @@ import axios from "axios"
     padding: 4% 0 0% 3%;
     color: #7E7E7E;
   }
-
   .search_box_texts h6{
     font-size: 13px;
   }
-
   .search_box {
     display: flex;
     flex-direction: column;
-    width: 15%;
+    width: 22%;
     position: fixed;
-    right: 5%;
+    right: 2%;
     top: 20%;
     border: solid 0.5px;
     border-color: #0060fa;
     padding: 0.5%;
   }
-
   .search_bar {
     width: 100%;
     margin-left: 0;
   }
-
-  .posts_section {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding-top: 2%;
-  }
-
-  .dated_section {
-    border-top: 2px solid #0060fa;
-  }
-
-  .border_date {
-    width:140px;
-    margin-top:-14px;
-    margin-left:52px;
-    background: white;
-  }
-  .main_center {
-    display: flex;
-    flex-direction: column;
-    margin-left: 15%;
-    margin-right: 25%;
-    width: 60%;
-  }
-
-  .margin_set {
-    margin-bottom: 1%;
-  }
-
-  .single_card {
-    min-width: 120pt;
-    min-height: 144pt;
-    aspect-ratio: 5/6;
-    max-width: 120pt;
-    max-height: 144pt;
-    margin: 1%;
-  }
-
-  .card {
-    width: 120pt;
-    height: 144pt;
-    aspect-ratio: 5/6;
-    max-width: 120pt;
-    max-height: 144pt;
-  }
-
   .logo_options
   {
     width: 33%;
   }
 </style>
+
