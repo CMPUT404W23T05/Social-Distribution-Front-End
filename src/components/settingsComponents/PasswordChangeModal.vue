@@ -33,7 +33,7 @@
 </div>
 <!-- Button to open the password modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#passwordModal">
-  Change Password
+  <i class="bi bi-lock-fill"></i> Change password
 </button>
 </template>
 
