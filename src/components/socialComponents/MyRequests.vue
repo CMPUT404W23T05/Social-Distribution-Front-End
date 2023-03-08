@@ -6,8 +6,8 @@
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
       <span>
-        <button id="accept-button">Accept</button>
-        <button id="decline-button">Decline</button>
+        <button id="accept-button" class="btn btn-success">Accept</button>
+        <button id="decline-button" class="btn btn-danger">Decline</button>
       </span>
     </li>
   </ul>
@@ -64,18 +64,6 @@ export default {
 
   .list-of-profiles p button{
     margin: 10px;
-  }
-
-  #accept-button{
-    background-color: green;
-    color:white;
-    margin:10px;
-  }
-
-  #decline-button{
-    background-color: red;
-    color:white;
-    margin:5px;
   }
 
   img {
