@@ -1,5 +1,4 @@
 <template>
-    <h1>Settings</h1>
     <SettingsProfile></SettingsProfile>
   </template>
 

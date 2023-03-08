@@ -1,6 +1,9 @@
 <template>
-  <div class="alert" :class="[alert.type]" role="alert" v-if="alert.msg">{{ alert.msg }}</div>
-  <h2>Profile</h2>
+  <div class="alert fade show alert-dismissible" :class="[alert.type]" role="alert" v-if="alert.msg">
+    {{ alert.msg }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+  <h1>Profile</h1>
+  <h2>Settings</h2>
   <div class="d-flex justify-content-center">
   <div class="d-flex">
     <div class="image-container">
