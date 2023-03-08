@@ -5,6 +5,8 @@ import BrowsePage from '../views/Browse.vue'
 import LogIn from '../views/Login.vue'
 import SignUp from '../views/SignUp.vue'
 import SocialView from '../views/SocialView.vue'
+import SettingsView from '../views/SettingsView.vue'
+
 // Routes go here
 export default [
   {
@@ -40,5 +42,10 @@ export default [
     path: '/social',
     name: 'SocialPage',
     component: SocialView
+  },
+  {
+    path: '/settings',
+    name: 'SettingsPage',
+    component: SettingsView
   }
 ]

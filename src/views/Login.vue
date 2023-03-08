@@ -69,7 +69,8 @@ export default {
         })
         .catch(error => {
           console.log(error)
-          const errorString = errorToString(error)
+          const formattedFieldNames = { username: 'Username', password: 'Password', non_field_errors: 'Error' }
+          const errorString = errorToString(error, formattedFieldNames)
           // alert(errorString)
           this.authError = errorString
         })
