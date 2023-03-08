@@ -2,21 +2,34 @@ import { shallowMount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
 import routes from '@/router/routes'
 import NavBar from '@/components/NavBar.vue'
+import { setActivePinia, createPinia } from 'pinia'
+import { useUserStore } from '@/stores/user.js'
 
 describe('NavBar.vue', () => {
   // Initialize such that tests will be able to access.
   let wrapper
-  let author
   let router
 
   beforeEach(() => {
-    author = {
+    setActivePinia(createPinia())
+    // TODO: update mock data to match new backend schema
+    const author = {
       id: 12345,
       home_host: 'this node',
-      display_name: 'Charmander',
-      profile_image: 'https://m.media-amazon.com/images/I/71TDVlm5zUL._AC_SY741_.jpg',
+      displayName: 'Charmander',
+      profileImage: 'https://m.media-amazon.com/images/I/71TDVlm5zUL._AC_SY741_.jpg',
       author_github: 'gittyuphorse'
     }
+    const user = {
+      auth_token: '12345',
+      author: author,
+      email: 'example@example.com',
+      id: 12345,
+      username: 'Charmander'
+    }
+    const userStore = useUserStore()
+    userStore.setUser(user)
+    localStorage.setItem('user', JSON.stringify(user))
     router = createRouter({
       history: createWebHistory(),
       inkActiveClass: 'active',
@@ -25,19 +38,17 @@ describe('NavBar.vue', () => {
   })
 
   it('renders the author name', () => {
-    wrapper = shallowMount(NavBar, {
-      props: { author }
-    })
+    wrapper = shallowMount(NavBar)
+    const author = useUserStore().user.author
     const username = wrapper.get('#username')
-    expect(username.text()).toMatch('@' + author.display_name)
+    expect(username.text()).toMatch('@' + author.displayName)
   })
 
   it('renders the author profile picture with correct alt-text', () => {
-    wrapper = shallowMount(NavBar, {
-      props: { author }
-    })
+    wrapper = shallowMount(NavBar)
+    const author = useUserStore().user.author
     const profileImage = wrapper.get('img')
-    expect(profileImage.attributes().src).toEqual('https://m.media-amazon.com/images/I/71TDVlm5zUL._AC_SY741_.jpg')
+    expect(profileImage.attributes().src).toEqual(author.profileImage)
     expect(profileImage.attributes().alt).toContain('profile picture')
   })
 

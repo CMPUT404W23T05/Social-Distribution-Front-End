@@ -1,6 +1,6 @@
 <template>
     <div class="card" @click="goTo()">
-
+ 
         <img :src="author.profileImage"  id='profile-picture' alt="profile picture">
 
         <div class="card-header" id = "title">
@@ -62,6 +62,9 @@ export default {
         font-size: larger;
         text-align: left;
         text-transform: capitalize;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .card {
@@ -73,5 +76,8 @@ export default {
     .card-body {
         height: 140pt;
         text-align: left;
+        text-transform: capitalize;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>
