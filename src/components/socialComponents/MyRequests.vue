@@ -7,8 +7,8 @@
       <img :src="author.actor.profileImage">
       <p>{{displayUsername(author.actor.displayName)}}</p>
       <span>
-        <button id="accept-button" class="btn btn-success">Accept</button>
-        <button id="decline-button" class="btn btn-danger">Decline</button>
+        <button @click="updateRequest('accept', getIdFromUrl(author.actor.id))" id="accept-button" class="btn btn-success">Accept</button>
+        <button @click="updateRequest('decline', getIdFromUrl(author.actor.id))" id="decline-button" class="btn btn-danger">Decline</button>
       </span>
       </template>
     </li>
