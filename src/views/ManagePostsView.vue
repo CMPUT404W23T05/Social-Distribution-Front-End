@@ -10,11 +10,11 @@
         v-for="(post, index) in posts"
         :key="post.id"
         :post="post"
-        :author="tempAuthor"
+        :author="author"
       >
         <template #footer>
           <button type="button" class="edit-button btn" @click="manage(post, index)">
-            ✐
+            Edit ✐
           </button>
           <span class="divider"></span>
           <button
@@ -22,7 +22,7 @@
             class="delete-button btn"
             @click="displayPrompt(post)"
           >
-          🔨
+          Delete 🔨
           </button>
         </template>
       </Card>
@@ -36,7 +36,7 @@
 
     <ManagePost
       v-if="showManage"
-      :author="tempAuthor"
+      :author="author"
       :existingPost="selectedPost"
       @end-manage="refreshPosts"
     ></ManagePost>
@@ -47,6 +47,7 @@
 import ManagePost from '@/components/ManagePost.vue'
 import Card from '@/components/RevisedCard.vue'
 import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 
 export default {
@@ -56,21 +57,13 @@ export default {
       selectedPost: null,
       showManage: false,
       showPrompt: false,
-      tempAuthor: {
-        type: 'author',
-        id: '580131fa-0d8f-4d6f-acfc-b6356387e422',
-        displayName: 'Test Author 1',
-        profileImage: 'https://i.imgur.com/k7XVwpB.jpeg',
-        url: 'http://someurlhere.ca/',
-        github: 'http://mygithub.com',
-        host: 'http://127.0.0.1:8080/'
-      }
+      author: null
     }
   },
   methods: {
     deletePost () {
       axios
-        .delete(`/authors/${this.tempAuthor.id}/posts/${this.selectedPost.id}`)
+        .delete(`/authors/${this.author.id}/posts/${this.selectedPost.id}`)
         .then((res) => {
           console.log(res.data)
           this.posts = this.posts.filter((post) => post !== this.selectedPost)
@@ -82,9 +75,9 @@ export default {
       this.closePrompt()
     },
 
-    async getPosts () {
+    getPosts () {
       axios
-        .get(`/authors/${this.tempAuthor.id}/posts/`)
+        .get(`/authors/${this.author.id}/posts/`)
         .then((res) => {
           this.posts = res.data
           console.log(res)
@@ -119,9 +112,16 @@ export default {
 
     closePrompt () {
       this.showPrompt = false
+    },
+
+    getAuthorFromStore () {
+      const userStore = useUserStore()
+      userStore.initializeStore()
+      this.author = userStore.user.author
     }
   },
   mounted () {
+    this.getAuthorFromStore()
     this.getPosts()
   },
   components: { ManagePost, Card, PopUpPrompt }
