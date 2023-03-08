@@ -18,7 +18,7 @@
       <img
         class="image-content"
         v-if="post.image"
-        :src="post.image"
+        :src="imageURL"
         :alt="post.description"
       />
     </div>
@@ -51,6 +51,14 @@ export default {
   data () {
     return {
       hovered: false
+    }
+  },
+  computed: {
+    markdownEnabled () {
+      return this.post.contentType.includes('text/markdown')
+    },
+    imageURL () {
+      return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
     }
   }
 }

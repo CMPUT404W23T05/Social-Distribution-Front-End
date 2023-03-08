@@ -13,7 +13,7 @@
                 <router-link :to="{ name: 'homepage' }" class = "nav-link">Home</router-link>
                 <ul class="dropdown-menu">
                     <router-link to="/home/inbox" class = "dropdown-item"> Inbox </router-link>
-                    <router-link to="/home/managePosts" class = "dropdown-item"> Manage Posts </router-link>
+                    <router-link :to="{ name: 'manageposts'}" class = "dropdown-item"> Manage Posts </router-link>
                 </ul>
             </li>
             <li class = 'nav-item'>
@@ -111,58 +111,59 @@ export default {
 </script>
 
 <style scoped>
-    .sticky_navbar {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }
+.sticky_navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
 
-    #profile-picture {
-        height: 32pt;
-        aspect-ratio: 1 / 1;
-        object-fit: cover;
-        border-radius: 50%;
-    }
+#profile-picture {
+    height: 32pt;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
-    .user-info {
-        margin: 0 3pt;
-    }
 
-    /* Whether link is active home/etc/etc/ or not */
-    .active {
-        background-color: #4998F5;
-    }
+.user-info {
+  margin: 0 3pt;
+}
 
-    /* When a dropdown item is active */
-    .dropdown-item:active {
-        background-color: #4998F5;
-    }
+/* Whether link is active home/etc/etc/ or not */
+.active {
+  background-color: #4998f5;
+}
 
-    .nav-item {
-        flex: 1;
-        margin: 0;
-        padding: 0;
-    }
+/* When a dropdown item is active */
+.dropdown-item:active {
+  background-color: #4998f5;
+}
 
-    .dropdown:hover .dropdown-menu {
-    display: block;
-    margin: 0 0;
-    padding: 0;
-    text-align: center;
-    justify-self: center;
-    width: 100%;
-    min-width: none;
-    border-radius: 0;
-    }
+.nav-item {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
 
-    .navbar-nav {
-        flex: 0.5;
-        padding: 0;
-    }
+.dropdown:hover .dropdown-menu {
+  display: block;
+  margin: 0 0;
+  padding: 0;
+  text-align: center;
+  justify-self: center;
+  width: 100%;
+  min-width: none;
+  border-radius: 0;
+}
 
-    .navbar {
-        padding: 0;
-    }
+.navbar-nav {
+  flex: 0.5;
+  padding: 0;
+}
+
+.navbar {
+  padding: 0;
+}
 
     .navbar .navbar-nav {
         vertical-align: top;

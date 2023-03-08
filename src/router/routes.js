@@ -1,4 +1,5 @@
 // Components to render the views go here
+import ManagePost from '@/views/ManagePostsView.vue'
 import Home from '../views/Home.vue'
 import BrowsePage from '../views/Browse.vue'
 import LogIn from '../views/Login.vue'
@@ -29,6 +30,11 @@ export default [
     path: '/signup',
     name: 'signup',
     component: SignUp
+  },
+  {
+    path: '/home/manage-posts',
+    name: 'manageposts',
+    component: ManagePost
   },
   {
     path: '/social',
