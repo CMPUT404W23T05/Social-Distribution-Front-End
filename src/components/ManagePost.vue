@@ -86,7 +86,7 @@ export default {
         image: null,
         count: 0,
         unlisted: false,
-        visibility: 'PRIVATE',
+        visibility: 'PUBLIC', //Public by default for now
         author: this.author,
         // Generate when post is submitted
         comments: null, // url from server
