@@ -4,8 +4,8 @@
     @mouseover="hovered = true"
     @mouseleave="hovered = false"
   >
-    <div class="post_title">
-      <h3 class="title_text">{{ post.title }}</h3>
+    <div class="post-title">
+      <h3 class="title-text">{{ post.title }}</h3>
     </div>
     <div class="content-container">
       <vue-markdown
@@ -52,19 +52,19 @@ export default {
     return {
       hovered: false
     }
-  },
   }
+}
 </script>
 
 <style scoped>
-  .post_title {
+  .post-title {
     font-size: 16pt;
     white-space: nowrap;
     overflow: hidden;
     color: white;
     background-color: rgb(57, 57, 57);
   }
-  .title_text {
+  .title-text {
     padding: 1% 1% 1% 1%;
     font-size: large;
   }
@@ -105,13 +105,13 @@ export default {
     width: 100%;
     background-color: rgba(0, 0, 0, 0.25);
     margin-left: 0;
-    justify-content: space-evenly;
+    align-items: center;
   }
 
   .profile-image {
-    width: 100%;
+    height: 100%;
     aspect-ratio: 1/1;
-    border-radius: 50%;
+    border-radius: 50pt;
     object-fit: scale-down;
   }
 
@@ -120,7 +120,7 @@ export default {
     min-width: 200pt;
     max-width: 300pt;
     margin: 5pt;
-    padding: 5pt 0;
+    padding: 2pt 0;
     width: 120pt;
     height: 144pt;
     aspect-ratio: 5/6;
