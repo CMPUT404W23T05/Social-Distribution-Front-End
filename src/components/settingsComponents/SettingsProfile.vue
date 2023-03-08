@@ -1,4 +1,5 @@
 <template>
+  <div class="alert" :class="[alert.type]" role="alert" v-if="alert.msg">{{ alert.msg }}</div>
   <h2>Profile</h2>
   <div class="d-flex justify-content-center">
   <div class="d-flex">
@@ -6,19 +7,31 @@
   <img class = "settings-profile-image rounded-circle" :src="getProfileImage" alt = 'User profile picture'/>
   <div class="edit-overlay rounded-circle" role="button"><i class="bi bi-pencil-fill overlay-icon"></i></div>
 </div>
-  <div class="d-flex flex-column p-4 justify-content-left justify-text-left">
+  <div class="d-flex flex-column p-4 text-start">
   <span class="display-name">Display Name: @{{ getDisplayName }}</span>
   <span class="username">Username: {{ getUsername }}</span>
+  <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
 </div>
+
 </div>
+
 </div>
+
 </template>
 <script>
 import { useUserStore } from '@/stores/user'
+import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
 export default {
+  name: 'SettingsProfile',
+  components: {
+    PasswordChangeModal
+  },
   data () {
     return {
-      greeting: 'Hello World!'
+      alert: {
+        msg: '',
+        type: ''
+      }
     }
   },
   methods: {
@@ -32,6 +45,11 @@ export default {
         console.log('could not retrieve author property')
         return null
       }
+    },
+    showAlert (msg, type) {
+      this.alert.msg = msg
+      this.alert.type = 'alert-' + type
+      console.log(this.alert)
     }
   },
   computed: {
