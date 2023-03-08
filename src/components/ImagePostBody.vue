@@ -19,7 +19,7 @@ import axios from 'axios'
 
 export default {
   props: ['image'],
-  emits: ['image-uploaded'],
+  emits: ['image-uploaded', 'image-clear'],
 
   data () {
     return {
@@ -84,6 +84,7 @@ export default {
       reader.readAsDataURL(blob)
     },
     clearImage () {
+      this.$emit('imageClear')
       this.imageSrc = null
     },
     emitImageStatus () {

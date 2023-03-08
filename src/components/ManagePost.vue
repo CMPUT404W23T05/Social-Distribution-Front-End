@@ -45,6 +45,7 @@
         class="image-upload"
         :image="imageDataURL"
         @image-uploaded="(image) => setImage(image)"
+        @image-clear="setImage(null)"
       />
       <input
         v-model="post.description"
@@ -117,7 +118,7 @@ export default {
       return this.post.contentType.toString()
     },
     imageDataURL () {
-      if (this.existingPost && this.existingPost.image) {
+      if (this.existingPost && this.post.image) {
         const imageMime = this.post.contentType.find(type => type.includes('image'))
         // Template literals give undefined in child component
         return String.raw`data:${imageMime},${this.post.image}`
@@ -134,9 +135,13 @@ export default {
     },
 
     setImage (image) {
-      this.post.image = image.raw64
       this.sanitizeContentTypes('image')
-      this.appendMime(image.mime)
+      if (image) {
+        this.post.image = image.raw64
+        this.appendMime(image.mime)
+      } else {
+        this.post.image = null
+      }
     },
 
     appendMime (mime) {
