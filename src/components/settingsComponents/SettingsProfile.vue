@@ -12,7 +12,7 @@
 </div>
   <div class="d-flex flex-column p-4 text-start">
   <div><span class="display-name">Display Name: @{{ getDisplayName }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
-  <span class="username">Username: {{ getUsername }}</span>
+<div><span class="username">Username: {{ getUsername }}</span>&nbsp;<UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div>
   <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
 </div>
 
@@ -24,11 +24,13 @@
 <script>
 import { useUserStore } from '@/stores/user'
 import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
+import UsernameChangeModal from './UsernameChangeModal.vue'
 import axios from 'axios'
 export default {
   name: 'SettingsProfile',
   components: {
-    PasswordChangeModal
+    PasswordChangeModal,
+    UsernameChangeModal
   },
   data () {
     return {
