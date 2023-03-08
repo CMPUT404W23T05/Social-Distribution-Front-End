@@ -2,7 +2,7 @@
   <h1>Manage your posts here</h1>
   <div class="manage-posts">
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn" @click="manage()">
+    <button type="button" class="add-button btn btn-primary" @click="manage()">
       Make A New Post
     </button>
     <div class="card-list">
