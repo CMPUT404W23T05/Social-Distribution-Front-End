@@ -8,7 +8,7 @@
   <div class="d-flex">
     <div class="image-container">
   <img class = "settings-profile-image rounded-circle" :src="getProfileImage" alt = 'User profile picture'/>
-  <div class="edit-overlay rounded-circle" role="button"><i class="bi bi-pencil-fill overlay-icon"></i></div>
+  <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div>
 </div>
   <div class="d-flex flex-column p-4 text-start">
   <span class="display-name">Display Name: @{{ getDisplayName }}</span>
@@ -24,6 +24,7 @@
 <script>
 import { useUserStore } from '@/stores/user'
 import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
+import axios from 'axios'
 export default {
   name: 'SettingsProfile',
   components: {
@@ -53,10 +54,38 @@ export default {
       this.alert.msg = msg
       this.alert.type = 'alert-' + type
       console.log(this.alert)
+    },
+    promptImageURL () {
+      // simple javascript prompt to get new image URL, replace with Vue component later
+      const url = prompt('Enter a new image URL')
+      if (url) {
+        this.updateAuthorField('profileImage', url)
+      }
+    },
+    updateAuthorField (type, newValue) {
+      // update author field with newValue in backend and local storage
+      const readableFieldNames = {
+        displayName: 'Display name',
+        profileImage: 'Profile image'
+      }
+      const userStore = useUserStore()
+      userStore.initializeStore()
+      const user = userStore.user
+      const author = userStore.user.author
+      author[type] = newValue
+      axios.post('/authors/' + author.id + '/', author)
+        .then((response) => {
+          console.log(response)
+          this.showAlert(readableFieldNames[type] + ' sucessfully updated!', 'success')
+          localStorage.setItem('user', JSON.stringify(user)) // update local storage
+        })
+        .catch((error) => {
+          console.log(error)
+          this.showAlert(readableFieldNames[type] + ' update failed!', 'danger')
+        })
     }
   },
   computed: {
-
     getDisplayName () { // get display name from user store
       return this.getUser().author.displayName
     },
@@ -68,6 +97,7 @@ export default {
     }
 
   }
+
 }
 </script>
 
