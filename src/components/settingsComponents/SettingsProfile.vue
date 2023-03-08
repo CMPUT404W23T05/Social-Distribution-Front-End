@@ -11,7 +11,7 @@
   <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div>
 </div>
   <div class="d-flex flex-column p-4 text-start">
-  <span class="display-name">Display Name: @{{ getDisplayName }}</span>
+  <div><span class="display-name">Display Name: @{{ getDisplayName }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
   <span class="username">Username: {{ getUsername }}</span>
   <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
 </div>
@@ -54,6 +54,13 @@ export default {
       this.alert.msg = msg
       this.alert.type = 'alert-' + type
       console.log(this.alert)
+    },
+    promptNewDisplayName () {
+      // simple javascript prompt to get new display name, replace with Vue component later
+      const name = prompt('Enter a new display name')
+      if (name) {
+        this.updateAuthorField('displayName', name)
+      }
     },
     promptImageURL () {
       // simple javascript prompt to get new image URL, replace with Vue component later
