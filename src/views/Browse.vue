@@ -121,7 +121,7 @@ export default {
   methods: {
     getPosts () {
       axios
-        .get(`/authors/${this.author.id}/posts/`)
+        .get('/posts/')
         .then((res) => {
           this.posts = res.data
         })
