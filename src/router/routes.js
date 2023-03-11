@@ -6,6 +6,7 @@ import LogIn from '../views/Login.vue'
 import SignUp from '../views/SignUp.vue'
 import SocialView from '../views/SocialView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import SinglePostView from '../views/SinglePostView.vue'
 
 // Routes go here
 export default [
@@ -47,5 +48,11 @@ export default [
     path: '/settings',
     name: 'SettingsPage',
     component: SettingsView
+  },
+  {
+    // authorID; postID
+    path: '/author/:aid/posts/:pid',
+    name: 'Post',
+    component: SinglePostView
   }
 ]
