@@ -124,7 +124,6 @@ export default {
     border-radius: 50%;
 }
 
-
 .user-info {
   margin: 0 3pt;
 }
@@ -163,18 +162,19 @@ export default {
 
 .navbar {
   padding: 0;
+  margin-bottom: 15pt;
 }
 
-    .navbar .navbar-nav {
-        vertical-align: top;
-        justify-content: center;
-        margin: 0 auto;
-        padding: 0;
-    }
-    span {
-        color: #fff;
-        margin: 5pt;
-        vertical-align: middle;
-    }
+.navbar .navbar-nav {
+  vertical-align: top;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
+span {
+  color: #fff;
+  margin: 5pt;
+  vertical-align: middle;
+}
 
 </style>

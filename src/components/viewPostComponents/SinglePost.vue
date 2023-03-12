@@ -1,34 +1,34 @@
 <template>
   <!-- A read-only version of a single post -->
-  <h2 id = post-title>{post}</h2>
+  <h1 class = post-title>{{post.title}}</h1>
 
   <img v-if="post.image" :src="post.image"/>
 
   <!-- Bootstrap icons to indicate post type -->
   <span class="post-icons">
-    <i v-for="content in post.contentType" :key="content" class="bi" :class=getIcon(content)></i>
+    <i v-for="content in post.contentType.split(',')" :key="content" class="bi" :class=getIcon(content)></i>
   </span>
 
   <!-- Text content (if any) -->
-  <p v-if="post.content && markdown" id="post-content-plain" class="text"></p>
-  <VueMarkdown v-else-if="post.content && !markdown" id="post-content-markdown" :src="post.content" class="text"></VueMarkdown>
+  <p v-if="post.content && !markdown" id="post-content-plain" class="text">{{post.content}}</p>
+  <VueMarkdown v-else-if="post.content && markdown" id="post-content-markdown" :source="post.content" class="text"></VueMarkdown>
 
-  <p v-if="post.description" class=subtext></p>
+  <p v-if="post.description" class=subtext>{{post.description}}</p>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown-render'
 
 export default {
-  props: {
-    post: Object
-  },
   components: {
     VueMarkdown
   },
+  props: {
+    post: Object
+  },
   computed: {
     markdown () {
-      return this.post.contentType.includes('text/markdown')
+      return this.post.contentType.split(',').includes('text/markdown')
     }
   },
   methods: {

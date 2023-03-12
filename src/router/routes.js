@@ -51,8 +51,8 @@ export default [
   },
   {
     // authorID; postID
-    path: '/author/:aid/posts/:pid',
-    name: 'Post',
+    path: '/authors/:aid/posts/:pid',
+    name: 'postpage',
     component: SinglePostView
   }
 ]
