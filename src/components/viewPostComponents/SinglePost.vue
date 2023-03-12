@@ -1,5 +1,4 @@
 <template>
-  <!-- A read-only version of a single post -->
   <h1 class = post-title>{{post.title}}</h1>
 
   <img v-if="post.image" :src="post.image"/>
@@ -34,17 +33,20 @@ export default {
   methods: {
     getIcon (contentType) {
       // Returns additional bs class for an icon w/ regEx
-      switch (contentType) {
-        case /^text\/markdown$/: return ('bi-markdown')
-        case /^text\/plain$/: return ('bi-blockquote-left')
-        case /^image/: return ('bi-image')
+      switch (true) {
+        case /^text\/markdown$/.test(contentType): return ('bi-markdown')
+        case /^text\/plain$/.test(contentType): return ('bi-blockquote-left')
+        case /^image/.test(contentType): return ('bi-image')
       }
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 /* Styles go here :) */
-
+   p > img {
+    display: block;
+    text-align: center;
+  }
 </style>
