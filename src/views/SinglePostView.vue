@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     loading () {
-      return (!this.authorData && !this.postData)
+      return (!this.authorData || !this.postData)
     }
   },
   data () {
