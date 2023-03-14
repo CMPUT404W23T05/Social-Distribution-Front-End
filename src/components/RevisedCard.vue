@@ -4,23 +4,25 @@
     @mouseover="hovered = true"
     @mouseleave="hovered = false"
   >
-    <div class="post-title">
-      <h3 class="title-text">{{ post.title }}</h3>
-    </div>
-    <div class="content-container">
-      <vue-markdown
-        v-if="markdownEnabled"
-        class="text-content"
-        :source="post.content"
-      ></vue-markdown>
-      <!-- Post is plain text -->
-      <p v-else-if="post.content" class="text-content">{{ post.content }}</p>
-      <img
-        class="image-content"
-        v-if="post.image"
-        :src="imageURL"
-        :alt="post.description"
-      />
+    <div class = "redirect-on-click" @click="goTo">
+      <div class="post-title">
+        <h3 class="title-text">{{ post.title }}</h3>
+      </div>
+      <div class="content-container">
+        <vue-markdown
+          v-if="markdownEnabled"
+          class="text-content"
+          :source="post.content"
+        ></vue-markdown>
+        <!-- Post is plain text -->
+        <p v-else-if="post.content" class="text-content">{{ post.content }}</p>
+        <img
+          class="image-content"
+          v-if="post.image"
+          :src="imageURL"
+          :alt="post.description"
+        />
+      </div>
     </div>
     <div :class="{ open: hovered }" class="footer card-footer text-muted">
       <slot name="footer">
@@ -59,6 +61,11 @@ export default {
     },
     imageURL () {
       return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
+    }
+  },
+  methods: {
+    goTo () {
+      this.$router.push({ name: 'postpage', params: { aid: this.author.id, pid: this.post.id } })
     }
   }
 }
