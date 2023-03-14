@@ -11,21 +11,34 @@
             <span v-else-if="matchSession(comment)">Me<i class="bi bi-smile-fill"></i></span>
         </template>
     </UserComment>
+
+    <!-- Bottom of the list when in loading/completed state-->
+    <div v-if="loading" class="spinner-grow text-dark" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
     <hr v-if="exhausted" id="end-of-comments">
     <small v-if="exhausted">There are no more comments. <a href="activateAddComment!">But you can add one</a></small>
 </template>
 
 <script>
-import UserComment from '@/components/UserComment.vue'
+import UserComment from '@/components/commentComponents/UserComment.vue'
 import axios from 'axios'
 import useUserStore from '@/stores/user'
 
 export default {
   props: { post: Object },
   components: { UserComment },
+  mounted () {
+    window.addEventListener('scroll', this.handleScroll)
+    this.appendPosts()
+  },
+  unmounted () {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
   data () {
     return {
       comments: [],
+      loading: false, // Used in tandem with loading more posts
       exhausted: false, // No more posts to load from server (Stop infinite scroll)
       currentUser: useUserStore().initializeStore().user.author // TODO: Consolidate later
     }
@@ -43,12 +56,14 @@ export default {
         .then(res => {
           if (res.data.length === 0) {
             this.exhausted = true
+            this.loading = false
           }
           this.loadedComments.push(res.data)
         })
         .catch(err => {
           console.log(err)
         })
+      this.loading = true
     },
     handleScroll (event) {
       const list = this.$refs.infScrollCommentList
