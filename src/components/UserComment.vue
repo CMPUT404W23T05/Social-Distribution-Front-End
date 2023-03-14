@@ -1,6 +1,7 @@
 <template>
  <div class="comment-body" :class="{decoration: flairDecorate}">
-    <p>{{ comment.comment }}</p>
+    <p v-if="markdown">{{ comment.comment }}</p>
+    <VueMarkdown v-else :source="comment.content"></VueMarkdown>
     <div class="commenter">
         <span>{{ displayName }}</span>
         <!-- OP, same as current session user, etc. -->
@@ -11,10 +12,12 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown-render'
 import moment from 'moment'
 
 export default {
   props: { comment: Object },
+  components: { VueMarkdown },
   computed: {
     dateFormatted () {
       const commentDate = moment(this.comment.published).format('YYYY/MM/DD')
@@ -30,6 +33,9 @@ export default {
     flairDecorate () {
       // Special behaviour when flair is present
       return !!this.$slots.flair
+    },
+    markdown () {
+      return /markdown$/.test(this.comment.contentType)
     }
   }
 }
