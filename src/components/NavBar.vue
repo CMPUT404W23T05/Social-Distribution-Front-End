@@ -54,6 +54,8 @@
 import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
+import { mapStores } from 'pinia'
+
 export default {
   // Author json object
   methods: {
@@ -61,12 +63,12 @@ export default {
       // post to remove token from server
       axios.post('token/logout').then(response => {
         console.log(response)
-        const token = useTokenStore()
+        const token = this.tokenStore
         token.removeToken() // remove token from store
         localStorage.removeItem('token') // remove token from local
         // remove user from local storage and store
         localStorage.removeItem('user')
-        useUserStore().removeUser()
+        this.userStore.removeUser()
         this.$router.push('/login') // go to login page
         // reset axios header
         axios.defaults.headers.common.Authorization = ''
@@ -76,6 +78,7 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useTokenStore, useUserStore),
     getDisplayName () { // get display name from user store
       const userStore = useUserStore()
       userStore.initializeStore()
@@ -123,7 +126,6 @@ export default {
     object-fit: cover;
     border-radius: 50%;
 }
-
 
 .user-info {
   margin: 0 3pt;

@@ -77,16 +77,15 @@ export default {
         displayName: 'Display name',
         profileImage: 'Profile image'
       }
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
-      const author = userStore.user.author
+      this.userStore.initializeStore()
+      const user = this.userStore.user
+      const author = user.author
       author[type] = newValue
       axios.post('/authors/' + author.id + '/', author)
         .then((response) => {
           console.log(response)
           this.showAlert(readableFieldNames[type] + ' sucessfully updated!', 'success')
-          localStorage.setItem('user', JSON.stringify(user)) // update local storage
+          this.userStore.setUser(user) // update user store and local storage
         })
         .catch((error) => {
           console.log(error)
@@ -95,6 +94,7 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useUserStore),
     getDisplayName () { // get display name from user store
       return this.getUser().author.displayName
     },

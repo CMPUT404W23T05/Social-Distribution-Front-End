@@ -75,6 +75,7 @@
 import Post from '../components/RevisedCard.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 const moment = require('moment')
 
 export default {
@@ -91,6 +92,7 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useUserStore),
     postSections () {
       const sections = []
       const groupedPosts = this.posts.reduce((acc, post) => {
@@ -133,7 +135,7 @@ export default {
         })
     },
     getAuthorFromStore () {
-      const userStore = useUserStore()
+      const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
     }
