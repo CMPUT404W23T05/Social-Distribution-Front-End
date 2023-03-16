@@ -63,7 +63,6 @@ export default {
   beforeMount () {
     // this.getProfilePicture()
     this.userStore.initializeStore() // initialize user store
-    console.log(this.userStore.user)
   },
   methods: {
     logout () {
