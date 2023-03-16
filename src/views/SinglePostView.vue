@@ -8,6 +8,7 @@
         <section class="author-info">
           <img :src="authorData.profileImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
+          <!-- TODO: Do NOT display follow-status if the post author matches session author -->
           <span class="follow-status">
             <!-- Will always encourage person to follow through colour contrast -->
             <small :class="{activated: isFollowing}"> {{ isFollowing ? "Following" : "Not Following" }} </small>

@@ -6,14 +6,15 @@
 
     <!-- Bootstrap icons to indicate post type -->
     <div class="supplementary-info">
+      <details v-if="post.description" class="post-description" :open="descIsHovered">
+        <!-- <summary @mouseenter="descIsHovered=true" @mouseleave="descIsHovered=false" @click.prevent><i class="bi bi-info-circle"></i></summary> -->
+        <summary data-toggle="tooltip" data-placement="left" :title="post.description" @click.prevent><i class="bi bi-info-circle"></i></summary>
+        <small>{{post.description}}</small>
+      </details>
+
       <span class="post-icons">
         <i v-for="content in post.contentType.split(',')" :key="content" class="bi" :class=getIcon(content)></i>
       </span>
-
-      <details v-if="post.description" class="post-description" :open="descIsHovered">
-        <summary @mouseenter="descIsHovered=true" @mouseleave="descIsHovered=false" @click.prevent><i class="bi bi-info-circle"></i></summary>
-        <small>{{post.description}}</small>
-      </details>
     </div>
 
     <section v-if="post.image" class="image-content">
@@ -90,26 +91,23 @@ export default {
 
   .supplementary-info {
     display: flex;
+    justify-content: space-between;
+    font-size: 1.4rem;
+  }
+  .post-icons > i {
+    margin: 0 0.2em;
   }
 
-  .post-icons {
-    justify-self: flex-start;
-  }
-
-  .post-description {
-    justify-self: flex-end;
-  }
-
-  .post-description {
-    justify-self: flex-end;
+  details > small {
+    display: inline-block;
+    text-align: left;
+    position: absolute;
   }
 
   img {
     display: block;
     margin: 0 auto;
     object-fit: contain;
-    max-width: 90%;
-    min-width: 80%
   }
 
   /* Description */
