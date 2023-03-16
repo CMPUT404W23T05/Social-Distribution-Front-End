@@ -18,15 +18,17 @@
 
         <ul class="btn-list">
           <li class="btn-with-label">
-            <button id="like-post-button" type="button" class="btn btn-default"><i class="bi bi-heart-fill"></i></button>
+            <button id="like-post-button" type="button" class="btn btn-light" @click="toggleLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
+            <!-- TODO: Implement like functionality -->
             <!-- <label for="like-post-button">{{ PostProper.likes }}</label> Not sure how this works yet...-->
           </li>
           <li class="btn-with-label">
-            <button id="comment-button" type="button" class="btn btn-default"><i class="bi bi-chat-left-text-fill" :class="{liked: isFollowing}"></i></button>
+            <button id="comment-button" type="button" class="btn btn-light"><i class="bi bi-chat-left-text-fill"></i></button>
             <label for="comment-button">{{ postData.count }}</label>
           </li>
           <li>
-            <button type="button" class="btn btn-default"><i class="bi bi-link-45deg"></i></button>
+            <!-- TODO: Implement share functionality -->
+            <button type="button" class="btn btn-light"><i class="bi bi-share-fill"></i></button>
           </li>
         </ul>
       </aside>
@@ -50,16 +52,14 @@ export default {
   computed: {
     loading () {
       return (!this.authorData || !this.postData)
-    },
-    isFollowing () {
-      // return this.authorisfollowing
-      return false
     }
   },
   data () {
     return {
       postData: null,
-      authorData: null
+      authorData: null,
+      isFollowing: false,
+      isLiked: false
     }
   },
   methods: {
@@ -75,6 +75,12 @@ export default {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
+    },
+    toggleFollow () {
+      this.isFollowing = !this.isFollowing
+    },
+    toggleLike () {
+      this.isLiked = !this.isLiked
     }
   }
 }
@@ -121,7 +127,7 @@ export default {
   button {
     display: block;
     border-radius: 50%;
-    background-color: #d9d9d9;
+    background-color: #ebebeb;
     aspect-ratio: 1/1;
     width: 5em;
   }
@@ -147,7 +153,7 @@ export default {
 
   aside {
     position: fixed;
-    width: fit-content;
+    width: min(20%, fit-content);
   }
 
 </style>

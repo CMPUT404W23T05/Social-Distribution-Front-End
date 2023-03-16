@@ -18,7 +18,7 @@
     </div>
 
     <section v-if="post.image" class="image-content">
-      <img :src="imageSrc"/>
+      <img class="img-fluid" :src="imageSrc"/>
     </section>
 
     <!-- Text content (if any) -->
@@ -77,6 +77,7 @@ export default {
   /* Title */
   .post-title {
     font-size: 1.2rem;
+    font-weight: bold;
   }
   .text-content {
     font-size: 1rem;
@@ -94,6 +95,10 @@ export default {
     justify-content: space-between;
     font-size: 1.4rem;
   }
+  .image-content, .text-content {
+    min-height: 25rem;
+    background: #fcfafa;
+  }
   .post-icons > i {
     margin: 0 0.2em;
   }
@@ -108,6 +113,7 @@ export default {
     display: block;
     margin: 0 auto;
     object-fit: contain;
+    width: 70%;
   }
 
   /* Description */
@@ -131,11 +137,6 @@ export default {
     background: padding-box;
     padding: 0.4rem 0.75rem;
     margin-bottom: 0.5rem;
-  }
-
-  .image-content, .text-content {
-    min-height: 50vh;
-    background: #fafafa;
   }
 
 </style>
