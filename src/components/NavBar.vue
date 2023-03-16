@@ -3,8 +3,10 @@
         <!-- Pass a default image if none is provided -->
         <router-link to="/settings#profile" class = "user-info">
             <div>
-                <img id = "profile-picture" class = "circle" :src="getProfilePicture" alt = 'User profile picture'/>
-                <span id = username>@{{ getDisplayName }}</span>
+              <!-- Get profile picture from userStore - using any data variable breaks reactivity at the moment so this is the only way -->
+                <img id = "profile-picture" v-if="user" class = "circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture' />
+                <!-- Get username from userStore -->
+                <span id = 'display-name'  v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
             </div>
         </router-link>
 
@@ -54,10 +56,15 @@
 import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
-import { mapStores } from 'pinia'
-
+import { mapStores, mapState } from 'pinia'
 export default {
+  name: 'NavBar',
   // Author json object
+  beforeMount () {
+    // this.getProfilePicture()
+    this.userStore.initializeStore() // initialize user store
+    console.log(this.userStore.user)
+  },
   methods: {
     logout () {
       // post to remove token from server
@@ -68,34 +75,21 @@ export default {
         localStorage.removeItem('token') // remove token from local
         // remove user from local storage and store
         localStorage.removeItem('user')
-        this.userStore.removeUser()
+        useUserStore().removeUser()
         this.$router.push('/login') // go to login page
         // reset axios header
         axios.defaults.headers.common.Authorization = ''
       }).catch(error => {
         console.log(error)
       })
+    },
+    getAuthorPropertyIfDefined (prop) {
+      return this.userStore.user.author ? this.userStore.user.author[prop] : '' // return an author property only if author exists else return empty string
     }
   },
   computed: {
     ...mapStores(useTokenStore, useUserStore),
-    getDisplayName () { // get display name from user store
-      const user = this.userStore.getUser()
-      if (user.author) {
-        return user.author.displayName
-      } else {
-        console.log('No user found')
-        return '' // default name
-      }
-    },
-    getProfilePicture () { // get profile picture from user store
-      const user = this.userStore.getUser()
-      if (user.author) {
-        return user.author.profileImage
-      } else {
-        return 'http://i.imgur.com/k7XVwpB.jpeg' // default image
-      }
-    },
+    ...mapState(useUserStore, ['user']),
     alreadyLoggedIn () {
       const defined = typeof this.$route !== 'undefined' && this.$route !== null
       if (defined && 'hash' in this.$route) {

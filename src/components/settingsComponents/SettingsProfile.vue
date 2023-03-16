@@ -6,13 +6,18 @@
   <h2>Settings</h2>
   <div class="d-flex justify-content-center">
   <div class="d-flex">
+    <!-- Profile picture and the edit overlay that shows on hover-->
     <div class="image-container">
-  <img class = "settings-profile-image rounded-circle" :src="getProfileImage" alt = 'User profile picture'/>
+  <img class = "settings-profile-image rounded-circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture'/>
   <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div>
 </div>
+    <!-- Settings for names and password -->
   <div class="d-flex flex-column p-4 text-start">
-  <div><span class="display-name">Display Name: @{{ getDisplayName }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
-<div><span class="username">Username: {{ getUsername }}</span>&nbsp;<UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div>
+    <!-- Display name field with clickable edit icon -->
+  <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
+  <!-- Username field with clickable edit icon -->
+<div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;<UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div>
+<!-- Change password botton -->
   <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
 </div>
 
@@ -42,15 +47,6 @@ export default {
     }
   },
   methods: {
-    getUser () {
-      const user = this.userStore.getUser()
-      if (user) {
-        return user
-      } else {
-        console.log('could not retrieve author property')
-        return null
-      }
-    },
     showAlert (msg, type) {
       this.alert.msg = msg
       this.alert.type = 'alert-' + type
@@ -90,19 +86,13 @@ export default {
           console.log(error)
           this.showAlert(readableFieldNames[type] + ' update failed!', 'danger')
         })
+    },
+    getAuthorPropertyIfDefined (prop) {
+      return this.userStore.user.author ? this.userStore.user.author[prop] : '' // return an author property only if author exists else return empty string
     }
   },
   computed: {
-    ...mapStores(useUserStore),
-    getDisplayName () { // get display name from user store
-      return this.getUser().author.displayName
-    },
-    getProfileImage () { // get profile picture from user store
-      return this.getUser().author.profileImage
-    },
-    getUsername () {
-      return this.getUser().username
-    }
+    ...mapStores(useUserStore)
 
   }
 
