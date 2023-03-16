@@ -15,9 +15,15 @@ export const useUserStore = defineStore('user', {
     setUser (user) { // set the user in local storage when the user logs in
       console.assert(typeof user === 'object', 'user must be an object')
       this.user = user
+      localStorage.setItem('user', JSON.stringify(user))
     },
     removeUser () { // remove the user from local storage when the user logs out
       this.user = {}
+      localStorage.removeItem('user')
+    },
+    getUser () {
+      this.initializeStore()
+      return this.user
     }
   }
 })
