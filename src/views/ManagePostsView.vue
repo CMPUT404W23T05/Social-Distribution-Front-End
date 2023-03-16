@@ -48,6 +48,7 @@ import ManagePost from '@/components/ManagePost.vue'
 import Card from '@/components/RevisedCard.vue'
 import PopUpPrompt from '@/components/PopUpPrompt.vue'
 import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 import axios from 'axios'
 
 export default {
@@ -59,6 +60,9 @@ export default {
       showPrompt: false,
       author: null
     }
+  },
+  computed: {
+    ...mapStores(useUserStore)
   },
   methods: {
     deletePost () {
@@ -115,7 +119,7 @@ export default {
     },
 
     getAuthorFromStore () {
-      const userStore = useUserStore()
+      const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
     }
