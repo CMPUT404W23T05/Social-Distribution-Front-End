@@ -25,6 +25,7 @@
 import { useUserStore } from '@/stores/user'
 import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
 import UsernameChangeModal from './UsernameChangeModal.vue'
+import { mapStores } from 'pinia'
 import axios from 'axios'
 export default {
   name: 'SettingsProfile',
@@ -42,9 +43,7 @@ export default {
   },
   methods: {
     getUser () {
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
+      const user = this.userStore.getUser()
       if (user) {
         return user
       } else {

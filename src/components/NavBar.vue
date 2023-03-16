@@ -80,9 +80,7 @@ export default {
   computed: {
     ...mapStores(useTokenStore, useUserStore),
     getDisplayName () { // get display name from user store
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
+      const user = this.userStore.getUser()
       if (user.author) {
         return user.author.displayName
       } else {
@@ -91,9 +89,7 @@ export default {
       }
     },
     getProfilePicture () { // get profile picture from user store
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
+      const user = this.userStore.getUser()
       if (user.author) {
         return user.author.profileImage
       } else {
