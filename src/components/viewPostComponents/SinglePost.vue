@@ -1,18 +1,31 @@
 <template>
-  <h1 class = post-title>{{post.title}}</h1>
+  <div class="post-template container">
+    <section class="post-title">
+      <h1 class = post-title>{{post.title}}</h1>
+    </section>
 
-  <img v-if="post.image" :src="post.image"/>
+    <!-- Bootstrap icons to indicate post type -->
+    <div class="supplementary-info">
+      <span class="post-icons">
+        <i v-for="content in post.contentType.split(',')" :key="content" class="bi" :class=getIcon(content)></i>
+      </span>
 
-  <!-- Bootstrap icons to indicate post type -->
-  <span class="post-icons">
-    <i v-for="content in post.contentType.split(',')" :key="content" class="bi" :class=getIcon(content)></i>
-  </span>
+      <details v-if="post.description" class="post-description" :open="descIsHovered">
+        <summary @mouseenter="descIsHovered=true" @mouseleave="descIsHovered=false" @click.prevent><i class="bi bi-info-circle"></i></summary>
+        <small>{{post.description}}</small>
+      </details>
+    </div>
 
-  <!-- Text content (if any) -->
-  <p v-if="post.content && !markdown" id="post-content-plain" class="text">{{post.content}}</p>
-  <VueMarkdown v-else-if="post.content && markdown" id="post-content-markdown" :source="post.content" class="text"></VueMarkdown>
+    <section v-if="post.image" class="image-content">
+      <img :src="imageSrc"/>
+    </section>
 
-  <p v-if="post.description" class=subtext>{{post.description}}</p>
+    <!-- Text content (if any) -->
+    <section v-if="post.content" class="text-content">
+      <p v-if="post.content && !markdown" id="post-content-plain" class="text">{{post.content}}</p>
+      <VueMarkdown v-else-if="post.content && markdown" id="post-content-markdown" :source="post.content" class="text"></VueMarkdown>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -23,20 +36,29 @@ export default {
     VueMarkdown
   },
   props: {
-    post: Object
+    post: Object,
+    author: Object
   },
   computed: {
     markdown () {
       return this.post.contentType.split(',').includes('text/markdown')
+    },
+    imageSrc () {
+      return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
+    }
+  },
+  data () {
+    return {
+      descIsHovered: false
     }
   },
   methods: {
     getIcon (contentType) {
       // Returns additional bs class for an icon w/ regEx
       switch (true) {
-        case /^text\/markdown$/.test(contentType): return ('bi-markdown')
+        case /^text\/markdown$/.test(contentType): return ('bi-markdown-fill')
         case /^text\/plain$/.test(contentType): return ('bi-blockquote-left')
-        case /^image/.test(contentType): return ('bi-image')
+        case /^image/.test(contentType): return ('bi-image-fill')
       }
     }
   }
@@ -45,8 +67,77 @@ export default {
 
 <style scoped>
 /* Styles go here :) */
-   p > img {
-    display: block;
-    text-align: center;
+
+  .post-template {
+    margin-top: 3rem;
+    text-align: left;
   }
+
+  /* Title */
+  .post-title {
+    font-size: 1.2rem;
+  }
+  .text-content {
+    font-size: 1rem;
+    white-space: pre-wrap;
+  }
+
+  /* Post content type */
+  .post-icons {
+    gap: 5pt;
+    color: #a3a3a3;
+  }
+
+  .supplementary-info {
+    display: flex;
+  }
+
+  .post-icons {
+    justify-self: flex-start;
+  }
+
+  .post-description {
+    justify-self: flex-end;
+  }
+
+  .post-description {
+    justify-self: flex-end;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+    max-width: 90%;
+    min-width: 80%
+  }
+
+  /* Description */
+  summary {
+    list-style: none;
+    color: #736666;
+  }
+
+  summary:hover {
+    color: #4998F5;
+  }
+
+  small {
+    font-size: 0.75em;
+  }
+
+  section {
+    border-bottom: 0.5em solid transparent;
+    box-sizing: content-box;
+    box-shadow: 0 3px 0 -1px #4998F5;
+    background: padding-box;
+    padding: 0.4rem 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .image-content, .text-content {
+    min-height: 50vh;
+    background: #fafafa;
+  }
+
 </style>
