@@ -15,9 +15,10 @@
 
 <script>
 import { useTokenStore } from '@/stores/token'
-import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 export default {
   name: 'LogIn',
   data () {
@@ -56,9 +57,8 @@ export default {
             .then(response => {
               this.authError = '' // clear error message
               const user = response.data
-              const store = useUserStore()
+              const store = this.userStore
               store.setUser(user)
-              localStorage.setItem('user', JSON.stringify(user))
             })
             .catch(error => {
               console.log(error)
@@ -76,6 +76,9 @@ export default {
         })
     }
 
+  },
+  computed: {
+    ...mapStores(useTokenStore, useUserStore)
   }
 }
 

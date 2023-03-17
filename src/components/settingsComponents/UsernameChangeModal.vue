@@ -35,6 +35,7 @@
 import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
 import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 export default {
   name: 'UsernameChangeModal',
   emits: ['alert'],
@@ -84,12 +85,15 @@ export default {
       this.$emit('alert', 'Username changed successfully. Your username is now "' + newName + '".', 'success')
     },
     updateLocalUsername (newUsername) {
-      const userStore = useUserStore()
+      const userStore = this.userStore
       userStore.initializeStore()
       const user = userStore.user
       user.username = newUsername
       localStorage.setItem('user', JSON.stringify(userStore.user))
     }
+  },
+  computed: {
+    ...mapStores(useUserStore)
   }
 }
 
