@@ -1,10 +1,10 @@
 <template>
-    <div class="d-flex flex-column flex-shrink-0 p-3">
+    <div class="d-flex flex-column flex-shrink-0" id="single-post-container">
       <!-- Components: Post, Comments list, profile picture -->
       <PostProper v-if="!loading" :post="postData" :author="authorData" class="col-9"></PostProper>
 
       <!--Left sidebar w/ features and author stuff-->
-      <aside v-if="!loading" id="post-left-bar">
+      <aside v-if="!loading" class="post-left-bar">
         <section class="author-info">
           <img :src="authorData.profileImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
@@ -34,8 +34,8 @@
       </aside>
 
       <!-- Right comment aside -->
-      <aside v-if="!loading">
-        <div class="right-aside-tab"> <i class="bi bi-craret-left-fill"></i></div>
+      <aside v-if="!loading" class="post-right-bar">
+        <div class="right-aside-tab"> <i class="right-aside-tab-icon bi bi-caret-left-fill"></i></div>
         <CommentList :post="postData"></CommentList>
       </aside>
 
@@ -95,6 +95,11 @@ export default {
 
 <style scoped>
 
+  #single-post-container {
+    padding: 0;
+    margin: 0;
+  }
+
   .liked {
     color: #FF0000;
   }
@@ -102,6 +107,15 @@ export default {
   .activated {
     color: #4998F5;
     font-weight: bold;
+  }
+
+  /* Left aside */
+
+  .post-left-bar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 2em 4em;
   }
 
   .btn-list {
@@ -147,6 +161,7 @@ export default {
     color: #3a3a3a;
     font-size: 2.2rem;
     padding: 0;
+    line-height: 0;
   }
 
   small {
@@ -161,6 +176,31 @@ export default {
   aside {
     position: fixed;
     width: min(20%, fit-content);
+  }
+
+  /* Right aside */
+  .post-right-bar {
+    right: 0;
+    background-color: rgba(0,0,0,0.7);
+    height: 100%;
+    padding: 0 1em;
+    width: 33%;
+  }
+
+  .right-aside-tab {
+    float: left;
+    position: relative;
+    background-color: rgba(0,0,0,0.7);
+    width: 1.5em;
+    height: 15em;
+    right: 2.5em;
+    top: calc(40%);
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .right-aside-tab-icon {
+    color: #4998F5;
   }
 
 </style>

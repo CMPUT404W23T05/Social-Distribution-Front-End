@@ -1,7 +1,7 @@
 <template>
- <div class="comment-body" :class="{decoration: flairDecorate}">
-    <p v-if="!markdown">{{ comment.comment }}</p>
-    <VueMarkdown v-else :source="comment.comment"></VueMarkdown>
+ <div class="comment-body" >
+    <p v-if="!markdown" :class="{decoration: flairDecorate}">{{ comment.comment }}</p>
+    <VueMarkdown v-else :source="comment.comment" :class="{decoration: flairDecorate}"></VueMarkdown>
     <div class="commenter">
         <span>{{ displayName }}</span>
         <!-- OP, same as current session user, etc. -->
@@ -46,6 +46,21 @@ export default {
   /* Style overall content when flair is present */
   .decoration {
     font-weight: bold;
+  }
+
+  .comment-body {
+    background: #FFF;
+    margin: 1em;
+    padding: 0.5em 1.5em;
+    width: 20svw;
+    border-left: #1e1e1e solid 2pt;
+    text-align: left;
+    color: #1e1e1e
+  }
+
+  .commenter, .date {
+    color: #736666;
+    font-size: 0.8em;
   }
 
 </style>

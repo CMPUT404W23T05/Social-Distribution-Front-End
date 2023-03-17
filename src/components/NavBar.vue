@@ -162,7 +162,6 @@ export default {
 
 .navbar {
   padding: 0;
-  margin-bottom: 15pt;
 }
 
 .navbar .navbar-nav {
