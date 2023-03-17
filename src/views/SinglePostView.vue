@@ -39,7 +39,14 @@
           <i v-if="!expandComments" class="right-aside-tab-icon bi bi-caret-left-fill"></i>
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
-        <CommentList :post="postData"></CommentList>
+        <div class="scrollable">
+          <CommentList :post="postData"></CommentList>
+          <div v-if="pageTotal > 1" class="move-page">
+            <i class="bi bi-caret-left-fill" :class="{activated: currentPage > 1}"></i>
+            <span class="pages-count">{{ currentPage }}/{{ pageTotal }}</span>
+            <i class="bi bi-caret-right-fill" :class="{activated: currentPage < pageTotal}"></i>
+          </div>
+        </div>
       </aside>
 
     </div>
@@ -62,6 +69,9 @@ export default {
   computed: {
     loading () {
       return (!this.authorData || !this.postData)
+    },
+    pageTotal () {
+      return Math.ceil(this.postData.count / this.paginationSetting)
     }
   },
   data () {
@@ -70,7 +80,9 @@ export default {
       authorData: null,
       isFollowing: false,
       isLiked: false,
-      expandComments: true
+      expandComments: true,
+      currentPage: 1,
+      paginationSetting: 5 // This will acquired from user once they set their pagination
     }
   },
   methods: {
@@ -192,11 +204,18 @@ export default {
     height: 100%;
     padding: 0 1em;
     width: 0%;
-    transition: 0.4s ease-in-out
+    transition: 0.4s ease-in-out;
   }
-
   .post-right-bar.expanded {
     width: 33%
+  }
+
+  .scrollable {
+    overflow-y: scroll;
+    height: 100%;
+  }
+  .scrollable::-webkit-scrollbar {
+    display: none;
   }
 
   .right-aside-tab {
@@ -206,7 +225,7 @@ export default {
     width: 1.5em;
     height: 15em;
     right: 2.5em;
-    top: calc(40%);
+    top: calc(50% - 7.5em);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -215,4 +234,15 @@ export default {
     color: #4998F5;
   }
 
+  .move-page {
+    margin-bottom: 5em;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  .pages-count {
+    color: #FFF;
+    font-size: 1.2em;
+  }
 </style>
