@@ -1,5 +1,5 @@
 <template>
-  <card-totality>
+  <div id="card-totality">
     <div class="post-title">
         <h3 class="title-text">{{ post.title }}</h3>
     </div>
@@ -10,7 +10,7 @@
     >
       <div class="content-container">
         <div class="decoration-accent"></div>
-        <div v-if="hovered" class="scrim"></div>
+        <div class="scrim" :class="{open: hovered}"></div>
         <vue-markdown
           v-if="markdownEnabled"
           class="text-content"
@@ -29,20 +29,23 @@
         <slot name="footer">
           <img
             class="profile-image"
+            :class="{ open: hovered }"
             :src="author.profileImage"
             :alt="author.profileName"
           />
-          <h6 id="username">@{{ author.displayName }}</h6>
-          <span
+          <h6 id="username" v-if="hovered">
+          @{{ author.displayName }}
+          </h6>
+          <!-- <span
             class="content-types"
             v-for="content in post.ContentType"
             :key="content"
             >{{ content }}
-          </span>
+          </span> -->
         </slot>
       </div>
     </div>
-  </card-totality>
+  </div>
 </template>
 
 <script>
@@ -93,9 +96,15 @@ export default {
 
   .scrim {
     position: absolute;
-    height: 100%;
+    height: 0;
     width: 100%;
-    background: linear-gradient(rgba(0,0,0,0), rgba(0, 0, 0, 0.3));
+    bottom: 0;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+    transition: ease-in-out 0.4s
+  }
+
+  .scrim.open {
+    height: 100%;
   }
 
   .decoration-accent {
@@ -123,31 +132,37 @@ export default {
   }
 
   .footer {
-    display: none;
+    display: flex;
     float: bottom;
     position: absolute;
     bottom: 0;
     height: 0;
     border: none;
-    border-radius: 0 !important;
-    background-color: rgba(70, 70, 70, 0.8);
-    transition: all 1s;
-  }
-
-  .footer.open {
-    display: flex;
-    height: 20%;
     width: 100%;
-    color: #FFF !important;
-    margin-left: 0;
+    border-radius: 0 !important;
+    background-color: rgba(70, 70, 70, 1);
+    transition: ease-in 0.4s;
     align-items: center;
   }
 
+  .footer.open {
+    height: 20%;
+    color: #FFF !important;
+    background-color: rgba(70,70,70, 0.8);
+    margin-left: 0;
+  }
+
   .profile-image {
-    height: 5em;
-    width: 5em;
+    height: 0em;
+    width: 0em;
     border-radius: 50%;
     object-fit: cover;
+    transition: 0.4s;
+  }
+
+  .profile-image.open {
+    height: 5em;
+    width: 5em;
   }
 
   .card {
@@ -158,8 +173,6 @@ export default {
     padding: 2pt 0;
     width: 120pt;
     height: 144pt;
-    max-width: 120pt;
-    max-height: 144pt;
     display: flex;
     border: none;
     border-radius: 0;
@@ -168,9 +181,8 @@ export default {
     box-shadow: 0.1rem 0.25rem 0.5rem rgba(0,0,0,0.25);
   }
 
-  img {
-    margin: 0;
-    flex-basis: 1;
+  h6 {
+    line-height: 0;
   }
 
 </style>
