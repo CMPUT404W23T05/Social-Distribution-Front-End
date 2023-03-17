@@ -3,7 +3,7 @@
     <p v-if="!markdown" :class="{decoration: flairDecorate}">{{ comment.comment }}</p>
     <VueMarkdown v-else :source="comment.comment" :class="{decoration: flairDecorate}"></VueMarkdown>
     <div class="commenter">
-        <span>{{ displayName }}</span>
+        <span class="display-name">{{ displayName }}</span>
         <!-- OP, same as current session user, etc. -->
         <slot name="flair"></slot>
     </div>
@@ -24,7 +24,7 @@ export default {
       const now = moment().format('YYYY/MM/DD')
 
       return commentDate === now
-        ? 'today'
+        ? 'Today'
         : commentDate
     },
     displayName () {
@@ -50,17 +50,28 @@ export default {
 
   .comment-body {
     background: #FFF;
-    margin: 1em;
+    font-size: 1.2em;
+    margin: 2em 1em;
     padding: 0.5em 1.5em;
-    width: 20svw;
+    width: calc(100% - 2em);
     border-left: #1e1e1e solid 2pt;
     text-align: left;
-    color: #1e1e1e
+    color: #1e1e1e;
+    max-height: fit-content;
+    white-space: pre-wrap;
   }
 
   .commenter, .date {
     color: #736666;
+    font-size: 1em;
+  }
+
+  .date {
     font-size: 0.8em;
+  }
+
+  .display-name {
+    margin-right: 2em;
   }
 
 </style>

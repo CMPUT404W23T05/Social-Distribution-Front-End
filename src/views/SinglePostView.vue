@@ -34,8 +34,11 @@
       </aside>
 
       <!-- Right comment aside -->
-      <aside v-if="!loading" class="post-right-bar">
-        <div class="right-aside-tab"> <i class="right-aside-tab-icon bi bi-caret-left-fill"></i></div>
+      <aside v-if="!loading" class="post-right-bar" :class="{expanded: expandComments}">
+        <div class="right-aside-tab" @click="toggleComments">
+          <i v-if="!expandComments" class="right-aside-tab-icon bi bi-caret-left-fill"></i>
+          <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
+        </div>
         <CommentList :post="postData"></CommentList>
       </aside>
 
@@ -66,7 +69,8 @@ export default {
       postData: null,
       authorData: null,
       isFollowing: false,
-      isLiked: false
+      isLiked: false,
+      expandComments: true
     }
   },
   methods: {
@@ -88,6 +92,9 @@ export default {
     },
     toggleLike () {
       this.isLiked = !this.isLiked
+    },
+    toggleComments () {
+      this.expandComments = !this.expandComments
     }
   }
 }
@@ -184,7 +191,12 @@ export default {
     background-color: rgba(0,0,0,0.7);
     height: 100%;
     padding: 0 1em;
-    width: 33%;
+    width: 0%;
+    transition: 0.4s ease-in-out
+  }
+
+  .post-right-bar.expanded {
+    width: 33%
   }
 
   .right-aside-tab {
@@ -195,7 +207,7 @@ export default {
     height: 15em;
     right: 2.5em;
     top: calc(40%);
-    display:flex;
+    display: flex;
     flex-direction: column;
     justify-content: center;
   }

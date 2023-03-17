@@ -5,10 +5,10 @@
     :key="comment.id"
     :comment="comment">
         <!-- A list of comments independent of a post will not show this information -->
-        <template v-slot:flair>
+        <template #flair>
             <span v-if="matchPost(comment)">OP<i class="bi bi-person-check-fill"></i></span>
             <!-- I'm not sure what an appropriate icon for "Me" would be -->
-            <span v-else-if="matchSession(comment)">Me<i class="bi bi-smile-fill"></i></span>
+            <span v-else-if="matchSession(comment)">Me<i class="bi bi-rocket-takeoff-fill"></i></span>
         </template>
     </UserComment>
 
@@ -82,3 +82,13 @@ export default {
 </script>
 
 <!-- Styling of this list will be left up to whatever view renders this -->
+<style scoped>
+  /* Colour of post flair */
+  span {
+    color: #4998F5;
+  }
+
+  i {
+    margin: 0 0.5em;
+  }
+</style>
