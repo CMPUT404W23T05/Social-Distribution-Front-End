@@ -33,16 +33,23 @@
         </ul>
       </aside>
 
+      <!-- Right comment aside -->
+      <aside v-if="!loading">
+        <div class="right-aside-tab"> <i class="bi bi-craret-left-fill"></i></div>
+        <CommentList :post="postData"></CommentList>
+      </aside>
+
     </div>
-    <!-- Idk if the sidebar for liiking, commenting, etc should be a component, or unique to this page -->
+    <!-- Idk if the sidebar for liking, commenting, etc should be a component, or unique to this page -->
 </template>
 
 <script>
 import PostProper from '@/components/viewPostComponents/SinglePost.vue'
+import CommentList from '@/components/commentComponents/CommentList.vue'
 import axios from 'axios'
 
 export default {
-  components: { PostProper },
+  components: { PostProper, CommentList },
   mounted () {
     // Get the post and author
     const pid = this.$route.params.pid

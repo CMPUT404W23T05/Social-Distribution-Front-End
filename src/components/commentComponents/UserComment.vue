@@ -1,7 +1,7 @@
 <template>
  <div class="comment-body" :class="{decoration: flairDecorate}">
-    <p v-if="markdown">{{ comment.comment }}</p>
-    <VueMarkdown v-else :source="comment.content"></VueMarkdown>
+    <p v-if="!markdown">{{ comment.comment }}</p>
+    <VueMarkdown v-else :source="comment.comment"></VueMarkdown>
     <div class="commenter">
         <span>{{ displayName }}</span>
         <!-- OP, same as current session user, etc. -->

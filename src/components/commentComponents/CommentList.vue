@@ -13,9 +13,7 @@
     </UserComment>
 
     <!-- Bottom of the list when in loading/completed state-->
-    <div v-if="loading" class="spinner-grow text-dark" role="status">
-        <span class="sr-only">Loading...</span>
-    </div>
+    <div v-if="loading" class="spinner-grow text-dark" role="status"></div>
     <hr v-if="exhausted" id="end-of-comments">
     <small v-if="exhausted">There are no more comments. <a href="activateAddComment!">But you can add one</a></small>
 </template>
@@ -23,13 +21,18 @@
 <script>
 import UserComment from '@/components/commentComponents/UserComment.vue'
 import axios from 'axios'
-import useUserStore from '@/stores/user'
+import { useUserStore } from '@/stores/user'
 
 export default {
   props: { post: Object },
   components: { UserComment },
   mounted () {
     window.addEventListener('scroll', this.handleScroll)
+
+    const userStore = useUserStore()
+    userStore.initializeStore()
+    this.currentUser = userStore.user.author
+
     this.appendPosts()
   },
   unmounted () {
@@ -38,13 +41,14 @@ export default {
   data () {
     return {
       comments: [],
-      loading: false, // Used in tandem with loading more posts
+      loading: true, // Used in tandem with loading more posts
       exhausted: false, // No more posts to load from server (Stop infinite scroll)
-      currentUser: useUserStore().initializeStore().user.author // TODO: Consolidate later
+      currentUser: null
     }
   },
   methods: {
     matchPost (comment) {
+      console.table(comment)
       return this.post.author.id === comment.author.id || false
     },
     matchSession (comment) {
@@ -52,13 +56,15 @@ export default {
     },
     appendPosts (n) {
       // n will be determined by user's pagination settings (eventually)
-      axios.get(`/authors/${this.author.id}/posts/${this.post.id}/comments`)
+      console.table(this.post)
+      axios.get(`/authors/${this.post.author.id}/posts/${this.post.id}/comments`)
         .then(res => {
           if (res.data.length === 0) {
             this.exhausted = true
-            this.loading = false
           }
-          this.loadedComments.push(res.data)
+          console.log(res.data.comments)
+          this.comments = this.comments.concat(res.data.comments)
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
