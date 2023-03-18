@@ -14,12 +14,14 @@
         <vue-markdown
           v-if="markdownEnabled"
           class="text-content"
+          :class="{singleton: isSingleton}"
           :source="post.content"
         ></vue-markdown>
         <!-- Post is plain text -->
-        <p v-else-if="post.content" class="text-content">{{ post.content }}</p>
+        <p v-else-if="post.content" class="text-content" :class="{singleton: isSingleton}">{{ post.content }}</p>
         <img
           class="image-content"
+          :class="{singleton: isSingleton}"
           v-if="post.image"
           :src="imageURL"
           :alt="post.description"
@@ -36,12 +38,6 @@
           <h6 id="username" v-if="hovered">
           @{{ author.displayName }}
           </h6>
-          <!-- <span
-            class="content-types"
-            v-for="content in post.ContentType"
-            :key="content"
-            >{{ content }}
-          </span> -->
         </slot>
       </div>
     </div>
@@ -66,6 +62,9 @@ export default {
     },
     imageURL () {
       return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
+    },
+    isSingleton () {
+      return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
     }
   }
 }
@@ -136,6 +135,9 @@ export default {
     white-space: pre-wrap;
   }
 
+  *.singleton{
+    flex: 0 0 100%;
+  }
   .footer {
     display: flex;
     position: absolute;
