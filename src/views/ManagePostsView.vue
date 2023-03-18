@@ -156,6 +156,12 @@ export default {
 
 i {
   font-size: 2em;
+  color: #FFF;
+  transition: all 0.2s;
+}
+
+i:hover {
+  color: #4998F5;
 }
 
 </style>
