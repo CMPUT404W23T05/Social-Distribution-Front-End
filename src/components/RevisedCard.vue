@@ -158,7 +158,8 @@ export default {
     color: #FFF !important;
     background-color: rgba(70,70,70, 0.8);
     margin-left: 0;
-    overflow: hidden;
+    overflow: visible;
+
   }
 
   .profile-image {
