@@ -44,7 +44,7 @@ export default {
           console.log(this.friends)
         })
         .catch((err) => {
-          alert("Couldn't get friends!")
+          console.log("Couldn't get friends!")
           console.log(err)
         })
     }

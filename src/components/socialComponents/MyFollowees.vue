@@ -21,7 +21,7 @@ export default {
   data () {
     return {
       followees: [''],
-      author: null
+      author: null 
     }
   },
   computed: {
@@ -44,7 +44,7 @@ export default {
           console.log(this.followees)
         })
         .catch((err) => {
-          alert("Couldn't get followees!")
+          console.log("Couldn't get followees!")
           console.log(err)
         })
     }

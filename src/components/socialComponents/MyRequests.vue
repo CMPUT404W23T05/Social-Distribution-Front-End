@@ -3,7 +3,7 @@
   <h1> Your <br/> Requests</h1>
   <ul>
     <li v-for="author in requests" :key="author.url">
-      <template v-if="author"> 
+      <template v-if="author" > 
       <img :src="author.actor.profileImage">
       <p>{{displayUsername(author.actor.displayName)}}</p>
       <span>
@@ -40,13 +40,54 @@ export default {
     ...mapStores(useUserStore)
   },
   methods: {
+    getTestFollowerAuthor() {
+      axios
+        .get(`/authors/01ae906b-495a-4292-9a87-835c86a7ee67/`) 
+        .then((res) => {
+          this.actor = res.data
+          this.testSendingRequest()
+          }
+        )
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    testSendingRequest() {
+      this.followFormat["actor"] = this.actor
+      this.followFormat["object"] = this.object
+      axios
+        .post(`/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/inbox/`, this.followFormat) 
+        .catch((err) => {
+          console.log("Couldn't send test request")
+          console.log(err)
+        })     
+    },
+    testExampleRequest () {
+      /*
+      Get information about the author that wants to follow the curent author, set then
+      to this.actor, then post the follow request for the first time (i.e. it won't have a state field)  
+      */
+      axios
+        .get(`/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/`) 
+        .then((res) => {
+          this.object = res.data
+          this.getTestFollowerAuthor()
+          }
+        )
+        .then(
+          console.log(this.actor)
+        )
+        .catch((err) => {
+          console.log(err)
+        })
+    },
     displayUsername (username) {
       return '@' + username
     },
     getIdFromUrl (url) {
       return url.split('/')[4]
     },
-    HandleRequest (state, followerId) {
+    handleRequest (state, followerId) {
         axios
         .get(`/authors/${followerId}/`) // info about the author who wants to follow the current author
         .then((res) => {
@@ -54,17 +95,22 @@ export default {
           this.updateRequestInformation(state)
         })
         .catch((err) => {
-          alert("Couldn't get author actor!")
+          console.log("Couldn't get author actor!")
           console.log(err)
         })
     },
     updateRequestInformation (state) {
-      this.followFormat["state"] = state // having a state implies that the request has been accepted/declined
+      /* 
+      having a state implies that the request has been accepted/declined
+      */
+      this.followFormat["state"] = state 
+      this.followFormat["actor"] = this.actor
+      this.followFormat["object"] = this.object
 
       axios
         .post(`/authors/${this.object.id}/inbox/`, this.followFormat) 
         .catch((err) => {
-          alert("Couldn't update your request!")
+          console.log("Couldn't update your request!")
           console.log(err)
         }) 
     },
@@ -82,7 +128,7 @@ export default {
           this.requests = this.inbox.items.filter(item => item.type == "Follow").filter(follow => follow.state == undefined)
         })
         .catch((err) => {
-          alert("Couldn't get inbox or requests!")
+          console.log("Couldn't get inbox or requests!")
           console.log(err)
         })
     }
@@ -90,6 +136,7 @@ export default {
   mounted () {
     this.getAuthorFromStore()
     this.getRequests()
+    //this.testExampleRequest()
   }
 }
 

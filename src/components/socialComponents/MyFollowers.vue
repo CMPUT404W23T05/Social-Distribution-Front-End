@@ -44,7 +44,7 @@ export default {
           console.log(this.followers)
         })
         .catch((err) => {
-          alert("Couldn't get followers!")
+          console.log("Couldn't get followers!")
           console.log(err)
         })
     }
