@@ -24,7 +24,7 @@ export default {
   left: 0;
   right: 0;
   z-index: 99;
-  backdrop-filter: blur(1pt) brightness(25%);
+  backdrop-filter: blur(0.5em) brightness(25%);
   display: flex;
   align-items: center;
   justify-content: center;

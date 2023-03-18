@@ -1,7 +1,10 @@
 <template>
-  <!-- TODO: Refactor so that existing posts can be passed in as props and re-use this interface -->
-  <div class="container col-6">
-    <button type="button" class="exit" @click="$emit('endManage')">X</button>
+  <div class="backdrop"></div>
+
+  <div class="container">
+    <button type="button" class="exit-btn" @click="$emit('endManage')">
+      <i class="bi bi-x"></i>
+    </button>
     <form action="gotothedesiredURL" method="POST">
       <input
         v-model="post.title"
@@ -57,8 +60,6 @@
     <button type="submit" class="btn btn-primary" @click="submitPost">Post</button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
-
-  <div class="backdrop"></div>
 </template>
 
 <script>
@@ -202,17 +203,37 @@ export default {
 </script>
 
 <style scoped>
-div .container {
+
+.backdrop {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  backdrop-filter: blur(0.5em) brightness(25%);
+}
+
+.exit-btn {
+  position: absolute;
+  top: -0.8em;
+  right: 1em;
+  border-radius: 50%;
+  border: none;
+  height: 1.5em;
+  width: 1.5em;
+  font-size: 1.5em;
+}
+
+.container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
-}
-
-.container {
   padding-top: 25pt;
   background-color: #fff;
+  min-width: 50%;
+  max-width: 30rem;
   border-radius: 5pt;
 }
 
@@ -227,4 +248,19 @@ div .container {
   text-transform: capitalize;
   border-bottom: 2pt solid #4998f5;
 }
+
+input {
+  overflow: auto;
+  box-shadow: none;
+  border-style: none;
+  border: 2pt solid #dadada;
+  transition: all 1s;
+}
+
+*:focus {
+  outline: none;
+  border: 2pt solid #4998f5;
+  border-radius: 0pt;
+}
+
 </style>
