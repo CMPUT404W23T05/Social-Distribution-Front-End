@@ -2,13 +2,13 @@
 <div class="list-of-profiles" id="requests">
   <h1> Your <br/> Requests</h1>
   <ul>
-    <li v-for="author in requests" :key="author.actor.id">
-      <template v-if="author">
+    <li v-for="author in requests" :key="author.url">
+      <template v-if="author"> 
       <img :src="author.actor.profileImage">
       <p>{{displayUsername(author.actor.displayName)}}</p>
       <span>
-        <button @click="updateRequest('accept', getIdFromUrl(author.actor.id))" id="accept-button" class="btn btn-success">Accept</button>
-        <button @click="updateRequest('decline', getIdFromUrl(author.actor.id))" id="decline-button" class="btn btn-danger">Decline</button>
+        <button @click="handleRequest('Accepted', getIdFromUrl(author.actor.url))" id="accept-button" class="btn btn-success">Accept</button>
+        <button @click="handleRequest('Declined', getIdFromUrl(author.actor.url))" id="decline-button" class="btn btn-danger">Decline</button>
       </span>
       </template>
     </li>
@@ -17,26 +17,27 @@
   </template>
 
 <script>
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
+import axios from 'axios'
 
 export default {
   data () {
     return {
-      requests: null,
-      get_request_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/requests/',
-      get_follower_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/followers/',
-      test_requests: [
-        {
-          id: 1,
-          displayName: 'request1',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        },
-        {
-          id: 2,
-          displayName: 'request2',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        }
-      ]
+      inbox: [''], // the author's entire inbox
+      requests: [''], // the requests that will be filtered from the inbox
+      actor: null, // the author that is requesting to follow the current author
+      object: null, // the current author
+      followFormat: // the json object that will be sent 
+      {
+        "type": "Follow",      
+        "actor": this.actor,
+        "object": this.object
+      }
     }
+  },
+  computed: {
+    ...mapStores(useUserStore)
   },
   methods: {
     displayUsername (username) {
@@ -45,26 +46,50 @@ export default {
     getIdFromUrl (url) {
       return url.split('/')[4]
     },
-    updateRequest (selection, authorId) {
-      if (selection === 'accept') {
-        // if accepted, add the follower
-        this.$http.put(this.get_follower_link + authorId + '/')
-      }
-      // will get deleted regardless
-      this.$http.delete(this.get_request_link + authorId + '/')
+    HandleRequest (state, followerId) {
+        axios
+        .get(`/authors/${followerId}/`) // info about the author who wants to follow the current author
+        .then((res) => {
+          this.actor = res.data
+          this.updateRequestInformation(state)
+        })
+        .catch((err) => {
+          alert("Couldn't get author actor!")
+          console.log(err)
+        })
     },
-    async getData () {
-      try {
-        const response = await this.$http.get(this.get_request_link)
-        this.requests = response.data
-      } catch (error) {
-        console.log(error)
-      }
+    updateRequestInformation (state) {
+      this.followFormat["state"] = state // having a state implies that the request has been accepted/declined
+
+      axios
+        .post(`/authors/${this.object.id}/inbox/`, this.followFormat) 
+        .catch((err) => {
+          alert("Couldn't update your request!")
+          console.log(err)
+        }) 
+    },
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.object = userStore.user.author
+    },
+    // get the inbox and filter out the inbox so that we only get the requests
+    getRequests () {
+      axios
+        .get(`/authors/${this.object.id}/inbox/`)
+        .then((res) => {
+          this.inbox = res.data
+          this.requests = this.inbox.items.filter(item => item.type == "Follow").filter(follow => follow.state == undefined)
+        })
+        .catch((err) => {
+          alert("Couldn't get inbox or requests!")
+          console.log(err)
+        })
     }
   },
-  created () {
-    // get requests when page loads
-    this.getData()
+  mounted () {
+    this.getAuthorFromStore()
+    this.getRequests()
   }
 }
 

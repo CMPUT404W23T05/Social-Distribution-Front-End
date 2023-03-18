@@ -2,8 +2,8 @@
 <div class="list-of-profiles" id="friends">
   <h1> Your <br/> Friends</h1>
   <ul>
-    <li v-for="author in test_friends" :key="author.id">
-      <template v-if="author">
+    <li v-for="author in friends.items" :key="author.id">
+      <template v-if="author">  
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
       </template>
@@ -13,46 +13,46 @@
   </template>
 
 <script>
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
+import axios from 'axios'
 
 export default {
   data () {
     return {
-      // for author in friends
       friends: [''],
-      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/friends/',
-      test_friends: [
-        {
-          id: 1,
-          displayName: 'friend1',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        },
-        {
-          id: 2,
-          displayName: 'friend2',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        }
-      ]
+      author: null
     }
+  },
+  computed: {
+    ...mapStores(useUserStore)
   },
   methods: {
     displayUsername (username) {
       return '@' + username
     },
-    async getData () {
-      try {
-        // get the friends of the author
-        const response = await this.$http.get(this.get_link)
-        this.friends = response.data
-      } catch (error) {
-        console.log(error)
-      }
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.author = userStore.user.author
+    },
+    getFriends () {
+      axios
+        .get(`/authors/${this.author.id}/friends/`)
+        .then((res) => {
+          this.friends = res.data
+          console.log(this.friends)
+        })
+        .catch((err) => {
+          alert("Couldn't get friends!")
+          console.log(err)
+        })
     }
   },
-  created () {
-    // get friends when page loads
-    this.getData()
+  mounted () {
+    this.getAuthorFromStore()
+    this.getFriends()
   }
-
 }
 
 </script>

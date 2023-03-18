@@ -2,7 +2,7 @@
 <div class="list-of-profiles" id="followers">
   <h1 id="followers"> Your <br/> Followers</h1>
   <ul>
-    <li v-for="author in test_followers" :key="author.id">
+    <li v-for="author in followers.items" :key="author.id">
       <template v-if="author">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
@@ -13,44 +13,45 @@
   </template>
 
 <script>
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
+import axios from 'axios'
 
 export default {
   data () {
     return {
-      // for author in followers.items
       followers: [''],
-      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/followers/',
-      test_followers: [
-        {
-          id: 1,
-          displayName: 'follower1',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        },
-        {
-          id: 2,
-          displayName: 'follower2',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        }
-      ]
+      author: null 
     }
+  },
+  computed: {
+    ...mapStores(useUserStore)
   },
   methods: {
     displayUsername (username) {
       return '@' + username
     },
-    async getData () {
-      try {
-        // get the followers of the author
-        const response = await this.$http.get(this.get_link)
-        this.followers = response.data
-      } catch (error) {
-        console.log(error)
-      }
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.author = userStore.user.author
+    },
+    getFollowers () {
+      axios
+        .get(`/authors/${this.author.id}/followers/`)
+        .then((res) => {
+          this.followers = res.data
+          console.log(this.followers)
+        })
+        .catch((err) => {
+          alert("Couldn't get followers!")
+          console.log(err)
+        })
     }
   },
-  created () {
-    // get followers when page loads
-    this.getData()
+  mounted () {
+    this.getAuthorFromStore()
+    this.getFollowers()
   }
 }
 
