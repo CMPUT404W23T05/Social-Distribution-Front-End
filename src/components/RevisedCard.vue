@@ -88,6 +88,7 @@ export default {
     height: 100%;
     padding: 0;
     margin: 0.5em 0.8em;
+    background-color: #f7f7f7;
     text-align: left;
     align-items: center;
     justify-content: space-evenly;
@@ -111,8 +112,8 @@ export default {
     position: absolute;
     border-right: 2pt solid #4998F5;
     border-top: 2pt solid #4998F5;
-    width: 90%;
-    height: calc(100% + 28pt);
+    width: 92.5%;
+    height: calc(100% + 20pt);
     top: -28pt;
     right: 0.8em;
   }
@@ -147,6 +148,7 @@ export default {
     transition: ease-in 0.4s;
     align-items: center;
     overflow: hidden;
+    padding:0;
   }
 
   .footer.open {
@@ -181,8 +183,8 @@ export default {
     display: flex;
     border: none;
     border-radius: 0;
+    background-color: #ffffff;
 
-    background-color: #fafafa;
     box-shadow: 0.1rem 0.25rem 0.5rem rgba(0,0,0,0.25);
   }
 
