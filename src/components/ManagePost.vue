@@ -49,7 +49,7 @@
       </span>
 
       <!-- Text/Image areas of post -->
-      <textarea v-model="post.content" placeholder="Give your post some body text!"></textarea>
+      <textarea v-model="post.content" class=text-input placeholder="Give your post some body text!"></textarea>
       <ImagePostBody
         class="image-upload"
         :image="imageDataURL"
@@ -63,7 +63,9 @@
       />
     </form>
 
-    <button type="submit" class="btn btn-primary" @click="submitPost">Post</button>
+    <button type="submit" class="btn btn-outline-primary" @click="submitPost">
+    Post <i class="bi bi-send-fill"></i>
+    </button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
   </div>
 </template>
@@ -251,32 +253,63 @@ export default {
   min-width: 50%;
   max-width: 30rem;
   border-radius: 5pt;
+  padding: 2em;
 }
 
 .text-input {
   width: 100%;
   resize: none;
   border-radius: 0;
+  box-sizing: content-box;
+}
+
+.form-toggles {
+  display: flex;
+}
+
+.markdown-toggle {
+  justify-self: flex-end;
 }
 
 .btn {
-  width: 50%;
+  width: 10em;
   text-transform: capitalize;
-  border-bottom: 2pt solid #4998f5;
-}
-
-input {
-  overflow: auto;
-  box-shadow: none;
-  border-style: none;
-  border: 2pt solid #dadada;
-  transition: all 1s;
+  color:#4998f5;
+  border-radius: 0pt;
 }
 
 *:focus {
   outline: none;
   border: 2pt solid #4998f5;
   border-radius: 0pt;
+}
+
+/* All this for just textarea smh */
+
+textarea {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  min-height: 8em;
+  overflow: hidden;
+}
+
+textarea:focus {
+  min-height: 30em;
+  display: block;
+  overflow: auto;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: #4998f5;
+}
+
+input, textarea {
+  box-shadow: none;
+  border-style: none;
+  border: 2pt solid #dadada;
+  transition: all 0.4s;
+  resize: none;
 }
 
 </style>
