@@ -26,7 +26,7 @@
         />
       </div>
       <div :class="{ open: hovered }" class="footer card-footer text-muted">
-        <slot name="footer">
+        <slot name="footer" :class="{ open: hovered }">
           <img
             class="profile-image"
             :class="{ open: hovered }"
@@ -125,15 +125,18 @@ export default {
   }
 
   .text-content {
-    word-wrap: break-word;
-    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 9;
+    -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 90%; /* Jank to get it to line up with image */
     flex: 0 0 50%;
+    padding-left: 1em;
+    white-space: pre-wrap;
   }
 
   .footer {
     display: flex;
-    float: bottom;
     position: absolute;
     bottom: 0;
     height: 0;
@@ -143,6 +146,7 @@ export default {
     background-color: rgba(70, 70, 70, 1);
     transition: ease-in 0.4s;
     align-items: center;
+    overflow: hidden;
   }
 
   .footer.open {
@@ -150,6 +154,7 @@ export default {
     color: #FFF !important;
     background-color: rgba(70,70,70, 0.8);
     margin-left: 0;
+    overflow: visible;
   }
 
   .profile-image {
