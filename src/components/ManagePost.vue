@@ -5,45 +5,51 @@
     <button type="button" class="exit-btn" @click="$emit('endManage')">
       <i class="bi bi-x"></i>
     </button>
+
+    <!-- Form -->
     <form action="gotothedesiredURL" method="POST">
       <input
         v-model="post.title"
+        @update="setText"
         class="text-input"
         placeholder="Write a title for your post"
       />
-      <span id="privacySettings">
-        <input disabled
-          type="radio"
-          name="privacy"
-          id="private"
-          value="PRIVATE"
-          v-model="post.visibility"
-        />
-        <label for="private">Private</label>
-        <input disabled
-          type="radio"
-          name="privacy"
-          id="friendsonly"
-          value="FRIENDS"
-          v-model="post.visibility"
-        />
-        <label for="friendsonly">Friends Only</label>
-        <input
-          type="radio"
-          name="privacy"
-          id="public"
-          value="PUBLIC"
-          v-model="post.visibility"
-        />
-        <label for="public">Public</label>
+      <!-- Radio buttons and markdown toggle -->
+      <span class="form-toggles">
+        <span id="privacySettings">
+          <input disabled
+            type="radio"
+            name="privacy"
+            id="private"
+            value="PRIVATE"
+            v-model="post.visibility"
+          />
+          <label for="private">Private</label>
+          <input disabled
+            type="radio"
+            name="privacy"
+            id="friendsonly"
+            value="FRIENDS"
+            v-model="post.visibility"
+          />
+          <label for="friendsonly">Friends Only</label>
+          <input
+            type="radio"
+            name="privacy"
+            id="public"
+            value="PUBLIC"
+            v-model="post.visibility"
+          />
+          <label for="public">Public</label>
+        </span>
+        <span>
+          <input v-model="markdownEnabled" @change="setText" class="form-check-input" type="checkbox"/>
+          <label class="form-check-label" for="markdown-toggle">{{ markDownMessage }}</label>
+        </span>
       </span>
 
-      <TextPostBody
-        class="text-input"
-        :body="post.content"
-        :toggle="markdownEnabled"
-        @change-text-post="(text) => setText(text)"
-      />
+      <!-- Text/Image areas of post -->
+      <textarea v-model="post.content" placeholder="Give your post some body text!"></textarea>
       <ImagePostBody
         class="image-upload"
         :image="imageDataURL"
@@ -63,14 +69,12 @@
 </template>
 
 <script>
-import TextPostBody from '@/components/TextPostBody.vue'
 import ImagePostBody from '@/components/ImagePostBody.vue'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
   components: {
-    TextPostBody,
     ImagePostBody
   },
   data () {
@@ -95,15 +99,21 @@ export default {
         published: '2023-03-01T21:18:38.908794Z' // placeholder
       },
       // Used to validate the validaty of the post
-      badSubmit: false
+      badSubmit: false,
+      markdownEnabled: false
     }
   },
   props: ['author', 'existingPost'],
 
   computed: {
+    titleLength () {
+      return this.post.title.length
+    },
+    maxTitleLength () {
+      return 30
+    },
     validPost () {
-      const length = this.post.title.length
-      return length <= 30 && length > 0 && (this.post.image || this.post.content)
+      return this.titleLength < this.maxTitleLength && this.titleLength > 0 && (!!this.post.image || !!this.post.content)
     },
     errorMessage () {
       if (!this.post.title) {
@@ -111,9 +121,6 @@ export default {
       } else if (!this.post.image && !this.post.content) {
         return 'Your post needs text and/or an image!'
       } else return ''
-    },
-    markdownEnabled () {
-      return this.post.contentType.includes('text/markdown')
     },
     contentTypeAsStr () {
       return this.post.contentType.toString()
@@ -126,13 +133,17 @@ export default {
       } else {
         return null
       }
+    },
+    markDownMessage () {
+      return this.markdownEnabled
+        ? 'Markdown Enabled!'
+        : 'Markdown Disabled'
     }
   },
   methods: {
-    setText (text) {
-      this.post.content = text.body
+    setText () {
       this.sanitizeContentTypes('text')
-      this.appendMime(text.mime)
+      this.appendMime(this.markdownEnabled ? 'text/markdown' : 'text/plain')
     },
 
     setImage (image) {
@@ -162,6 +173,7 @@ export default {
     submitPost () {
       if (this.validPost) {
         this.post.contentType = this.contentTypeAsStr
+        console.table(this.post)
 
         if (this.existingPost) {
           console.log(this.post)
@@ -193,9 +205,13 @@ export default {
   },
   mounted () {
     if (this.existingPost) {
+      // Pass by value. (If user exits before submitting, do not update the existing post)
       this.post = structuredClone(this.existingPost)
       // Convert to array from string from backend
       this.post.contentType = this.post.contentType.split(',')
+      if (this.post.contentType.includes('text/markdown')) {
+        this.markdownEnabled = true
+      }
     }
   },
   emits: ['endManage']
