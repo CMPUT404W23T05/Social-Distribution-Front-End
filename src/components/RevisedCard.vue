@@ -96,15 +96,16 @@ export default {
 
   .scrim {
     position: absolute;
-    height: 0;
+    height: 60%;
     width: 100%;
     bottom: 0;
+    opacity: 0;
     background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
-    transition: ease-in-out 0.4s
+    transition: 0.35s
   }
-
+/* Hover transition shadow */
   .scrim.open {
-    height: 100%;
+    opacity: 100;
   }
 
   .decoration-accent {
@@ -147,7 +148,7 @@ export default {
     width: 100%;
     border-radius: 0 !important;
     background-color: rgba(70, 70, 70, 1);
-    transition: ease-in 0.4s;
+    transition: 0.35s;
     align-items: center;
     overflow: hidden;
     padding:0;
