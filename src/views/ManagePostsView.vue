@@ -13,17 +13,19 @@
         :author="author"
       >
         <template #footer>
-          <button type="button" class="edit-button btn" @click="manage(post, index)">
-            Edit ✐
-          </button>
-          <span class="divider"></span>
-          <button
-            type="button"
-            class="delete-button btn"
-            @click="displayPrompt(post)"
-          >
-          Delete 🔨
-          </button>
+          <span class="footer-totality">
+            <button type="button" class="edit-button btn" @click="manage(post, index)">
+              <i class="bi bi-pencil-square"></i>
+            </button>
+            <span class="divider"></span>
+            <button
+              type="button"
+              class="delete-button btn"
+              @click="displayPrompt(post)"
+            >
+            <i class="bi bi-trash3-fill"></i>
+            </button>
+          </span>
         </template>
       </Card>
       <div v-if="posts.length === 0">You haven't made any posts yet!</div>
@@ -132,10 +134,36 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .card-list {
   display: flex;
   flex-wrap: wrap;
   margin: 15pt 10%;
+  gap: 3em;
 }
+
+.footer-totality {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  overflow: hidden;
+}
+
+.divider {
+  border: 1px solid #FFF;
+  height: 55%;
+}
+
+i {
+  font-size: 2em;
+  color: #FFF;
+  transition: all 0.2s;
+}
+
+i:hover {
+  color: #4998F5;
+}
+
 </style>
