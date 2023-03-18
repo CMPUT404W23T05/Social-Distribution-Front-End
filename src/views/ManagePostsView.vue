@@ -150,7 +150,7 @@ export default {
 }
 
 .divider {
-  border: 1px solid white;
+  border: 1px solid rgb(41, 41, 41);
   height: 1.8em;
 }
 
