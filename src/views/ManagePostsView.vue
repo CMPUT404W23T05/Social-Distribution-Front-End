@@ -143,6 +143,7 @@ export default {
 }
 
 .footer-totality {
+  height: 100%;
   width: 100%;
   display: flex;
   justify-content: space-evenly;
@@ -151,7 +152,7 @@ export default {
 
 .divider {
   border: 1px solid rgb(41, 41, 41);
-  height: 1.8em;
+  height: 55%;
 }
 
 i {
