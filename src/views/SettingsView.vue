@@ -39,6 +39,6 @@ export default {
   width: 100%;
 }
 .child-root { /* the root class of the child components */
-  width: 30%;
+  width: 50%;
 }
 </style>
