@@ -21,7 +21,7 @@ export default {
   data () {
     return {
       followers: [''],
-      author: null 
+      author: null
     }
   },
   computed: {

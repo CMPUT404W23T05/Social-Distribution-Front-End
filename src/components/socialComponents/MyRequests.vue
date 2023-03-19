@@ -3,7 +3,7 @@
   <h1> Your <br/> Requests</h1>
   <ul>
     <li v-for="author in requests" :key="author.url">
-      <template v-if="author" > 
+      <template v-if="author" >
       <img :src="author.actor.profileImage">
       <p>{{displayUsername(author.actor.displayName)}}</p>
       <span>
@@ -28,11 +28,11 @@ export default {
       requests: [''], // the requests that will be filtered from the inbox
       actor: null, // the author that is requesting to follow the current author
       object: null, // the current author
-      followFormat: // the json object that will be sent 
+      followFormat: // the json object that will be sent
       {
-        "type": "Follow",      
-        "actor": this.actor,
-        "object": this.object
+        type: 'Follow',
+        actor: this.actor,
+        object: this.object
       }
     }
   },
@@ -40,39 +40,39 @@ export default {
     ...mapStores(useUserStore)
   },
   methods: {
-    getTestFollowerAuthor() {
+    getTestFollowerAuthor () {
       axios
-        .get(`/authors/01ae906b-495a-4292-9a87-835c86a7ee67/`) 
+        .get('/authors/01ae906b-495a-4292-9a87-835c86a7ee67/')
         .then((res) => {
           this.actor = res.data
           this.testSendingRequest()
-          }
+        }
         )
         .catch((err) => {
           console.log(err)
         })
     },
-    testSendingRequest() {
-      this.followFormat["actor"] = this.actor
-      this.followFormat["object"] = this.object
+    testSendingRequest () {
+      this.followFormat.actor = this.actor
+      this.followFormat.object = this.object
       axios
-        .post(`/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/inbox/`, this.followFormat) 
+        .post('/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/inbox/', this.followFormat)
         .catch((err) => {
           console.log("Couldn't send test request")
           console.log(err)
-        })     
+        })
     },
     testExampleRequest () {
       /*
       Get information about the author that wants to follow the curent author, set then
-      to this.actor, then post the follow request for the first time (i.e. it won't have a state field)  
+      to this.actor, then post the follow request for the first time (i.e. it won't have a state field)
       */
       axios
-        .get(`/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/`) 
+        .get('/authors/8a7f848a-e325-4a56-bc85-64b62224dcf4/')
         .then((res) => {
           this.object = res.data
           this.getTestFollowerAuthor()
-          }
+        }
         )
         .then(
           console.log(this.actor)
@@ -88,7 +88,7 @@ export default {
       return url.split('/')[4]
     },
     handleRequest (state, followerId) {
-        axios
+      axios
         .get(`/authors/${followerId}/`) // info about the author who wants to follow the current author
         .then((res) => {
           this.actor = res.data
@@ -100,19 +100,19 @@ export default {
         })
     },
     updateRequestInformation (state) {
-      /* 
+      /*
       having a state implies that the request has been accepted/declined
       */
-      this.followFormat["state"] = state 
-      this.followFormat["actor"] = this.actor
-      this.followFormat["object"] = this.object
+      this.followFormat.state = state
+      this.followFormat.actor = this.actor
+      this.followFormat.object = this.object
 
       axios
-        .post(`/authors/${this.object.id}/inbox/`, this.followFormat) 
+        .post(`/authors/${this.object.id}/inbox/`, this.followFormat)
         .catch((err) => {
           console.log("Couldn't update your request!")
           console.log(err)
-        }) 
+        })
     },
     getAuthorFromStore () {
       const userStore = this.userStore
@@ -125,7 +125,7 @@ export default {
         .get(`/authors/${this.object.id}/inbox/`)
         .then((res) => {
           this.inbox = res.data
-          this.requests = this.inbox.items.filter(item => item.type == "Follow").filter(follow => follow.state == undefined)
+          this.requests = this.inbox.items.filter(item => item.type === 'Follow').filter(follow => follow.state === undefined)
         })
         .catch((err) => {
           console.log("Couldn't get inbox or requests!")
@@ -136,7 +136,7 @@ export default {
   mounted () {
     this.getAuthorFromStore()
     this.getRequests()
-    //this.testExampleRequest()
+    // this.testExampleRequest()
   }
 }
 

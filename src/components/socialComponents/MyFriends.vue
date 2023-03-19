@@ -3,7 +3,7 @@
   <h1> Your <br/> Friends</h1>
   <ul>
     <li v-for="author in friends.items" :key="author.id">
-      <template v-if="author">  
+      <template v-if="author">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
       </template>
