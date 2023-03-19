@@ -82,7 +82,7 @@
 </template>
 <script>
 import { useUserStore } from '@/stores/user'
-import SlotModal from './SlotModal.vue'
+import SlotModal from '../SlotModal.vue'
 import { mapStores } from 'pinia'
 import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
