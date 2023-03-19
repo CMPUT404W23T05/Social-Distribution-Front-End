@@ -204,7 +204,8 @@ export default {
           this.$emit('editPost', this.post)
         } else {
           this.post.id = uuidv4()
-          this.emit('addPost', this.post)
+          console.table(this.post)
+          this.$emit('createPost', this.post)
         }
       } else {
         this.badSubmit = true

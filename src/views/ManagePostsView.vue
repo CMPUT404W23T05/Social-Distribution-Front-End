@@ -47,7 +47,7 @@
       :existingPost="selected.post"
       @dismiss="showManage=false"
       @edit-post="(post) => editPost(post)"
-      @create-post="(post) => addPost(post)"
+      @create-post="(post) => createPost(post)"
     ></ManagePost>
   </div>
 </template>
@@ -73,13 +73,13 @@ export default {
   computed: {
     ...mapStores(useUserStore),
 
-    // Create, update, delete
-    cudEndPoint () {
+    // Update, delete
+    udEndPoint () {
       return `/authors/${this.author.id}/posts/${this.selected.post.id}/`
     },
 
-    // read
-    rEndPoint () {
+    // Create, read
+    crEndPoint () {
       return `/authors/${this.author.id}/posts/`
     }
   },
@@ -92,20 +92,21 @@ export default {
 
     // This view handles all CRUD Operations
     // Existing post is already accessible via "this.selected"
-    addPost (post) {
+    createPost (post) {
       axios
-        .post(this.cudEndPoint, post)
+        .post(this.udEndPoint, post)
         .then(() => {
           this.posts.unshift(post)
         })
         .catch(() => {
           alert("Couldn't add the post!")
         })
+      this.showManage = false
     },
 
     getPosts () {
       axios
-        .get(this.rEndPoint)
+        .get(this.crEndPoint)
         .then((res) => {
           this.posts = res.data
         })
@@ -116,18 +117,19 @@ export default {
 
     editPost (post) {
       axios
-        .post(this.cudEndPoint, post)
+        .post(this.udEndPoint, post)
         .then(() => {
           this.posts[this.selected.index] = post
         })
         .catch(() => {
           alert("Couldn't edit the post!")
         })
+      this.showManage = false
     },
 
     delPost () {
       axios
-        .delete(this.endpoint)
+        .delete(this.udEndPoint)
         .then(() => {
           this.posts.splice(this.selected.index, 1)
         })
