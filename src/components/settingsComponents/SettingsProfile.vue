@@ -9,16 +9,34 @@
     <!-- Profile picture and the edit overlay that shows on hover-->
     <div class="image-container">
   <img class = "settings-profile-image rounded-circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture'/>
-  <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div>
+  <!-- Edit profile picture modal -->
+  <SlotModal :modal-name="'profileImageModal'" @submit-my-form="submitProfileImageForm" @clear-fields="prefillProfileImageURL">
+    <template #titleText>Edit profile picture</template>
+    <template #body="scoped">
+      <form @submit.prevent="scoped.submitMethod" id="profileImageForm">
+        <div class="mb-3">
+          <label for="newProfileImage" class="form-label">New profile image URL</label>
+          <input class="form-control" id="newProfileImage" v-model="fields.newProfileImageURL" type="url" required>
+        </div>
+          </form>
+    </template>
+    <template #submitButton>
+      <button type="submit" class="btn btn-primary" form="profileImageForm">Change profile picture</button>
+    </template>
+    <template #openModalButton>
+      <div class="edit-overlay rounded-circle" role="button" data-bs-toggle="modal" data-bs-target="#profileImageModal" @click="prefillProfileImageURL"><i class="bi bi-pencil-fill overlay-icon" id="edit-image-icon"></i></div>
+    </template>
+      </SlotModal>
+  <!-- <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div> -->
 </div>
     <!-- Settings for names and password -->
   <div class="d-flex flex-column p-4 text-start">
     <!-- Display name field with clickable edit icon -->
   <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;
     <!-- Edit display name modal -->
-    <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="fillCurrentDisplayName" >
+    <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="prefillDisplayName" >
     <template #openModalButton>
-      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="fillCurrentDisplayName"></i>
+      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="prefillDisplayName"></i>
     </template>
     <template #titleText>Edit display name</template>
     <template #body="scoped">
@@ -66,7 +84,6 @@
     </template>
       <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
   </SlotModal></div>
-  <!-- <UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div> -->
 <!-- Change password modal -->
 <SlotModal :modal-name="'passwordModal'" @submit-my-form="submitPasswordForm" @clear-fields="clearFields">
   <template #titleText>Change password</template>
@@ -126,7 +143,8 @@ export default {
         newUsername: '',
         newPassword: '',
         confirmNewPassword: '',
-        newDisplayName: ''
+        newDisplayName: '',
+        newProfileImageURL: ''
       }
 
     }
@@ -235,12 +253,20 @@ export default {
           })
       }
     },
-    // method for display name change modal
+    // methods for display name change modal
     submitDisplaynameForm ({ done, e }) {
       this.updateAuthorField('displayName', this.fields.newDisplayName, { done, e })
     },
-    fillCurrentDisplayName () {
+    prefillDisplayName () {
       this.fields.newDisplayName = this.getAuthorPropertyIfDefined('displayName')
+    },
+    // methods for profile image change modal
+    submitProfileImageForm ({ done, e }) {
+      this.updateAuthorField('profileImage', this.fields.newProfileImageURL, { done, e })
+    },
+    prefillProfileImageURL () {
+      this.fields.newProfileImageURL = this.getAuthorPropertyIfDefined('profileImage')
+      console.log(this.fields.newProfileImageURL)
     }
   },
   computed: {
@@ -275,7 +301,9 @@ export default {
 .image-container {
   position: relative;
   text-align: center;
-  color: white;
+}
+#edit-image-icon {
+  color: #fff;
 }
 .settings-profile-image {
   height: 8rem;
