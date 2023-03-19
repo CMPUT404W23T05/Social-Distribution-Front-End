@@ -17,11 +17,11 @@
   <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
   <!-- Username field with clickable edit icon -->
 <div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;
-  <!-- Edit username modal opener -->
-  <SlotModal :input-fields="{
-    currentPassword: '',
-    newUsername: ''}
-      " @submit-my-form="submitUsernameForm" @clear-fields="clearFields">
+
+  <!-- Edit username modal -->
+  <SlotModal
+    :modal-name="'usernameModal'"
+     @submit-my-form="submitUsernameForm" @clear-fields="clearFields">
     <template #titleText>Edit username</template>
     <template #body="scoped">
       <form @submit.prevent="scoped.submitMethod" id="usernameForm">
@@ -39,13 +39,40 @@
       <button type="submit" class="btn btn-primary" form="usernameForm">Change username</button>
     </template>
     <template #openModalButton>
-      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#slotModal"></i>
+      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#usernameModal"></i>
     </template>
       <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
   </SlotModal></div>
   <!-- <UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div> -->
-<!-- Change password botton -->
-  <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
+<!-- Change password modal -->
+<SlotModal :modal-name="'passwordModal'" @submit-my-form="submitPasswordForm" @clear-fields="clearFields">
+  <template #titleText>Change password</template>
+  <template #body="scoped">
+    <form @submit.prevent="scoped.submitMethod" id="passwordForm">
+    <div class="mb-3">
+      <label for="currentPassword" class="form-label">Current password</label>
+      <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" >
+    </div>
+      <div class="mb-3">
+        <label for="newPassword" class="form-label">New password</label>
+        <input class="form-control" type="password" id="newPassword" v-model="fields.newPassword">
+      </div>
+      <div class="mb-3">
+        <label for="confirmNewPassword" class="form-label">Confirm new password</label>
+        <input class="form-control" type="password" id="confirmNewPassword" v-model="fields.confirmNewPassword">
+      </div>
+        </form>
+  </template>
+  <template #submitButton>
+    <button type="submit" class="btn btn-primary" form="passwordForm">Change password</button>
+  </template>
+  <template #openModalButton>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#passwordModal">
+  <i class="bi bi-lock-fill"></i> Change password
+</button>
+  </template>
+  </SlotModal>
+  <!-- <PasswordChangeModal @alert="showAlert"></PasswordChangeModal> -->
 
 </div>
 </div>
@@ -55,7 +82,6 @@
 </template>
 <script>
 import { useUserStore } from '@/stores/user'
-import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
 import SlotModal from './SlotModal.vue'
 import { mapStores } from 'pinia'
 import axios from 'axios'
@@ -63,7 +89,6 @@ import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'SettingsProfile',
   components: {
-    PasswordChangeModal,
     SlotModal
   },
   data () {
@@ -75,7 +100,9 @@ export default {
       errorMsg: '',
       fields: {
         currentPassword: '',
-        newUsername: ''
+        newUsername: '',
+        newPassword: '',
+        confirmNewPassword: ''
       }
 
     }
@@ -159,7 +186,37 @@ export default {
       const user = userStore.user
       user.username = newUsername
       localStorage.setItem('user', JSON.stringify(userStore.user))
+    },
+
+    // methods for password change modal
+    submitPasswordForm ({ done, e }) {
+      // key value pairs of username and password
+      const formData = {
+        current_password: this.fields.currentPassword,
+        new_password: this.fields.newPassword,
+        re_new_password: this.fields.confirmNewPassword
+      }
+      // client side validation
+      if (this.fields.newPassword !== this.fields.confirmNewPassword) {
+        e('New passwords do not match.')
+      } else {
+        axios
+          .post('/users/set_password/', formData)
+          .then(response => {
+            console.log(response)
+            this.showAlert('Password changed successfully.', 'success')
+            done() // tell modal to clean up and close
+          })
+          .catch(error => {
+            // server side validation or error
+            console.log(error)
+            const formattedFieldNames = { current_password: 'Current password', new_password: 'New password', re_new_password: 'Confirm new password', non_field_errors: 'Error' }
+            const errorString = errorToString(error, formattedFieldNames)
+            e(errorString) // send error to modal
+          })
+      }
     }
+
   },
   computed: {
     ...mapStores(useUserStore)

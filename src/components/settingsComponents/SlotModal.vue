@@ -1,6 +1,6 @@
 <template>
     <!-- modal starts hidden -->
-    <div class="modal fade" tabindex="-1" id="slotModal" ref="slotModal" aria-labelledby="slotModalLabel" aria-hidden="true">
+    <div class="modal fade" tabindex="-1" :id="this.modalName" :ref="this.modalName" :aria-labelledby="this.modalName + 'Label'" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -36,7 +36,7 @@
   <!-- Button to open the modal -->
   <slot name="openModalButton">
     <!-- fallback button -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#slotModal">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" :data-bs-target="'#'+this.modalName">
       Open modal
     </button>
 </slot>
@@ -46,7 +46,7 @@
 export default {
   name: 'SlotModal',
   emits: ['alert', 'submitMyForm', 'clearFields'],
-  props: ['inputFields'],
+  props: ['modalName'],
   data () {
     return {
       errorMsg: ''
