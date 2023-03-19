@@ -45,7 +45,7 @@
             <!-- display name input -->
             <div class="input-group mb-3">
             <div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">@</span></div>
-            <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName">
+            <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName" required>
           </div>
 
         </form>
@@ -68,11 +68,11 @@
       <form @submit.prevent="scoped.submitMethod" id="usernameForm">
         <div class="mb-3">
         <label for="currentPassword" class="form-label">Password</label>
-        <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" >
+        <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" required>
         </div>
         <div class="mb-3">
           <label for="newUsername" class="form-label">New username</label>
-          <input class="form-control" type="text" id="newUsername" v-model="fields.newUsername">
+          <input class="form-control" type="text" id="newUsername" v-model="fields.newUsername" required>
         </div>
           </form>
     </template>
@@ -91,15 +91,15 @@
     <form @submit.prevent="scoped.submitMethod" id="passwordForm">
     <div class="mb-3">
       <label for="currentPassword" class="form-label">Current password</label>
-      <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" >
+      <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" required>
     </div>
       <div class="mb-3">
         <label for="newPassword" class="form-label">New password</label>
-        <input class="form-control" type="password" id="newPassword" v-model="fields.newPassword">
+        <input class="form-control" type="password" id="newPassword" v-model="fields.newPassword" required>
       </div>
       <div class="mb-3">
         <label for="confirmNewPassword" class="form-label">Confirm new password</label>
-        <input class="form-control" type="password" id="confirmNewPassword" v-model="fields.confirmNewPassword">
+        <input class="form-control" type="password" id="confirmNewPassword" v-model="fields.confirmNewPassword" required>
       </div>
         </form>
   </template>
