@@ -5,7 +5,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <!-- Title text -->
-          <h5 class="modal-title" id="slotModalLabel">
+          <h5 class="modal-title" :id="this.modalName + 'Label'">
             <slot name="titleText">Modal title</slot>
           </h5>
           <!-- Top right close button -->
