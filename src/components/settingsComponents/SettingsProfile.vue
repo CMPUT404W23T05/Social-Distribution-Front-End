@@ -1,13 +1,14 @@
 <template>
+  <div class="child-root">
   <div class="alert fade show alert-dismissible" :class="[alert.type]" role="alert" v-if="alert.msg">
     {{ alert.msg }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
   <h1>Profile</h1>
   <h2>Settings</h2>
-  <div class="d-flex justify-content-center">
+  <div class="d-flex mt-4" id="profile-container">
   <div class="d-flex">
-    <!-- Profile picture and the edit overlay that shows on hover-->
-    <div class="image-container">
+    <!-- Profile picture and the edit overlay that shows on hover, with right margin lvl 4-->
+    <div class="image-container me-4">
   <img class = "settings-profile-image rounded-circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture'/>
   <!-- Edit profile picture modal -->
   <SlotModal :modal-name="'profileImageModal'" @submit-my-form="submitProfileImageForm" @clear-fields="prefillProfileImageURL">
@@ -29,10 +30,10 @@
       </SlotModal>
   <!-- <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div> -->
 </div>
-    <!-- Settings for names and password -->
-  <div class="d-flex flex-column p-4 text-start">
+  <!-- Settings for names and password, with lvl 4 gap between each item -->
+  <div class="d-flex flex-column gap-3 text-start">
     <!-- Display name field with clickable edit icon -->
-  <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;
+  <div><span class="display-name"><span class="field-name">Display Name:</span> @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;
     <!-- Edit display name modal -->
     <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="prefillDisplayName" >
     <template #openModalButton>
@@ -57,7 +58,7 @@
     ></SlotModal>
   </div>
   <!-- Username field with clickable edit icon -->
-<div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;
+  <div><span class="username"><span class="field-name">Username:</span> {{ this.userStore.user.username }}</span>&nbsp;
 
   <!-- Edit username modal -->
   <SlotModal
@@ -118,7 +119,7 @@
 </div>
 
 </div>
-
+</div>
 </template>
 <script>
 import { useUserStore } from '@/stores/user'
@@ -276,11 +277,7 @@ export default {
 }
 </script>
 
-<style>
-.greeting {
-  color: red;
-  font-weight: bold;
-}
+<style scoped>
 .edit-overlay {
   position: absolute;
   top: 0;
@@ -303,7 +300,7 @@ export default {
   text-align: center;
 }
 #edit-image-icon {
-  color: #fff;
+  color: var(--bs-blue);
 }
 .settings-profile-image {
   height: 8rem;
@@ -313,6 +310,9 @@ export default {
 .overlay-icon {
   line-height: 8rem;
   font-size: 1.5em;
+}
+.field-name {
+  color: var(--bs-blue);
 }
 
 </style>
