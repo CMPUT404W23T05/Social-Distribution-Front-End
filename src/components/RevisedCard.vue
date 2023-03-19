@@ -112,6 +112,7 @@ export default {
     position: absolute;
     border-right: 2pt solid #4998F5;
     border-top: 2pt solid #4998F5;
+
     width: 92.5%;
     height: calc(100% + 20pt);
     top: -28pt;

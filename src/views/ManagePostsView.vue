@@ -1,36 +1,37 @@
 <template>
-  <h1>Manage your posts here</h1>
   <div class="manage-posts">
+    <h1>Manage <strong>Posts</strong></h1>
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn btn-primary" @click="manage()">
+    <button type="button" class="add-button btn btn-primary float-start" @click="manage()">
       Make A New Post
     </button>
-    <div class="card-list">
-      <Card
-        v-for="(post, index) in posts"
-        :key="post.id"
-        :post="post"
-        :author="author"
-      >
-        <template #footer>
-          <span class="footer-totality">
-            <button type="button" class="edit-button btn" @click="manage(post, index)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <span class="divider"></span>
-            <button
-              type="button"
-              class="delete-button btn"
-              @click="displayPrompt(post)"
-            >
-            <i class="bi bi-trash3-fill"></i>
-            </button>
-          </span>
-        </template>
-      </Card>
-      <div v-if="posts.length === 0">You haven't made any posts yet!</div>
+    <div class="list-wrapper">
+      <div class="card-list">
+        <Card
+          v-for="(post, index) in posts"
+          :key="post.id"
+          :post="post"
+          :author="author"
+        >
+          <template #footer>
+            <span class="footer-totality">
+              <button type="button" class="edit-button btn" @click="manage(post, index)">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <span class="divider"></span>
+              <button
+                type="button"
+                class="delete-button btn"
+                @click="displayPrompt(post)"
+              >
+              <i class="bi bi-trash3-fill"></i>
+              </button>
+            </span>
+          </template>
+        </Card>
+        <div v-if="posts.length === 0">You haven't made any posts yet!</div>
+      </div>
     </div>
-
     <PopUpPrompt v-if="showPrompt" @dismiss="closePrompt" @accept="deletePost">
       You are about to delete <strong>{{ selectedPost.title }}</strong
       >! Are you sure?
@@ -138,10 +139,20 @@ export default {
 </script>
 
 <style scoped>
+
+.manage-posts {
+  margin: 2rem 5%;
+}
+
+.list-wrapper {
+  clear: left;
+}
+
 .card-list {
-  display: flex;
+  margin: 0 auto;
+  display: inline-flex;
+  justify-content: center; /* TODO: Try to center align the list, but flex-start each card */
   flex-wrap: wrap;
-  margin: 15pt 10%;
   gap: 3em;
 }
 
@@ -159,6 +170,12 @@ export default {
   height: 55%;
 }
 
+.add-button {
+  margin: 1rem 0 2rem 0;
+  background-color: #4998F5;
+  border: none;
+}
+
 i {
   font-size: 2em;
   color: #FFF;
@@ -166,6 +183,15 @@ i {
 }
 
 i:hover {
+  color: #4998F5;
+}
+
+h1 {
+  text-align: left;
+  color: #1e1e1e;
+}
+
+strong {
   color: #4998F5;
 }
 
