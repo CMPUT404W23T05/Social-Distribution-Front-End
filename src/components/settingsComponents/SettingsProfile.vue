@@ -45,8 +45,8 @@
             <label for="newDisplayName" class="form-label">New display name</label>
             <!-- display name input -->
             <div class="input-group mb-3">
-            <div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">@</span></div>
-            <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName" required>
+            <span class="input-group-text" id="basic-addon1">@</span>
+            <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName" aria-label="Display name" aria-describedby="basic-addon1" required>
           </div>
 
         </form>
