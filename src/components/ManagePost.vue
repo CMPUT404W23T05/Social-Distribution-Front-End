@@ -2,7 +2,7 @@
   <div class="backdrop"></div>
 
   <div class="container">
-    <button type="button" class="exit-btn" @click="$emit('endManage')">
+    <button type="button" class="exit-btn" @mousedown="$emit('endManage')">
       <i class="bi bi-x"></i>
     </button>
 
@@ -11,6 +11,7 @@
       <input
         v-model="post.title"
         @update="setText"
+        maxlength="100"
         class="text-input"
         placeholder="Write a title for your post"
       />
@@ -42,9 +43,9 @@
           />
           <label for="public">Public</label>
         </span>
-        <span>
+        <span class="form-check form-switch">
           <input v-model="markdownEnabled" @change="setText" class="form-check-input" type="checkbox"/>
-          <label class="form-check-label" for="markdown-toggle">{{ markDownMessage }}</label>
+          <label class="form-check-label" for="markdown-toggle"><i class="bi bi-markdown-fill"></i> {{ markDownMessage }}</label>
         </span>
       </span>
 
@@ -62,8 +63,9 @@
         placeholder="Write an (optional) description here"
       />
     </form>
-
-    <button type="submit" class="btn btn-outline-primary" @click="submitPost">
+    <!-- Using @click listener instead actually listens for mouseup, which doesn't trigger when the textarea -->
+    <!-- is resized on unfocus, requiring two clicks to trigger the submit when textarea is focused -->
+    <button type="submit" class="btn btn-outline-primary" @mousedown="submitPost">
     Post <i class="bi bi-send-fill"></i>
     </button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
@@ -112,7 +114,7 @@ export default {
       return this.post.title.length
     },
     maxTitleLength () {
-      return 30
+      return 100
     },
     validPost () {
       return this.titleLength < this.maxTitleLength && this.titleLength > 0 && (!!this.post.image || !!this.post.content)
@@ -265,10 +267,8 @@ export default {
 
 .form-toggles {
   display: flex;
-}
-
-.markdown-toggle {
-  justify-self: flex-end;
+  justify-content: space-between;
+  margin: 0.5em 0;
 }
 
 .btn {
@@ -295,13 +295,9 @@ textarea {
 }
 
 textarea:focus {
-  min-height: 30em;
+  min-height: 20em;
   display: block;
   overflow: auto;
-}
-
-textarea::-webkit-scrollbar-thumb {
-  background-color: #4998f5;
 }
 
 input, textarea {
@@ -310,6 +306,11 @@ input, textarea {
   border: 2pt solid #dadada;
   transition: all 0.4s;
   resize: none;
+}
+
+.image-upload {
+  height: 15em;
+  padding: 1em 0;
 }
 
 </style>

@@ -1,15 +1,24 @@
 <template>
   <div id="makeImagePostBody">
     <!-- Note: image/jpeg != image/jpg despite identical encoding. Ensure correct MIME is sent. -->
-    <input
-      v-if="!imageUploaded"
-      type="file"
-      accept="image/jpeg,image/png"
-      @change="encodeFileBase64($event.target.files[0])"
-    />
+    <div v-if="!imageUploaded" class="image-upload-wrapper image-container">
+      <div class = "wrapper-text">
+        <i class="bi bi-upload"></i>
+        <small>Upload an image</small>
+      </div>
+      <!-- Actual functionality -->
+        <input
+          type="file"
+          accept="image/jpeg,image/png"
+          class="image-container"
+          @change="encodeFileBase64($event.target.files[0])"
+        />
+    </div>
     <div v-else class="image-container">
-      <img class="image-upload" :src="imageSrc" />
-      <button type="button" class="btn image-cancel" @click="clearImage">x</button>
+      <img class="image-upload img-fluid" :src="imageSrc" />
+      <button type="button" class="btn image-cancel" @click="clearImage">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
   </div>
 </template>
@@ -98,21 +107,64 @@ export default {
 }
 </script>
 
-<style>
-.image-upload {
-  max-width: 100pt;
-  max-height: 100pt;
-  object-fit: scale-down;
-  text-align: center;
-  justify-content: center;
-  border-radius: 3pt;
+<style scoped>
+
+.image-container {
+  width: 100%;
+  height: 100%;
 }
 
 .image-cancel {
   position: relative;
-  bottom: 100pt;
-  left: 50pt;
+  width: 1.5em;
+  height: 1.5em;
+  /* Sussy position, but it gets the job done on all images. */
+  left: -2.5em;
+  top: -42%;
+  padding: 0;
+  line-height: 0;
   border-radius: 50%;
-  background-color: red;
+  border: 2pt #FFF solid;
+  background-color: rgba(68, 68, 68, 0.8);
+  color: #FFF;
+  transition: 0.4s;
 }
+
+.image-cancel:hover {
+  color: #f51212;
+  text-shadow: 0 0 5pt red;
+}
+
+/* File inputs are notoriously hard to style - style wrapper instead */
+input[type=file] {
+  opacity: 0;
+}
+.image-upload-wrapper {
+  border: 2pt solid #dadada;
+}
+
+.wrapper-text {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #afafaf;
+  font-size: 0.8em;
+}
+
+.image-upload {
+  max-height: 100%;
+  width: auto
+}
+
+.wrapper-text:hover {
+  color: #f51212;
+}
+
+.bi-upload {
+  font-size: 3.6em;
+}
+
 </style>
