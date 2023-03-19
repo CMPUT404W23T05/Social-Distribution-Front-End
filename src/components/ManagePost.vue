@@ -2,55 +2,70 @@
   <div class="backdrop"></div>
 
   <div class="container">
-    <button type="button" class="exit-btn" @mousedown="$emit('endManage')">
-      <i class="bi bi-x"></i>
-    </button>
+    <div class="modal-header mb-3">
+      <h5 class="modal-title"> {{managePostMessage}} </h5>
+      <button type="button" class="close exit-btn" @mousedown="$emit('endManage')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
 
     <!-- Form -->
-    <form action="gotothedesiredURL" method="POST">
-      <input
-        v-model="post.title"
-        @update="setText"
-        maxlength="100"
-        class="text-input"
-        placeholder="Write a title for your post"
-      />
+    <form action="gotothedesiredURL" method="POST" class="modal-body">
+      <span class="title-totality">
+        <input
+          v-model="post.title"
+          @update="setText"
+          :maxlength="maxTitleLength"
+          class="post-title text-input form-control"
+          placeholder="Write a title for your post"
+        />
+        <span class="title-length-display"> {{ titleLength }} /{{ maxTitleLength }} </span>
+      </span>
       <!-- Radio buttons and markdown toggle -->
-      <span class="form-toggles">
-        <span id="privacySettings">
-          <input disabled
-            type="radio"
-            name="privacy"
-            id="private"
-            value="PRIVATE"
-            v-model="post.visibility"
-          />
-          <label for="private">Private</label>
-          <input disabled
-            type="radio"
-            name="privacy"
-            id="friendsonly"
-            value="FRIENDS"
-            v-model="post.visibility"
-          />
-          <label for="friendsonly">Friends Only</label>
-          <input
-            type="radio"
-            name="privacy"
-            id="public"
-            value="PUBLIC"
-            v-model="post.visibility"
-          />
-          <label for="public">Public</label>
+      <span class="form-toggles mb-3">
+        <span class="privacy-settings">
+          <span class="privacy-setting-single">
+            <input disabled
+              type="radio"
+              name="privacy"
+              class="form-check-input"
+              id="private"
+              value="PRIVATE"
+              v-model="post.visibility"
+            />
+            <label for="private" class="form-check-label">Private</label>
+          </span>
+          <span class="privacy-setting-single">
+            <input disabled
+              type="radio"
+              name="privacy"
+              class="form-check-input"
+              id="friendsonly"
+              value="FRIENDS"
+              v-model="post.visibility"
+            />
+            <label for="friendsonly" class="form-check-label">Friends Only</label>
+          </span>
+          <span class="privacy-setting-single">
+            <input
+              type="radio"
+              name="privacy"
+              class="form-check-input"
+              id="public"
+              value="PUBLIC"
+              v-model="post.visibility"
+            />
+            <label for="public" class="form-check-label">Public</label>
+          </span>
         </span>
-        <span class="form-check form-switch">
-          <input v-model="markdownEnabled" @change="setText" class="form-check-input" type="checkbox"/>
+        <span class="form-check form-switch markdown-setting">
+          <input v-model="markdownEnabled" @change="setText" id="markdown-toggle" class="form-check-input" type="checkbox"/>
           <label class="form-check-label" for="markdown-toggle"><i class="bi bi-markdown-fill"></i> {{ markDownMessage }}</label>
         </span>
       </span>
 
       <!-- Text/Image areas of post -->
-      <textarea v-model="post.content" class=text-input placeholder="Give your post some body text!"></textarea>
+      <textarea v-model="post.content" class="text-input form-control" placeholder="Give your post some body text!"></textarea>
       <ImagePostBody
         class="image-upload"
         :image="imageDataURL"
@@ -59,13 +74,13 @@
       />
       <input
         v-model="post.description"
-        class="text-input"
+        class="text-input form-control mb-3"
         placeholder="Write an (optional) description here"
       />
     </form>
     <!-- Using @click listener instead actually listens for mouseup, which doesn't trigger when the textarea -->
     <!-- is resized on unfocus, requiring two clicks to trigger the submit when textarea is focused -->
-    <button type="submit" class="btn btn-outline-primary" @mousedown="submitPost">
+    <button type="submit" class="btn btn-outline-primary md-1" @mousedown="submitPost">
     Post <i class="bi bi-send-fill"></i>
     </button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
@@ -142,6 +157,11 @@ export default {
       return this.markdownEnabled
         ? 'Markdown Enabled!'
         : 'Markdown Disabled'
+    },
+    managePostMessage () {
+      return this.existingPost
+        ? 'Edit Your Post!'
+        : 'Make A New Post!'
     }
   },
   methods: {
@@ -234,14 +254,20 @@ export default {
 }
 
 .exit-btn {
-  position: absolute;
-  top: -0.8em;
-  right: 1em;
-  border-radius: 50%;
-  border: none;
   height: 1.5em;
   width: 1.5em;
   font-size: 1.5em;
+  padding: 0;
+  line-height: 0;
+  background-color: #FFF;
+  border: none;
+  font-size: 1.5em;
+  transition: 0.4s;
+}
+
+.exit-btn:hover {
+  color: #f51212;
+  text-shadow: 0 0 5pt red;
 }
 
 .container {
@@ -250,41 +276,37 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 99;
-  padding-top: 25pt;
+  padding: 1rem;
   background-color: #fff;
   min-width: 50%;
   max-width: 30rem;
-  border-radius: 5pt;
-  padding: 2em;
+  border-radius: 0.5rem;
+}
+
+.container.open {
+  height: auto;
 }
 
 .text-input {
   width: 100%;
   resize: none;
-  border-radius: 0;
-  box-sizing: content-box;
 }
 
 .form-toggles {
   display: flex;
   justify-content: space-between;
-  margin: 0.5em 0;
+  align-items: center;
 }
 
 .btn {
   width: 10em;
   text-transform: capitalize;
   color:#4998f5;
-  border-radius: 0pt;
 }
 
-*:focus {
-  outline: none;
-  border: 2pt solid #4998f5;
-  border-radius: 0pt;
+.form-check-input {
+  margin: 0 0.35rem;
 }
-
-/* All this for just textarea smh */
 
 textarea {
   display: -webkit-box;
@@ -303,14 +325,30 @@ textarea:focus {
 input, textarea {
   box-shadow: none;
   border-style: none;
-  border: 2pt solid #dadada;
+  border: 1pt solid #c4c4c4;
   transition: all 0.4s;
   resize: none;
+  border-radius: 0.375rem;
 }
 
 .image-upload {
   height: 15em;
   padding: 1em 0;
+}
+
+.title-length-display {
+  width: 100%;
+  text-align: right;
+  font-size: 0.75em;
+}
+
+.privacy-settings {
+  gap: 0.5em;
+}
+
+.privacy-setting-single, .markdown-setting, .privacy-settings {
+  display: flex;
+  align-items: center;
 }
 
 </style>

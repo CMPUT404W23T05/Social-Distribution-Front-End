@@ -10,14 +10,14 @@
         <input
           type="file"
           accept="image/jpeg,image/png"
-          class="image-container"
+          class="image-container form-control"
           @change="encodeFileBase64($event.target.files[0])"
         />
     </div>
     <div v-else class="image-container">
       <img class="image-upload img-fluid" :src="imageSrc" />
       <button type="button" class="btn image-cancel" @click="clearImage">
-        <i class="bi bi-x-lg"></i>
+        <i class="bi bi-x"></i>
       </button>
     </div>
   </div>
@@ -116,15 +116,15 @@ export default {
 
 .image-cancel {
   position: relative;
-  width: 1.5em;
-  height: 1.5em;
+  width: 1.3em;
+  height: 1.3em;
   /* Sussy position, but it gets the job done on all images. */
-  left: -2.5em;
+  left: -2em;
   top: -42%;
   padding: 0;
   line-height: 0;
   border-radius: 50%;
-  border: 2pt #FFF solid;
+  border: 1pt #FFF solid;
   background-color: rgba(68, 68, 68, 0.8);
   color: #FFF;
   transition: 0.4s;
@@ -138,9 +138,7 @@ export default {
 /* File inputs are notoriously hard to style - style wrapper instead */
 input[type=file] {
   opacity: 0;
-}
-.image-upload-wrapper {
-  border: 2pt solid #dadada;
+  cursor: pointer;
 }
 
 .wrapper-text {
@@ -156,7 +154,8 @@ input[type=file] {
 
 .image-upload {
   max-height: 100%;
-  width: auto
+  width: auto;
+  margin: 0;
 }
 
 .wrapper-text:hover {
