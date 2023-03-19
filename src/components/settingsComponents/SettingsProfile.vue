@@ -16,11 +16,38 @@
     <!-- Display name field with clickable edit icon -->
   <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
   <!-- Username field with clickable edit icon -->
-<div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;<UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div>
+<div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;
+  <!-- Edit username modal opener -->
+  <SlotModal :input-fields="{
+    currentPassword: '',
+    newUsername: ''}
+      " @submit-my-form="submitUsernameForm" @clear-fields="clearFields">
+    <template #titleText>Edit username</template>
+    <template #body="scoped">
+      <form @submit.prevent="scoped.submitMethod" id="usernameForm">
+        <div class="mb-3">
+        <label for="currentPassword" class="form-label">Password</label>
+        <input class="form-control" type="password" id="currentPassword" v-model="fields.currentPassword" >
+        </div>
+        <div class="mb-3">
+          <label for="newUsername" class="form-label">New username</label>
+          <input class="form-control" type="text" id="newUsername" v-model="fields.newUsername">
+        </div>
+          </form>
+    </template>
+    <template #submitButton>
+      <button type="submit" class="btn btn-primary" form="usernameForm">Change username</button>
+    </template>
+    <template #openModalButton>
+      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#slotModal"></i>
+    </template>
+      <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
+  </SlotModal></div>
+  <!-- <UsernameChangeModal @alert="showAlert"></UsernameChangeModal></div> -->
 <!-- Change password botton -->
   <PasswordChangeModal @alert="showAlert"></PasswordChangeModal>
-</div>
 
+</div>
 </div>
 
 </div>
@@ -29,21 +56,28 @@
 <script>
 import { useUserStore } from '@/stores/user'
 import PasswordChangeModal from '@/components/settingsComponents/PasswordChangeModal.vue'
-import UsernameChangeModal from './UsernameChangeModal.vue'
+import SlotModal from './SlotModal.vue'
 import { mapStores } from 'pinia'
 import axios from 'axios'
+import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'SettingsProfile',
   components: {
     PasswordChangeModal,
-    UsernameChangeModal
+    SlotModal
   },
   data () {
     return {
       alert: {
         msg: '',
         type: ''
+      },
+      errorMsg: '',
+      fields: {
+        currentPassword: '',
+        newUsername: ''
       }
+
     }
   },
   methods: {
@@ -89,6 +123,42 @@ export default {
     },
     getAuthorPropertyIfDefined (prop) {
       return this.userStore.user.author ? this.userStore.user.author[prop] : '' // return an author property only if author exists else return empty string
+    },
+    clearFields () {
+      for (const field in this.fields) {
+        this.fields[field] = ''
+      }
+    },
+    // Methods for username change modal
+    submitUsernameForm ({ done, e }) {
+      // key value pairs of username and password
+      const formData = {
+        current_password: this.fields.currentPassword,
+        new_username: this.fields.newUsername
+      }
+      axios
+        .post('/users/set_username/', formData)
+        .then(response => {
+          console.log(response)
+          const newName = this.fields.newUsername
+          this.showAlert('Username changed successfully. Your username is now "' + newName + '".', 'success')
+          this.updateLocalUsername(newName) // update local storage
+          done() // tell modal to clean up and close
+        })
+        .catch(error => {
+          console.log(error)
+          const formattedFieldNames = { current_password: 'Password', new_username: 'New username' }
+
+          const errorString = errorToString(error, formattedFieldNames)
+          e(errorString) // send error to modal
+        })
+    },
+    updateLocalUsername (newUsername) {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      const user = userStore.user
+      user.username = newUsername
+      localStorage.setItem('user', JSON.stringify(userStore.user))
     }
   },
   computed: {
