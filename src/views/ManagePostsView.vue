@@ -2,7 +2,7 @@
   <div class="manage-posts">
     <h1>Manage <strong>Posts</strong></h1>
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn btn-primary float-start" @click="manage()">
+    <button type="button" class="add-button btn btn-primary float-start" @click="showManage = true">
       Make A New Post
     </button>
     <div class="list-wrapper">
@@ -12,17 +12,18 @@
           :key="post.id"
           :post="post"
           :author="author"
+          @click="selected = {post: post, index: index}"
         >
           <template #footer>
             <span class="footer-totality">
-              <button type="button" class="edit-button btn" @click="manage(post, index)">
+              <button type="button" class="edit-button btn" @click="showManage = true">
                 <i class="bi bi-pencil-square"></i>
               </button>
               <span class="divider"></span>
               <button
                 type="button"
                 class="delete-button btn"
-                @click="displayPrompt(post)"
+                @click="showPrompt = true"
               >
               <i class="bi bi-trash3-fill"></i>
               </button>
@@ -32,20 +33,22 @@
         <div v-if="posts.length === 0">You haven't made any posts yet!</div>
       </div>
     </div>
-    <PopUpPrompt v-if="showPrompt" @dismiss="closePrompt" @accept="deletePost">
-      You are about to delete <strong>{{ selectedPost.title }}</strong
-      >! Are you sure?
+
+    <PopUpPrompt
+      v-if="showPrompt"
+      @dismiss="showPrompt = false"
+      @delete-post="delPost()"
+    >
+      You are about to delete <strong>{{ selected.post.title }}</strong>! Are you sure?
     </PopUpPrompt>
 
-    <Transition>
-      <ManagePost
-        v-if="showManage"
-        :class="{open: showManage}"
-        :author="author"
-        :existingPost="selectedPost"
-        @end-manage="refreshPosts"
-      ></ManagePost>
-    </Transition>
+    <ManagePost
+      v-if="showManage"
+      :existingPost="selected.post"
+      @dismiss="showManage=false"
+      @edit-post="(post) => editPost(post)"
+      @create-post="(post) => addPost(post)"
+    ></ManagePost>
   </div>
 </template>
 
@@ -61,73 +64,76 @@ export default {
   data () {
     return {
       posts: [],
-      selectedPost: null,
+      selected: { post: null, index: -1 },
       showManage: false,
       showPrompt: false,
-      author: null
+      author: null // Load from user store
     }
   },
   computed: {
-    ...mapStores(useUserStore)
+    ...mapStores(useUserStore),
+
+    // Create, update, delete
+    cudEndPoint () {
+      return `/authors/${this.author.id}/posts/${this.selected.post.id}/`
+    },
+
+    // read
+    rEndPoint () {
+      return `/authors/${this.author.id}/posts/`
+    }
   },
   methods: {
-    deletePost () {
-      axios
-        .delete(`/authors/${this.author.id}/posts/${this.selectedPost.id}`)
-        .then((res) => {
-          console.log(res.data)
-          this.posts = this.posts.filter((post) => post !== this.selectedPost)
-        })
-        .catch((err) => {
-          alert("Couldn't delete post!")
-          console.log(err)
-        })
-      this.closePrompt()
-    },
-
-    getPosts () {
-      axios
-        .get(`/authors/${this.author.id}/posts/`)
-        .then((res) => {
-          this.posts = res.data
-          console.log(res)
-        })
-        .catch((err) => {
-          alert("Couldn't get posts!")
-          console.log(err)
-          this.posts = []
-        })
-    },
-
-    manage (post) {
-      this.setSelected(post)
-      this.showManage = true
-    },
-
-    displayPrompt (post) {
-      this.setSelected(post)
-      this.showPrompt = true
-    },
-
-    setSelected (post) {
-      this.selectedPost = post
-    },
-
-    refreshPosts () {
-      console.log('refreshing!')
-      this.getPosts()
-      this.$forceUpdate()
-      this.showManage = false
-    },
-
-    closePrompt () {
-      this.showPrompt = false
-    },
-
     getAuthorFromStore () {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+
+    // This view handles all CRUD Operations
+    // Existing post is already accessible via "this.selected"
+    addPost (post) {
+      axios
+        .post(this.cudEndPoint, post)
+        .then(() => {
+          this.posts.unshift(post)
+        })
+        .catch(() => {
+          alert("Couldn't add the post!")
+        })
+    },
+
+    getPosts () {
+      axios
+        .get(this.rEndPoint)
+        .then((res) => {
+          this.posts = res.data
+        })
+        .catch(() => {
+          alert("Couldn't get any posts!")
+        })
+    },
+
+    editPost (post) {
+      axios
+        .post(this.cudEndPoint, post)
+        .then(() => {
+          this.posts[this.selected.index] = post
+        })
+        .catch(() => {
+          alert("Couldn't edit the post!")
+        })
+    },
+
+    delPost () {
+      axios
+        .delete(this.endpoint)
+        .then(() => {
+          this.posts.splice(this.selected.index, 1)
+        })
+        .catch(() => {
+          alert("Couldn't delete the post!")
+        })
     }
   },
   mounted () {

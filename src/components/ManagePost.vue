@@ -4,7 +4,7 @@
   <div class="container">
     <div class="modal-header mb-3">
       <h5 class="modal-title"> {{managePostMessage}} </h5>
-      <button type="button" class="close exit-btn" @mousedown="$emit('endManage')">
+      <button type="button" class="close exit-btn" @mousedown="$emit('dismiss')">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -80,7 +80,7 @@
     </form>
     <!-- Using @click listener instead actually listens for mouseup, which doesn't trigger when the textarea -->
     <!-- is resized on unfocus, requiring two clicks to trigger the submit when textarea is focused -->
-    <button type="submit" class="btn btn-outline-primary md-1" @mousedown="submitPost">
+    <button type="submit" class="btn btn-outline-primary md-1" @click="submitPost">
     Post <i class="bi bi-send-fill"></i>
     </button>
     <div class="error" v-show="badSubmit">{{ errorMessage }}</div>
@@ -89,7 +89,6 @@
 
 <script>
 import ImagePostBody from '@/components/ImagePostBody.vue'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 
 export default {
@@ -122,7 +121,7 @@ export default {
       markdownEnabled: false
     }
   },
-  props: ['author', 'existingPost'],
+  props: ['existingPost'],
 
   computed: {
     titleLength () {
@@ -195,33 +194,18 @@ export default {
     },
 
     submitPost () {
+      // Emit post back to parent for respective AJAX call
       if (this.validPost) {
+        // Re-format to to spec format
         this.post.contentType = this.contentTypeAsStr
         console.table(this.post)
 
         if (this.existingPost) {
-          console.log(this.post)
-          console.log(`/authors/${this.post.author.id}/posts/${this.post.id}/`)
-          axios
-            .post(`/authors/${this.post.author.id}/posts/${this.post.id}/`, this.post)
-            .then((res) => console.log(res))
-            .catch((err) => {
-              alert("Couldn't edit the post!")
-              console.log(err)
-            })
+          this.$emit('editPost', this.post)
         } else {
-          const uniqueID = uuidv4()
-          this.post.id = uniqueID
-          console.log(this.post)
-          axios
-            .post(`/authors/${this.post.author.id}/posts/create-post/`, this.post)
-            .then((res) => console.log(res))
-            .catch((err) => {
-              alert("Couldn't make the post!")
-              console.log(err)
-            })
+          this.post.id = uuidv4()
+          this.emit('addPost', this.post)
         }
-        this.$emit('endManage')
       } else {
         this.badSubmit = true
       }
@@ -238,7 +222,7 @@ export default {
       }
     }
   },
-  emits: ['endManage']
+  emits: ['dismiss', 'addPost', 'editPost']
 }
 </script>
 
