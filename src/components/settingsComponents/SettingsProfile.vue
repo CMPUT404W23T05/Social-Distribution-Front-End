@@ -14,7 +14,30 @@
     <!-- Settings for names and password -->
   <div class="d-flex flex-column p-4 text-start">
     <!-- Display name field with clickable edit icon -->
-  <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<i class="bi bi-pencil-fill"  role="button" @click="promptNewDisplayName"></i></div>
+  <div><span class="display-name">Display Name: @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;
+    <!-- Edit display name modal -->
+    <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="fillCurrentDisplayName" >
+    <template #openModalButton>
+      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="fillCurrentDisplayName"></i>
+    </template>
+    <template #titleText>Edit display name</template>
+    <template #body="scoped">
+        <form @submit.prevent="scoped.submitMethod" id="displaynameForm">
+            <label for="newDisplayName" class="form-label">New display name</label>
+            <!-- display name input -->
+            <div class="input-group mb-3">
+            <div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">@</span></div>
+            <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName">
+          </div>
+
+        </form>
+        </template>
+          <template #submitButton>
+            <button type="submit" class="btn btn-primary" form="displaynameForm">Change display name</button>
+            </template>
+
+    ></SlotModal>
+  </div>
   <!-- Username field with clickable edit icon -->
 <div><span class="username">Username: {{ this.userStore.user.username }}</span>&nbsp;
 
@@ -102,7 +125,8 @@ export default {
         currentPassword: '',
         newUsername: '',
         newPassword: '',
-        confirmNewPassword: ''
+        confirmNewPassword: '',
+        newDisplayName: ''
       }
 
     }
@@ -113,13 +137,6 @@ export default {
       this.alert.type = 'alert-' + type
       console.log(this.alert)
     },
-    promptNewDisplayName () {
-      // simple javascript prompt to get new display name, replace with Vue component later
-      const name = prompt('Enter a new display name')
-      if (name) {
-        this.updateAuthorField('displayName', name)
-      }
-    },
     promptImageURL () {
       // simple javascript prompt to get new image URL, replace with Vue component later
       const url = prompt('Enter a new image URL')
@@ -127,7 +144,7 @@ export default {
         this.updateAuthorField('profileImage', url)
       }
     },
-    updateAuthorField (type, newValue) {
+    updateAuthorField (type, newValue, { done, e }) {
       // update author field with newValue in backend and local storage
       const readableFieldNames = {
         displayName: 'Display name',
@@ -142,10 +159,12 @@ export default {
           console.log(response)
           this.showAlert(readableFieldNames[type] + ' sucessfully updated!', 'success')
           this.userStore.setUser(user) // update user store and local storage
+          done()
         })
         .catch((error) => {
           console.log(error)
           this.showAlert(readableFieldNames[type] + ' update failed!', 'danger')
+          e(errorToString(error))
         })
     },
     getAuthorPropertyIfDefined (prop) {
@@ -215,14 +234,19 @@ export default {
             e(errorString) // send error to modal
           })
       }
+    },
+    // method for display name change modal
+    submitDisplaynameForm ({ done, e }) {
+      this.updateAuthorField('displayName', this.fields.newDisplayName, { done, e })
+    },
+    fillCurrentDisplayName () {
+      this.fields.newDisplayName = this.getAuthorPropertyIfDefined('displayName')
     }
-
   },
   computed: {
     ...mapStores(useUserStore)
 
   }
-
 }
 </script>
 
