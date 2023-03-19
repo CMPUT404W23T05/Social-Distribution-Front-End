@@ -93,6 +93,7 @@ export default {
         .then((res) => {
           this.actor = res.data
           this.updateRequestInformation(state)
+          this.requests = this.requests.filter(request => request.actor.url !== res.data.url) // remove the request from the list by only keeping requests with a different actor url
         })
         .catch((err) => {
           console.log("Couldn't get author actor!")
