@@ -20,11 +20,7 @@
                 <i class="bi bi-pencil-square"></i>
               </button>
               <span class="divider"></span>
-              <button
-                type="button"
-                class="delete-button btn"
-                @click="showPrompt = true"
-              >
+              <button type="button" class="delete-button btn" data-bs-toggle="modal" data-bs-target="#deletePrompt">
               <i class="bi bi-trash3-fill"></i>
               </button>
             </span>
@@ -34,33 +30,38 @@
       </div>
     </div>
 
-    <PopUpPrompt
-      v-if="showPrompt"
-      @dismiss="showPrompt = false"
-      @delete-post="delPost()"
-    >
-      You are about to delete <strong>{{ selected.post.title }}</strong>! Are you sure?
-    </PopUpPrompt>
-
     <ManagePostModal
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
       @create-post="(post) => createPost(post)">
-      @dismiss="destroyModal"
     </ManagePostModal>
+
+    <SlotModal modal-name="deletePrompt" v-if="selected.post">
+      <template #titleText>Delete <strong>{{ selected.post.title }}</strong> </template>
+      <template #body>Are you sure?</template>
+      <template #closeButtonText>
+        No! Take me back!
+      </template>
+      <template #submitButton>
+        <button type="submit" class="btn btn-primary text-warning" data-bs-dismiss="modal" @click="delPost()">Yes, I'm sure</button>
+      </template>
+      <!-- Overwrite the fallback slot and prevent open modal button from appearing-->
+      <template #openModalButton><br class="d-none"></template>
+    </SlotModal>
 
   </div>
 </template>
 
 <script>
 import Card from '@/components/RevisedCard.vue'
-import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import SlotModal from '@/components/SlotModal.vue'
 import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import axios from 'axios'
 
 export default {
+  components: { ManagePostModal, Card, SlotModal },
   data () {
     return {
       posts: [],
@@ -101,7 +102,7 @@ export default {
     // Existing post is already accessible via "this.selected"
     createPost (post) {
       axios
-        .post(this.udEndPoint, post)
+        .post(this.crEndPoint, post)
         .then(() => {
           this.posts.unshift(post)
         })
@@ -148,8 +149,7 @@ export default {
   mounted () {
     this.getAuthorFromStore()
     this.getPosts()
-  },
-  components: { ManagePostModal, Card, PopUpPrompt }
+  }
 }
 </script>
 

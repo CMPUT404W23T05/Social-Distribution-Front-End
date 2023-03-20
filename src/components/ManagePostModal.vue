@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ modalTitle }}</h5>
+          <h5 class="modal-title">{{ modalTitleMode }}  <strong>{{ modalTitlePostName }}</strong></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" ref="Close" aria-label="Close" @mousedown="$emit('dismiss')">
             <span aria-hidden="true"></span>
           </button>
@@ -14,7 +14,7 @@
             <!-- Post Title -->
             <div class="form-group">
               <label for="post-title" class="d-flex justify-content-left" aria-autocomplete="off">Post Title</label>
-              <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Something fun goes here!"/>
+              <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Write a title for your post!"/>
               <small class="d-flex justify-content-center form-text text-muted"> {{ post.title.length }}/{{ titleMaxLength }} </small>
             </div>
 
@@ -84,11 +84,18 @@ export default {
     }
   },
   computed: {
-    modalTitle () {
+    modalTitleMode () {
       return this.existingPost
-        ? 'Edit Your Post!'
-        : 'Make A New Post!'
+        ? 'Edit'
+        : 'Make a'
     },
+
+    modalTitlePostName () {
+      return this.existingPost
+        ? this.existingPost.title
+        : 'New Post!'
+    },
+
     titleMaxLength () {
       return 30
     },
@@ -241,6 +248,10 @@ textarea.text-input:focus {
 .image-upload {
   height: 20em;
   padding: 1em 0;
+}
+
+h5 strong {
+  color: var(--bs-blue)
 }
 
 </style>
