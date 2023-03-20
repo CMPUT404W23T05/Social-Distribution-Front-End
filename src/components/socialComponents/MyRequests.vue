@@ -22,6 +22,7 @@ import { mapStores } from 'pinia'
 import axios from 'axios'
 
 export default {
+  emits: ['updateFollowers'],
   data () {
     return {
       inbox: [''], // the author's entire inbox
@@ -93,7 +94,6 @@ export default {
         .then((res) => {
           this.actor = res.data
           this.updateRequestInformation(state)
-          this.requests = this.requests.filter(request => request.actor.url !== res.data.url) // remove the request from the list by only keeping requests with a different actor url
         })
         .catch((err) => {
           console.log("Couldn't get author actor!")
@@ -110,6 +110,11 @@ export default {
 
       axios
         .post(`/authors/${this.object.id}/inbox/`, this.followFormat)
+        .then((res) => {
+          this.requests = this.requests.filter(request => request.actor.url !== this.actor.url) // remove the request from the list by only keeping requests with a different actor url
+          console.table(this.requests)
+          this.$emit('updateFollowers') // update the followers list
+        })
         .catch((err) => {
           console.log("Couldn't update your request!")
           console.log(err)
