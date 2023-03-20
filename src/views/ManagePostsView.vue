@@ -2,7 +2,7 @@
   <div class="manage-posts">
     <h1>Manage <strong>Posts</strong></h1>
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#managePost" @mousedown="selected = {post: null, index: -1}">
+    <button type="button" class="add-button btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#managePost" @mouseenter="selected = { post: null, index: -1 }">
       Make A New Post
     </button>
     <div class="list-wrapper">
@@ -42,11 +42,10 @@
       You are about to delete <strong>{{ selected.post.title }}</strong>! Are you sure?
     </PopUpPrompt>
 
-    <ManagePostModal>
+    <ManagePostModal
       :existingPost="selected.post"
-      @dismiss="showManage=false"
       @edit-post="(post) => editPost(post)"
-      @create-post="(post) => createPost(post)"
+      @create-post="(post) => createPost(post)">
     </ManagePostModal>
 
   </div>
@@ -65,7 +64,6 @@ export default {
     return {
       posts: [],
       selected: { post: null, index: -1 },
-      showManage: false,
       showPrompt: false,
       author: null // Load from user store
     }

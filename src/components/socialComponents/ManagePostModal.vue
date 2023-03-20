@@ -135,7 +135,7 @@ export default {
       }
     }
   },
-  mounted () {
+  beforeUpdate () {
     // Load a copy of an existing post if supplied
     if (this.existingPost) {
       this.post = structuredClone(this.existingPost)
