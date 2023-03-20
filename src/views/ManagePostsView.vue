@@ -2,7 +2,7 @@
   <div class="manage-posts">
     <h1>Manage <strong>Posts</strong></h1>
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn btn-primary float-start" @click="showManage = true">
+    <button type="button" class="add-button btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#managePost" @mousedown="selected = {post: null, index: -1}">
       Make A New Post
     </button>
     <div class="list-wrapper">
@@ -12,11 +12,11 @@
           :key="post.id"
           :post="post"
           :author="author"
-          @click="selected = {post: post, index: index}"
+          @mousedown="selected = {post: post, index: index}"
         >
           <template #footer>
             <span class="footer-totality">
-              <button type="button" class="edit-button btn" @click="showManage = true">
+              <button type="button" class="edit-button btn" data-bs-toggle="modal" data-bs-target="#managePost">
                 <i class="bi bi-pencil-square"></i>
               </button>
               <span class="divider"></span>
@@ -42,20 +42,20 @@
       You are about to delete <strong>{{ selected.post.title }}</strong>! Are you sure?
     </PopUpPrompt>
 
-    <ManagePost
-      v-if="showManage"
+    <ManagePostModal>
       :existingPost="selected.post"
       @dismiss="showManage=false"
       @edit-post="(post) => editPost(post)"
       @create-post="(post) => createPost(post)"
-    ></ManagePost>
+    </ManagePostModal>
+
   </div>
 </template>
 
 <script>
-import ManagePost from '@/components/ManagePost.vue'
 import Card from '@/components/RevisedCard.vue'
 import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import ManagePostModal from '@/components/socialComponents/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import axios from 'axios'
@@ -75,7 +75,11 @@ export default {
 
     // Update, delete
     udEndPoint () {
-      return `/authors/${this.author.id}/posts/${this.selected.post.id}/`
+      if (this.selected.post) {
+        return `/authors/${this.author.id}/posts/${this.selected.post.id}/`
+      } else {
+        return null
+      }
     },
 
     // Create, read
@@ -142,7 +146,7 @@ export default {
     this.getAuthorFromStore()
     this.getPosts()
   },
-  components: { ManagePost, Card, PopUpPrompt }
+  components: { ManagePostModal, Card, PopUpPrompt }
 }
 </script>
 

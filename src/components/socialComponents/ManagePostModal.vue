@@ -1,11 +1,11 @@
 <template>
-  <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal fade bd-example-modal-lg" id="managePost" tabindex="-1" role="dialog" aria-labelledby=":3" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
           </button>
         </div>
 
@@ -54,8 +54,10 @@
             <input v-model="post.description" class="text-input form-control mb-3" placeholder="Write an (optional) description here"/>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-outline-primary">Post <i class="bi bi-send-fill"></i></button>
-              <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error }}</small>
+              <div v-if="invalidSubmit" class="error-container">
+                <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error }}</small>
+              </div>
+              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" @mousedown="submitPost">Post <i class="bi bi-send-fill"></i></button>
             </div>
           </form>
         </div>
@@ -108,7 +110,7 @@ export default {
       return 100
     },
     markDownMessage () {
-      return this.markdownEnabled
+      return this.markDownEnabled
         ? 'Markdown Enabled!'
         : 'Markdown Disabled'
     },
@@ -140,14 +142,14 @@ export default {
       // Convert from contentType backend string-representation to an iterable
       this.post.contentType = this.post.contentType.split(',')
       if (this.post.contentType.includes('text/markdown')) {
-        this.markdownEnabled = true
+        this.markDownEnabled = true
       }
     }
   },
   methods: {
     setText () {
       this.sanitizeContentTypes('text')
-      this.appendMime(this.markdownEnabled ? 'text/markdown' : 'text/plain')
+      this.appendMime(this.markDownEnabled ? 'text/markdown' : 'text/plain')
     },
 
     setImage (image) {
