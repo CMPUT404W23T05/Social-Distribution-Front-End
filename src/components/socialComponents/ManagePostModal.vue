@@ -1,10 +1,10 @@
 <template>
-  <div class="modal fade bd-example-modal-lg" id="managePost" tabindex="-1" role="dialog" aria-labelledby=":3" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+  <div class="modal fade bd-example-modal-lg" ref="managePost" id="managePost" tabindex="-1" role="dialog" aria-labelledby=":3" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @mousedown="$emit('dismiss')">
             <span aria-hidden="true"></span>
           </button>
         </div>
@@ -74,28 +74,11 @@ import { v4 as uuidv4 } from 'uuid'
 export default {
   components: { ImagePostBody },
   props: ['existingPost'], // Create pass-by-value copy to avoid mutating original post
-  emits: ['createPost', 'editPost'],
+  emits: ['createPost', 'editPost', 'dismiss'],
   data () {
     return {
       // Initialize a default post
-      post: {
-        type: 'post',
-        title: '',
-        source: 'http://placeholderurlfornow.yummy/',
-        origin: 'http://anotherplaceholderurlfornow.yucky/',
-        description: '',
-        contentType: [],
-        content: '',
-        image: null,
-        count: 0,
-        unlisted: false,
-        visibility: 'PUBLIC', // Public by default for now
-        author: this.author,
-        // Generate when post is submitted
-        comments: null, // url from server
-        id: null,
-        published: '2023-03-01T21:18:38.908794Z' // placeholder
-      },
+      post: null,
       markDownEnabled: false,
       invalidSubmit: false
     }
@@ -135,16 +118,30 @@ export default {
       }
     }
   },
-  beforeUpdate () {
-    // Load a copy of an existing post if supplied
-    if (this.existingPost) {
-      this.post = structuredClone(this.existingPost)
-      // Convert from contentType backend string-representation to an iterable
-      this.post.contentType = this.post.contentType.split(',')
-      if (this.post.contentType.includes('text/markdown')) {
-        this.markDownEnabled = true
+
+  created () {
+    this.post = this.getTemplate()
+  },
+
+  mounted () {
+    const modalEl = this.$refs.managePost
+    modalEl.addEventListener('show.bs.modal', () => {
+      if (this.existingPost) {
+        this.post = structuredClone(this.existingPost)
+        // Convert from contentType backend string-representation to an iterable
+        this.post.contentType = this.post.contentType.split(',')
+        if (this.post.contentType.includes('text/markdown')) {
+          this.markDownEnabled = true
+        }
+      } else {
+        this.post = this.getTemplate()
       }
-    }
+    })
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      this.post = this.getTemplate()
+    })
+    // Load a copy of an existing post if supplied
   },
   methods: {
     setText () {
@@ -159,6 +156,27 @@ export default {
         this.appendMime(image.mime)
       } else {
         this.post.image = null
+      }
+    },
+
+    getTemplate () {
+      return {
+        type: 'post',
+        title: '',
+        source: 'http://placeholderurlfornow.yummy/',
+        origin: 'http://anotherplaceholderurlfornow.yucky/',
+        description: '',
+        contentType: [],
+        content: '',
+        image: null,
+        count: 0,
+        unlisted: false,
+        visibility: 'PUBLIC', // Public by default for now
+        author: this.author,
+        // Generate when post is submitted
+        comments: null, // url from server
+        id: null,
+        published: '2023-03-01T21:18:38.908794Z' // placeholder
       }
     },
 
@@ -185,10 +203,12 @@ export default {
 
         if (this.existingPost) {
           this.$emit('editPost', this.post)
+          this.$emit('dismiss')
         } else {
           this.post.id = uuidv4()
           console.table(this.post)
           this.$emit('createPost', this.post)
+          this.$emit('dismiss')
         }
       } else {
         this.invalidSubmit = true

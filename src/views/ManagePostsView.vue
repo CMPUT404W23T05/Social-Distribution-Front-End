@@ -46,6 +46,7 @@
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
       @create-post="(post) => createPost(post)">
+      @dismiss="destroyModal"
     </ManagePostModal>
 
   </div>
@@ -90,6 +91,11 @@ export default {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+
+    destroyModal () {
+      this.$el.querySelector('#managePost').dispose()
+      this.$el.querySelector('.modal-backdrop').dispose()
     },
 
     // This view handles all CRUD Operations
