@@ -19,7 +19,7 @@
                 </ul>
             </li>
             <li class = 'nav-item'>
-                <router-link to = "/browse" class="nav-link"> Browse </router-link>
+                <router-link :to="{ name: 'browsepage' }" class="nav-link"> Browse </router-link>
             </li>
             <li class = 'nav-item dropdown'>
                 <router-link to = "/social" class="nav-link"> Social </router-link>
