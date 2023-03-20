@@ -4,7 +4,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ modalTitle }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @mousedown="$emit('dismiss')">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" ref="Close" aria-label="Close" @mousedown="$emit('dismiss')">
             <span aria-hidden="true"></span>
           </button>
         </div>
@@ -13,7 +13,7 @@
           <form>
             <!-- Post Title -->
             <div class="form-group">
-              <label for="post-title">Post Title</label>
+              <label for="post-title" class="d-flex justify-content-left">Post Title</label>
               <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Something fun goes here!"/>
               <small class="d-flex justify-content-center form-text text-muted"> {{ post.title.length }}/{{ titleMaxLength }} </small>
             </div>
@@ -55,9 +55,9 @@
 
             <div class="modal-footer">
               <div v-if="invalidSubmit" class="error-container">
-                <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error }}</small>
+                <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error + " "}} </small>
               </div>
-              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal" @mousedown="submitPost">Post <i class="bi bi-send-fill"></i></button>
+              <button type="button" class="btn btn-outline-primary" @mousedown="submitPost">Post <i class="bi bi-send-fill"></i></button>
             </div>
           </form>
         </div>
@@ -90,7 +90,7 @@ export default {
         : 'Make A New Post!'
     },
     titleMaxLength () {
-      return 100
+      return 30
     },
     markDownMessage () {
       return this.markDownEnabled
@@ -100,7 +100,7 @@ export default {
     errors () {
       const messages = []
 
-      if (this.post.title.length > this.titleMaxLength) {
+      if (this.post.title.length > this.titleMaxLength || this.post.title.length === 0) {
         messages.push('Your post needs a title between 1 and 30 characters!')
       }
       if (!this.post.image && !this.post.content) {
@@ -110,7 +110,7 @@ export default {
     },
     imageDataURL () {
       if (this.existingPost && this.post.image) {
-        const imageMime = this.post.contentType.find(type => type.includes('image'))
+        const imageMime = this.post.contentType.find(contentType => contentType.includes('image'))
         // Template literals give undefined in child component
         return String.raw`data:${imageMime},${this.post.image}`
       } else {
@@ -126,6 +126,7 @@ export default {
   mounted () {
     const modalEl = this.$refs.managePost
     modalEl.addEventListener('show.bs.modal', () => {
+      // Load a copy of an existing post if supplied
       if (this.existingPost) {
         this.post = structuredClone(this.existingPost)
         // Convert from contentType backend string-representation to an iterable
@@ -139,9 +140,9 @@ export default {
     })
 
     modalEl.addEventListener('hidden.bs.modal', () => {
+      // Clear form
       this.post = this.getTemplate()
     })
-    // Load a copy of an existing post if supplied
   },
   methods: {
     setText () {
@@ -195,18 +196,19 @@ export default {
     },
 
     submitPost () {
+      console.log('emittting!')
       // Emit post back to parent for respective AJAX call
-      if (this.validPost) {
+      if (this.errors.length === 0) {
         // Re-format to to spec format
-        this.post.contentType = this.contentTypeAsStr
+        this.post.contentType = this.post.contentType.toString()
         console.table(this.post)
 
+        this.$refs.Close.click()
         if (this.existingPost) {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
         } else {
           this.post.id = uuidv4()
-          console.table(this.post)
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
         }
@@ -218,3 +220,27 @@ export default {
 }
 
 </script>
+
+<style>
+  textarea.text-input {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  min-height: 8em;
+  overflow: hidden;
+  transition: 0.4s;
+  resize: none;
+}
+
+textarea.text-input:focus {
+  min-height: 15em;
+  display: block;
+  overflow: auto;
+}
+
+.image-upload {
+  height: 20em;
+  padding: 1em 0;
+}
+
+</style>

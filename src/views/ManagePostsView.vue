@@ -55,7 +55,7 @@
 <script>
 import Card from '@/components/RevisedCard.vue'
 import PopUpPrompt from '@/components/PopUpPrompt.vue'
-import ManagePostModal from '@/components/socialComponents/ManagePostModal.vue'
+import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import axios from 'axios'
@@ -75,7 +75,9 @@ export default {
     // Update, delete
     udEndPoint () {
       if (this.selected.post) {
-        return `/authors/${this.author.id}/posts/${this.selected.post.id}/`
+        // const endpoint = `/authors/${this.author.id}/posts/${this.selected.post.id}/`
+        const endpoint = '/authors/' + this.author.id + '/posts/' + this.selected.post.id + '/'
+        return endpoint
       } else {
         return null
       }
@@ -83,7 +85,9 @@ export default {
 
     // Create, read
     crEndPoint () {
-      return `/authors/${this.author.id}/posts/`
+      // const endpoint = String.raw`/authors/${this.author.id}/posts/`
+      const endpoint = '/authors/' + this.author.id + '/posts/'
+      return endpoint
     }
   },
   methods: {

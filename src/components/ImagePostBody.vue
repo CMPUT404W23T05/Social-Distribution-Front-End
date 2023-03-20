@@ -118,9 +118,9 @@ export default {
   position: relative;
   width: 1.3em;
   height: 1.3em;
-  /* Sussy position, but it gets the job done on all images. */
+  /* Sussy position, but it gets the job done on most images. */
   left: -2em;
-  top: -42%;
+  top: -38%;
   padding: 0;
   line-height: 0;
   border-radius: 50%;
