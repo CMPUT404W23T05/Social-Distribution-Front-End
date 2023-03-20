@@ -1,0 +1,198 @@
+<template>
+  <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modalTitle }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form>
+            <!-- Post Title -->
+            <div class="form-group">
+              <label for="post-title">Post Title</label>
+              <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Something fun goes here!"/>
+              <small class="d-flex justify-content-center form-text text-muted"> {{ post.title.length }}/{{ titleMaxLength }} </small>
+            </div>
+
+            <!-- Privacy Settings and Markdown Setting-->
+            <div class="form-row">
+              <!-- Privacy -->
+              <div class="col">
+                <div class="form-check form-check-inline">
+                  <input v-model="post.visibility" id="privacy-private" class="form-check-input" type="radio" value="PRIVATE"/>
+                  <label for="privacy-private" class="form-check-label">Private</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input v-model="post.visibility" id="privacy-friends" class="form-check-input" type="radio" value="FRIENDS"/>
+                  <label for="privacy-friends" class="form-check-label">Friends</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input v-model="post.visibility" id="privacy-public" class="form-check-input" type="radio" value="PUBLIC"/>
+                  <label for="privacy-public" class="form-check-label">Public</label>
+                </div>
+              </div>
+              <!-- Markdown setting -->
+              <div class="col">
+                <div class="form-check form-switch">
+                  <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input" type="checkbox"/>
+                  <label class="form-check-label" for="markdown-toggle"><i class="bi bi-markdown-fill"></i> {{ markDownMessage }}</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Textbody -->
+            <textarea v-model="post.content" class="text-input form-control" placeholder="Give your post some body text!"></textarea>
+
+            <!-- Image custom component-->
+            <ImagePostBody class="image-upload" :image="imageDataURL" @image-uploaded="(image) => setImage(image)" @image-clear="setImage(null)"/>
+
+            <!-- Description -->
+            <input v-model="post.description" class="text-input form-control mb-3" placeholder="Write an (optional) description here"/>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-primary">Post <i class="bi bi-send-fill"></i></button>
+              <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error }}</small>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+import ImagePostBody from '@/components/ImagePostBody.vue'
+import { v4 as uuidv4 } from 'uuid'
+
+export default {
+  components: { ImagePostBody },
+  props: ['existingPost'], // Create pass-by-value copy to avoid mutating original post
+  emits: ['createPost', 'editPost'],
+  data () {
+    return {
+      // Initialize a default post
+      post: {
+        type: 'post',
+        title: '',
+        source: 'http://placeholderurlfornow.yummy/',
+        origin: 'http://anotherplaceholderurlfornow.yucky/',
+        description: '',
+        contentType: [],
+        content: '',
+        image: null,
+        count: 0,
+        unlisted: false,
+        visibility: 'PUBLIC', // Public by default for now
+        author: this.author,
+        // Generate when post is submitted
+        comments: null, // url from server
+        id: null,
+        published: '2023-03-01T21:18:38.908794Z' // placeholder
+      },
+      markDownEnabled: false,
+      invalidSubmit: false
+    }
+  },
+  computed: {
+    modalTitle () {
+      return this.existingPost
+        ? 'Edit Your Post!'
+        : 'Make A New Post!'
+    },
+    titleMaxLength () {
+      return 100
+    },
+    markDownMessage () {
+      return this.markdownEnabled
+        ? 'Markdown Enabled!'
+        : 'Markdown Disabled'
+    },
+    errors () {
+      const messages = []
+
+      if (this.post.title.length > this.titleMaxLength) {
+        messages.push('Your post needs a title between 1 and 30 characters!')
+      }
+      if (!this.post.image && !this.post.content) {
+        messages.push('You need text and/or image content!')
+      }
+      return messages
+    },
+    imageDataURL () {
+      if (this.existingPost && this.post.image) {
+        const imageMime = this.post.contentType.find(type => type.includes('image'))
+        // Template literals give undefined in child component
+        return String.raw`data:${imageMime},${this.post.image}`
+      } else {
+        return null
+      }
+    }
+  },
+  mounted () {
+    // Load a copy of an existing post if supplied
+    if (this.existingPost) {
+      this.post = structuredClone(this.existingPost)
+      // Convert from contentType backend string-representation to an iterable
+      this.post.contentType = this.post.contentType.split(',')
+      if (this.post.contentType.includes('text/markdown')) {
+        this.markdownEnabled = true
+      }
+    }
+  },
+  methods: {
+    setText () {
+      this.sanitizeContentTypes('text')
+      this.appendMime(this.markdownEnabled ? 'text/markdown' : 'text/plain')
+    },
+
+    setImage (image) {
+      this.sanitizeContentTypes('image')
+      if (image) {
+        this.post.image = image.raw64
+        this.appendMime(image.mime)
+      } else {
+        this.post.image = null
+      }
+    },
+
+    appendMime (mime) {
+      this.sanitizeContentTypes(mime)
+      if (mime) {
+        this.post.contentType.push(mime)
+      }
+    },
+
+    sanitizeContentTypes (mimeSuper) {
+      // Helper function to remove an exisiting MIME type before pushing updated one
+      this.post.contentType = this.post.contentType.filter(
+        (contentType) => !contentType.includes(mimeSuper)
+      )
+    },
+
+    submitPost () {
+      // Emit post back to parent for respective AJAX call
+      if (this.validPost) {
+        // Re-format to to spec format
+        this.post.contentType = this.contentTypeAsStr
+        console.table(this.post)
+
+        if (this.existingPost) {
+          this.$emit('editPost', this.post)
+        } else {
+          this.post.id = uuidv4()
+          console.table(this.post)
+          this.$emit('createPost', this.post)
+        }
+      } else {
+        this.invalidSubmit = true
+      }
+    }
+  }
+}
+
+</script>
