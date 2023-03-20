@@ -1,7 +1,7 @@
 <template>
   <div class="social">
     <MyRequests @update-followers="updateFollowers">Test Requests</MyRequests>
-    <MyFriends>Test Friends</MyFriends>
+    <MyFriends ref="friends">Test Friends</MyFriends>
     <MyFollowers ref="followers">Test Followers</MyFollowers>
     <MyFollowees>Test Followees</MyFollowees>
   </div>
@@ -24,6 +24,7 @@ export default {
   methods: {
     updateFollowers () {
       this.$refs.followers.getFollowers()
+      this.$refs.friends.getFriends()
     }
   }
 }
