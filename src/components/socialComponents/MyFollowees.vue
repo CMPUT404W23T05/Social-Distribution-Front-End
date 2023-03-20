@@ -57,7 +57,7 @@ export default {
 
 </script>
 
-  <style>
+  <style scoped>
   /* list items that are direct children of unordered list*/
   .list-of-profiles ul>li{
     display: inline-block

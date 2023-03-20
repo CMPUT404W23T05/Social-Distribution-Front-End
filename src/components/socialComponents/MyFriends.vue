@@ -57,7 +57,7 @@ export default {
 
 </script>
 
-  <style>
+  <style scoped>
 
   .list-of-profiles ul>li{
     display: inline-block
