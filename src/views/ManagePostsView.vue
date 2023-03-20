@@ -43,7 +43,7 @@
         No! Take me back!
       </template>
       <template #submitButton>
-        <button type="submit" class="btn btn-primary text-warning" data-bs-dismiss="modal" @click="delPost()">Yes, I'm sure</button>
+        <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" @click="delPost()">Yes, I'm sure</button>
       </template>
       <!-- Overwrite the fallback slot and prevent open modal button from appearing-->
       <template #openModalButton><br class="d-none"></template>
@@ -183,12 +183,6 @@ export default {
 .divider {
   border: 1px solid #FFF;
   height: 55%;
-}
-
-.add-button {
-  margin: 1rem 0 2rem 0;
-  background-color: #4998F5;
-  border: none;
 }
 
 i {
