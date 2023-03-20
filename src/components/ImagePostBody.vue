@@ -2,7 +2,7 @@
   <div id="makeImagePostBody">
     <!-- Note: image/jpeg != image/jpg despite identical encoding. Ensure correct MIME is sent. -->
     <div v-if="!imageUploaded" class="image-upload-wrapper image-container">
-      <div class = "wrapper-text">
+      <div class = "wrapper-text" :class="{hovered: hovered}">
         <i class="bi bi-upload"></i>
         <small>Upload an image</small>
       </div>
@@ -11,6 +11,8 @@
           type="file"
           accept="image/jpeg,image/png"
           class="image-container form-control"
+          @mouseenter="hovered=true"
+          @mouseleave="hovered=false"
           @change="encodeFileBase64($event.target.files[0])"
         />
     </div>
@@ -32,7 +34,8 @@ export default {
 
   data () {
     return {
-      imageSrc: null
+      imageSrc: null,
+      hovered: false
     }
   },
   computed: {
@@ -143,13 +146,14 @@ input[type=file] {
 
 .wrapper-text {
   width: 100%;
-  height: 100%;
+  height: 40%;
   position: absolute;
   display: flex;
   flex-direction: column;
   justify-content: center;
   color: #afafaf;
   font-size: 0.8em;
+  transition: 0.4s;
 }
 
 .image-upload {
@@ -158,12 +162,13 @@ input[type=file] {
   margin: 0;
 }
 
-.wrapper-text:hover {
-  color: #f51212;
+/* Can't use pseudo-class due to this being covered */
+.wrapper-text.hovered {
+  color: var(--bs-blue)
 }
 
 .bi-upload {
-  font-size: 3.6em;
+  font-size: 3.6rem;
 }
 
 </style>

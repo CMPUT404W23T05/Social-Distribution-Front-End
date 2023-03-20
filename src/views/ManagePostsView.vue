@@ -97,11 +97,6 @@ export default {
       this.author = userStore.user.author
     },
 
-    destroyModal () {
-      this.$el.querySelector('#managePost').dispose()
-      this.$el.querySelector('.modal-backdrop').dispose()
-    },
-
     // This view handles all CRUD Operations
     // Existing post is already accessible via "this.selected"
     createPost (post) {
