@@ -13,13 +13,13 @@
           <form>
             <!-- Post Title -->
             <div class="form-group">
-              <label for="post-title" class="d-flex justify-content-left">Post Title</label>
+              <label for="post-title" class="d-flex justify-content-left" aria-autocomplete="off">Post Title</label>
               <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Something fun goes here!"/>
               <small class="d-flex justify-content-center form-text text-muted"> {{ post.title.length }}/{{ titleMaxLength }} </small>
             </div>
 
             <!-- Privacy Settings and Markdown Setting-->
-            <div class="form-row">
+            <div class="row">
               <!-- Privacy -->
               <div class="col">
                 <div class="form-check form-check-inline">
@@ -37,8 +37,8 @@
               </div>
               <!-- Markdown setting -->
               <div class="col">
-                <div class="form-check form-switch">
-                  <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input" type="checkbox"/>
+                <div class="form-check form-switch d-flex justify-content-center gap-3 mb-2">
+                  <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
                   <label class="form-check-label" for="markdown-toggle"><i class="bi bi-markdown-fill"></i> {{ markDownMessage }}</label>
                 </div>
               </div>
