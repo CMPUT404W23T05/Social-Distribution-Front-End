@@ -2,7 +2,7 @@
 <div class="list-of-profiles" id="followers">
   <h1 id="followers"> Your <br/> Followers</h1>
   <ul>
-    <li v-for="author in test_followers" :key="author.id">
+    <li v-for="author in test_followers" :key="author._id">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
     </li>
