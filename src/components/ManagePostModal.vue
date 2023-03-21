@@ -45,7 +45,7 @@
             </div>
 
             <!-- Textbody -->
-            <textarea v-model="post.content" class="text-input form-control" placeholder="Give your post some body text!"></textarea>
+            <textarea v-model="post.content" @change="setText" class="text-input form-control" placeholder="Give your post some body text!"></textarea>
 
             <!-- Image custom component-->
             <ImagePostBody class="image-upload" :image="imageDataURL" @image-uploaded="(image) => setImage(image)" @image-clear="setImage(null)"/>
