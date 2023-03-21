@@ -41,7 +41,7 @@
     <!-- List view with delimiting date headers -->
     <div v-if="!loading" class="all-posts">
       <div v-for="[date, posts] of Object.entries(postSections)" :key="date">
-        <h3 class="text-primary mx-5 px-2"> {{ date === today ? today : date }} </h3>
+        <h3 class="text-primary mx-5 px-2"> {{ date === today ? 'Today' : date }} </h3>
         <hr class="date-header bg-secondary">
         <div class="card-list pb-5">
           <Card v-for="post in posts" :key="post.id" :author="post.author" :post="post"/>
