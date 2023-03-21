@@ -99,11 +99,11 @@ export default {
       // Helper to check if content type has atleast one of the filtered types
       for (const [filetype, activeStatus] of Object.entries(this.active)) {
         // Match atleast one
-        if (activeStatus && post.contentType.includes(filetype)) {
-          return true
+        if (!activeStatus && post.contentType.includes(filetype)) {
+          return false
         }
       }
-      return false
+      return true
     },
 
     getPosts () {
