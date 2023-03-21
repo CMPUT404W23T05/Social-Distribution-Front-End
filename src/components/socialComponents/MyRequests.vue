@@ -2,7 +2,7 @@
 <div class="list-of-profiles" id="requests">
   <h1> Your <br/> Requests</h1>
   <ul>
-    <li v-for="author in test_requests" :key="author.id">
+    <li v-for="author in test_requests" :key="author._id">
       <img :src="author.profileImage">
       <p>{{displayUsername(author.displayName)}}</p>
       <span>
@@ -23,14 +23,9 @@ export default {
       get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/requests/',
       test_requests: [
         {
-          id: 1,
-          displayName: 'request1',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
-        },
-        {
-          id: 2,
-          displayName: 'request2',
-          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
+          type: 'Follow',
+          actor: this.actor,
+          object: this.object
         }
       ]
     }
@@ -46,6 +41,11 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    mounted () {
+      this.getAuthorFromStore()
+      this.getRequests()
+      // this.testExampleRequest()
     }
   },
   created () {
