@@ -77,7 +77,7 @@ export default {
     udEndPoint () {
       if (this.selected.post) {
         // const endpoint = `/authors/${this.author.id}/posts/${this.selected.post.id}/`
-        const endpoint = '/authors/' + this.author.id + '/posts/' + this.selected.post.id + '/'
+        const endpoint = '/authors/' + this.author._id + '/posts/' + this.selected.post.id + '/'
         return endpoint
       } else {
         return null
@@ -87,7 +87,7 @@ export default {
     // Create, read
     crEndPoint () {
       // const endpoint = String.raw`/authors/${this.author.id}/posts/`
-      const endpoint = '/authors/' + this.author.id + '/posts/'
+      const endpoint = '/authors/' + this.author._id + '/posts/'
       return endpoint
     }
   },
