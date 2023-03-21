@@ -32,3 +32,14 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### References
+  
+ * Vue.js documentation guide on implementing scroll behaviour
+    * Title: Scroll Behavior
+    * Released under the MIT License.
+    * Copyright © 2014-present Evan You, Eduardo San Martin Morote
+    * Link: https://router.vuejs.org/guide/advanced/scroll-behavior.html
+
+
+
