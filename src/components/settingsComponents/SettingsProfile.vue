@@ -173,7 +173,7 @@ export default {
       const user = this.userStore.user
       const author = user.author
       author[type] = newValue
-      axios.post('/authors/' + author.id + '/', author)
+      axios.post('/authors/' + author._id + '/', author)
         .then((response) => {
           console.log(response)
           this.showAlert(readableFieldNames[type] + ' sucessfully updated!', 'success')
