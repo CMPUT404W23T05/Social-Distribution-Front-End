@@ -59,6 +59,7 @@ import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
   components: { ManagePostModal, Card, SlotModal },
@@ -76,8 +77,8 @@ export default {
     // Update, delete
     udEndPoint () {
       if (this.selected.post) {
-        // const endpoint = `/authors/${this.author.id}/posts/${this.selected.post.id}/`
-        const endpoint = '/authors/' + this.author._id + '/posts/' + this.selected.post.id + '/'
+        // const endpoint = `/authors/${this.author._id}/posts/${this.selected.post.id}/`
+        const endpoint = '/authors/' + this.author._id + '/posts/' + this.selected.post._id + '/'
         return endpoint
       } else {
         return null
@@ -86,7 +87,7 @@ export default {
 
     // Create, read
     crEndPoint () {
-      // const endpoint = String.raw`/authors/${this.author.id}/posts/`
+      // const endpoint = String.raw`/authors/${this.author._id}/posts/`
       const endpoint = '/authors/' + this.author._id + '/posts/'
       return endpoint
     }
@@ -101,6 +102,11 @@ export default {
     // This view handles all CRUD Operations
     // Existing post is already accessible via "this.selected"
     createPost (post) {
+      // set missing fields in post
+      post.author = this.author
+      post._id = uuidv4()
+      post.id = this.author.id + '/posts/' + post._id
+      console.log(post)
       axios
         .post(this.crEndPoint, post)
         .then(() => {

@@ -69,7 +69,6 @@
 <script>
 
 import ImagePostBody from '@/components/ImagePostBody.vue'
-import { v4 as uuidv4 } from 'uuid'
 
 export default {
   components: { ImagePostBody },
@@ -184,6 +183,7 @@ export default {
         // Generate when post is submitted
         comments: null, // url from server
         id: null,
+        _id: null,
         published: '2023-03-01T21:18:38.908794Z' // placeholder
       }
     },
@@ -196,7 +196,7 @@ export default {
     },
 
     sanitizeContentTypes (mimeSuper) {
-      // Helper function to remove an exisiting MIME type before pushing updated one
+      // Helper function to remove an existing MIME type before pushing updated one
       this.post.contentType = this.post.contentType.filter(
         (contentType) => !contentType.includes(mimeSuper)
       )
@@ -215,7 +215,6 @@ export default {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
         } else {
-          this.post.id = uuidv4()
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
         }
