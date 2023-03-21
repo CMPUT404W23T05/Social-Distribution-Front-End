@@ -61,7 +61,7 @@ export default {
       return this.post.contentType.includes('text/markdown')
     },
     imageURL () {
-      return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
+      return `http://localhost:8000/api/authors/${this.author._id}/posts/${this.post._id}/image`
     },
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
@@ -77,7 +77,7 @@ export default {
     overflow: hidden;
     color: #2c2c2c;
     font-weight: bold;
-    text-transform: uppercase;
+    text-transform: none;
   }
   .title-text {
     font-size: large;
@@ -112,6 +112,7 @@ export default {
     position: absolute;
     border-right: 2pt solid #4998F5;
     border-top: 2pt solid #4998F5;
+
     width: 92.5%;
     height: calc(100% + 20pt);
     top: -28pt;

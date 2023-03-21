@@ -1,75 +1,76 @@
 <template>
-  <div class="list-of-profiles" id="friends">
-    <h1> Your <br/> Friends</h1>
-    <ul>
-      <li v-for="author in friends.items" :key="author.url">
-        <template v-if="author">
-        <img :src="author.profileImage">
-        <p>{{displayUsername(author.displayName)}}</p>
-        </template>
-      </li>
-    </ul>
-  </div>
-    </template>
-  
-  <script>
-  import { useUserStore } from '@/stores/user'
-  import { mapStores } from 'pinia'
-  import axios from 'axios'
-  
-  export default {
-    data () {
-      return {
-        friends: [''],
-        author: null
-      }
+<div class="list-of-profiles" id="friends">
+  <h1> Your <br/> Friends</h1>
+  <ul>
+    <li v-for="author in test_friends" :key="author.id">
+      <img :src="author.profileImage">
+      <p>{{displayUsername(author.displayName)}}</p>
+    </li>
+  </ul>
+</div>
+  </template>
+
+<script>
+
+export default {
+  data () {
+    return {
+      friends: [''],
+      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/friends/',
+      test_friends: [
+        {
+          id: 1,
+          displayName: 'friend1',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
+        },
+        {
+          id: 2,
+          displayName: 'friend2',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
+        }
+      ]
+    }
+  },
+  methods: {
+    displayUsername (username) {
+      return '@' + username
     },
-    computed: {
-      ...mapStores(useUserStore)
-    },
-    methods: {
-      displayUsername (username) {
-        return '@' + username
-      },
-      getAuthorFromStore () {
-        const userStore = this.userStore
-        userStore.initializeStore()
-        this.author = userStore.user.author
-      },
-      getFriends () {
-        axios
-          .get(`/authors/${this.author._id}/friends/`)
-          .then((res) => {
-            this.friends = res.data
-            console.log(this.friends)
-          })
-          .catch((err) => {
-            console.log("Couldn't get friends!")
-            console.log(err)
-          })
+    async getData () {
+      try {
+        // get the friends of the author
+        const response = await this.$http.get(this.get_link)
+        this.friends = response.data
+      } catch (error) {
+        console.log(error)
       }
     },
     mounted () {
       this.getAuthorFromStore()
       this.getFriends()
     }
+  },
+  created () {
+    // get friends when page loads
+    // this.getData()
   }
-  
-  </script>
-  
-    <style>
-  
-    .list-of-profiles ul>li{
-      display: inline-block
-    }
-  
-    .list-of-profiles p{
-      margin: 10px;
-    }
-  
-    img {
-      width: 100px;
-      height: 100px;
-      margin: 10px;
-    }
-    </style>
+
+}
+
+</script>
+
+  <style>
+
+  .list-of-profiles ul>li{
+    display: inline-block
+  }
+
+  .list-of-profiles p{
+    margin: 10px;
+  }
+
+  img {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+  }
+  </style>

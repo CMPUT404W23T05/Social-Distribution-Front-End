@@ -1,75 +1,76 @@
 <template>
-  <div class="list-of-profiles" id="followees">
-    <h1> Your <br/> Followees</h1>
-    <ul>
-      <li v-for="author in followees.items" :key="author.url">
-        <template v-if="author">
-        <img :src="author.profileImage">
-        <p>{{displayUsername(author.displayName)}}</p>
-      </template>
-      </li>
-    </ul>
-  </div>
-    </template>
-  
-  <script>
-  import { useUserStore } from '@/stores/user'
-  import { mapStores } from 'pinia'
-  import axios from 'axios'
-  
-  export default {
-    data () {
-      return {
-        followees: [''],
-        author: null
-      }
+<div class="list-of-profiles" id="followees">
+  <h1> Your <br/> Followees</h1>
+  <ul>
+    <li v-for="author in test_followees" :key="author.uid">
+      <img :src="author.profileImage">
+      <p>{{displayUsername(author.displayName)}}</p>
+    </li>
+  </ul>
+</div>
+  </template>
+
+<script>
+
+export default {
+  data () {
+    return {
+      followees: [''],
+      get_link: 'http://localhost:8000/api/authors/a15eb467-5eb0-4b7d-9eaf-850c3bf7970c/following/',
+      test_followees: [
+        {
+          id: 1,
+          displayName: 'followee1',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
+        },
+        {
+          id: 2,
+          displayName: 'followee2',
+          profileImage: 'http://i.imgur.com/k7XVwpB.jpeg'
+        }
+      ]
+    }
+  },
+  methods: {
+    displayUsername (username) {
+      return '@' + username
     },
-    computed: {
-      ...mapStores(useUserStore)
-    },
-    methods: {
-      displayUsername (username) {
-        return '@' + username
-      },
-      getAuthorFromStore () {
-        const userStore = this.userStore
-        userStore.initializeStore()
-        this.author = userStore.user.author
-      },
-      getFollowees () {
-        axios
-          .get(`/authors/${this.author._id}/following/`)
-          .then((res) => {
-            this.followees = res.data
-            console.log(this.followees)
-          })
-          .catch((err) => {
-            console.log("Couldn't get followees!")
-            console.log(err)
-          })
+    async getData () {
+      try {
+        // who is the author following?
+        const response = await this.$http.get(this.get_link)
+        this.followees = response.data
+      } catch (error) {
+        console.log(error)
       }
     },
     mounted () {
       this.getAuthorFromStore()
       this.getFollowees()
     }
+  },
+  created () {
+    // get followees when page loads
+    // this.getData()
   }
-  
-  </script>
-  
-    <style>
-    /* list items that are direct children of unordered list*/
-    .list-of-profiles ul>li{
-      display: inline-block
-    }
-    /* p tags that are children of the class list of profiles */
-    .list-of-profiles p{
-      margin: 10px;
-    }
-  
-    img {
-      width: 100px;
-      height: 100px;
-      margin: 10px;
-    }
-    </style>
+
+}
+
+</script>
+
+  <style>
+  /* list items that are direct children of unordered list*/
+  .list-of-profiles ul>li{
+    display: inline-block
+  }
+  /* p tags that are children of the class list of profiles */
+  .list-of-profiles p{
+    margin: 10px;
+  }
+
+  img {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+  }
+  </style>
