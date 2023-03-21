@@ -10,15 +10,21 @@
 
       <template #body>
         <!-- Filter by file type -->
-        <div class="filetypes d-flex">
-          <button @click="toggle('plain')"><i class="bi bi-blockquote-left" :class="active.plain ? 'text-primary' : 'text-secondary'"></i> Text</button>
-          <button @click="toggle('markdown')"><i class="bi bi-markdown-fill" :class="active.markdown ? 'text-primary' : 'text-secondary'"></i> Markdown</button>
-          <button @click="toggle('image')"><i class="bi bi-image-fill" :class="active.image ? 'text-primary' : 'text-secondary'"></i> Image</button>
+        <div class="filetypes d-flex justify-content-center">
+          <button @click="toggle('plain')" class='btn mx-2 filter-button' :class="active.plain ? 'btn-primary' : 'btn-outline-secondary'">
+            <i class="bi bi-blockquote-left d-block"></i> Plaintext
+          </button>
+          <button @click="toggle('markdown')" class='btn mx-2 filter-button' :class="active.markdown ? 'btn-primary' : 'btn-outline-secondary'">
+            <i class="bi bi-markdown-fill d-block"></i> Markdown
+          </button>
+          <button @click="toggle('image')" class='btn mx-2 filter-button' :class="active.image ? 'btn-primary' : 'btn-outline-secondary'">
+            <i class="bi bi-image-fill d-block"></i> Image
+          </button>
         </div>
 
         <!-- Reverse post order -->
-        <div class="reverse">
-          <button @click="reversePosts">
+        <div class="reverse d-flex justify-content-center mt-3">
+          <button @click="reversePosts" class="btn btrn primary">
             <i class="bi bi-calendar"></i>
             <i class="bi" :class="reverse ? 'bi-arrow-up' : 'bi-arrow-down'"></i>
           </button>
@@ -27,7 +33,7 @@
 
       <template #closeButtonText>Done</template>
       <template #openModalButton>
-        <button type="button" class="btn btn-outline-primary open-filter-modal" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi bi-funnel-fill"></i> Filter Posts</button>
+        <button type="button" class="btn btn-outline-primary open-filter-modal d-flex justify-self-start" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi bi-funnel-fill"></i> Filter Posts</button>
       </template>
 
     </SlotModal>
@@ -153,6 +159,11 @@ export default {
 .date-header {
   width: 85%;
   margin: 0 auto;
+}
+
+/* Buttons inside the modal filter */
+.filter-button {
+  width: 20%;
 }
 
 h1 strong {
