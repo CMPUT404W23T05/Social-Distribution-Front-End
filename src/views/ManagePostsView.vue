@@ -38,7 +38,7 @@
 
     <SlotModal modal-name="deletePrompt" v-if="selected.post">
       <template #titleText>Delete <strong>{{ selected.post.title }}</strong> </template>
-      <template #body>Are you sure?</template>
+      <template #body>Are you sure you want to delete this post?</template>
       <template #closeButtonText>
         No! Take me back!
       </template>
