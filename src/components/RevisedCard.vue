@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     goTo () {
-      this.$router.push({ name: 'postpage', params: { aid: this.author.id, pid: this.post.id } })
+      this.$router.push({ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } })
     }
   }
 }

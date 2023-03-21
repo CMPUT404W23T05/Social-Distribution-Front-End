@@ -24,25 +24,22 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 
 export default {
-  props: { post: Object },
+  props: { post: Object, page: Number, pagination: Number },
   components: { UserComment },
   mounted () {
-    window.addEventListener('scroll', this.handleScroll)
-
     const userStore = useUserStore()
     userStore.initializeStore()
     this.currentUser = userStore.user.author
-
-    this.appendPosts()
+    this.getPosts(this.pagination)
   },
-  unmounted () {
-    window.removeEventListener('scroll', this.handleScroll)
+  updated () {
+    this.getPosts(this.pagination)
   },
   data () {
     return {
       comments: [],
       loading: true, // Used in tandem with loading more posts
-      exhausted: false, // No more posts to load from server (Stop infinite scroll)
+      exhausted: false, // No more posts to load from server (Show message indicating no more posts)
       currentUser: null
     }
   },
@@ -54,28 +51,27 @@ export default {
     matchSession (comment) {
       return this.currentUser.id === comment.author.id || false
     },
-    appendPosts (n) {
-      // n will be determined by user's pagination settings (eventually)
+    getPosts () {
       console.table(this.post)
-      axios.get(`/authors/${this.post.author.id}/posts/${this.post.id}/comments`)
+      axios.get(`${this.post.author._id}/posts/${this.post._id}/comments`, null,
+        {
+          params: {
+            page: this.page,
+            size: this.pagination
+          }
+        })
         .then(res => {
           if (res.data.length === 0) {
             this.exhausted = true
           }
           console.log(res.data.comments)
-          this.comments = this.comments.concat(res.data.comments)
+          this.comments = res.data.comments // Replace existing comments
           this.loading = false
         })
         .catch(err => {
           console.log(err)
         })
       this.loading = true
-    },
-    handleScroll (event) {
-      const list = this.$refs.infScrollCommentList
-      if (list.getBoundingClientRect().bottom < window.innerHeight && !this.exhausted) {
-        this.appendPosts(10)
-      }
     }
   }
 }

@@ -40,11 +40,11 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData"></CommentList>
+          <CommentList :post="postData" :page="currentCommentPage" :pagination="paginationSetting"></CommentList>
           <div v-if="pageTotal > 1" class="move-page">
-            <i class="bi bi-caret-left-fill" :class="{activated: currentPage > 1}"></i>
-            <span class="pages-count">{{ currentPage }}/{{ pageTotal }}</span>
-            <i class="bi bi-caret-right-fill" :class="{activated: currentPage < pageTotal}"></i>
+            <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(1)"></i>
+            <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
+            <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage < pageTotal}" @click="changeCommentPage(-1)"></i>
           </div>
         </div>
       </aside>
@@ -81,7 +81,7 @@ export default {
       isFollowing: false,
       isLiked: false,
       expandComments: true,
-      currentPage: 1,
+      currentCommentPage: 1,
       paginationSetting: 5 // This will acquired from user once they set their pagination
     }
   },
@@ -107,13 +107,18 @@ export default {
     },
     toggleComments () {
       this.expandComments = !this.expandComments
+    },
+    changeCommentPage (n) {
+      // Check if the currentPage will put the user out of bounds
+      if (this.currentCommentPage + n < this.pageTotal && this.currentCommentPage - n > 0) {
+        this.currentCommentPage = this.currentCommentPage + n
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-
   #single-post-container {
     padding: 0;
     margin: 0;
