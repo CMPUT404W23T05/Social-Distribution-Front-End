@@ -77,7 +77,7 @@ export default {
     overflow: hidden;
     color: #2c2c2c;
     font-weight: bold;
-    text-transform: uppercase;
+    text-transform: none;
   }
   .title-text {
     font-size: large;

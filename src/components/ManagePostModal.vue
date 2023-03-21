@@ -14,7 +14,7 @@
             <!-- Post Title -->
             <div class="form-group">
               <label for="post-title" class="d-flex justify-content-left" aria-autocomplete="off">Post Title</label>
-              <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Write a title for your post!"/>
+              <input v-model="post.title" type="text" class="form-control" id="post-title" aria-describedby="postTitle" placeholder="Write a title for your post"/>
               <small class="d-flex justify-content-center form-text text-muted"> {{ post.title.length }}/{{ titleMaxLength }} </small>
             </div>
 
@@ -39,13 +39,16 @@
               <div class="col">
                 <div class="form-check form-switch d-flex justify-content-center gap-3 mb-2">
                   <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
-                  <label class="form-check-label" for="markdown-toggle"><i class="bi bi-markdown-fill"></i> {{ markDownMessage }}</label>
+                  <label class="form-check-label" for="markdown-toggle">
+                    <i class="bi" :class="markDownEnabled ? 'bi-markdown-fill' : 'bi-blockquote-left'"></i>
+                     {{ markDownMessage }}
+                  </label>
                 </div>
               </div>
             </div>
 
             <!-- Textbody -->
-            <textarea v-model="post.content" @input="setText" class="text-input form-control" placeholder="Give your post some body text!"></textarea>
+            <textarea v-model="post.content" @input="setText" class="text-input form-control" placeholder="Give your post some body text"></textarea>
 
             <!-- Image custom component-->
             <ImagePostBody class="image-upload" :image="imageDataURL" @image-uploaded="(image) => setImage(image)" @image-clear="setImage(null)"/>
@@ -92,7 +95,7 @@ export default {
     modalTitlePostName () {
       return this.existingPost
         ? this.existingPost.title
-        : 'New Post!'
+        : 'New Post'
     },
 
     titleMaxLength () {
@@ -100,8 +103,8 @@ export default {
     },
     markDownMessage () {
       return this.markDownEnabled
-        ? 'Markdown Enabled!'
-        : 'Markdown Disabled'
+        ? 'Using CommonMark'
+        : 'Using Plaintext'
     },
     errors () {
       const messages = []
