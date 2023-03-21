@@ -40,8 +40,8 @@
                 <div class="form-check form-switch d-flex justify-content-center gap-3 mb-2">
                   <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
                   <label class="form-check-label" for="markdown-toggle">
-                    <i class="bi" :class="markDownEnabled ? 'bi-markdown-fill' : 'bi-blockquote-left'"></i>
-                     {{ markDownMessage }}
+                    <i class="bi-markdown-fill"></i>
+                     Use Markdown
                   </label>
                 </div>
               </div>
@@ -100,11 +100,6 @@ export default {
 
     titleMaxLength () {
       return 30
-    },
-    markDownMessage () {
-      return this.markDownEnabled
-        ? 'Using CommonMark'
-        : 'Using Plaintext'
     },
     errors () {
       const messages = []
