@@ -59,7 +59,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import moment from 'moment'
-
+const dateFormat = 'YYYY-MM-DD'
 export default {
   name: 'BrowsePage',
   components: { Card, SlotModal },
@@ -82,7 +82,7 @@ export default {
     },
 
     today () {
-      return moment().format('DD/MM/YYYY')
+      return moment().format(dateFormat)
     },
 
     filteredPosts () {
@@ -131,7 +131,7 @@ export default {
     groupPostsByDate (array) {
       // Splits array into object sorted by unique (date) keys
       return array.reduce((acc, post) => {
-        const key = moment(post.published).format('DD/MM/YYYY') // Granulate by days
+        const key = moment(post.published).format(dateFormat) // Granulate by days
         const grouping = acc[key] ?? []
 
         return { ...acc, [key]: [...grouping, post] }
