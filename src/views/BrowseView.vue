@@ -3,26 +3,31 @@
     <h1 class="text-left">Browse <strong>Posts</strong></h1>
 
     <!-- Open that modal :) -->
-    <button type="button" class="openFilterModal"><i class="bi bi-funnel-fill"></i></button>
 
     <!-- Used to sort and filter -->
-    <SlotModal :modal-name="filterModal">
+    <SlotModal modal-name="filterModal" v-if="!loading">
       <template #titleText>Filter Posts</template>
+
       <template #body>
         <!-- Filter by file type -->
         <div class="filetypes d-flex">
-          <button @click="toggle('text')"><i class="bi bi-blockquote-left" :class="active.includes('text') ? 'text-primary' : 'text-secondary'"></i> Text</button>
-          <button @click="toggle('md')"><i class="bi bi-markdown-fill" :class="active.includes('markdown') ? 'text-primary' : 'text-secondary'"></i> Markdown</button>
-          <button @click="toggle('image')"><i class="bi bi-image-fill" :class="active.includes('image') ? 'text-primary' : 'text-secondary'"></i> Image</button>
+          <button @click="toggle('plain')"><i class="bi bi-blockquote-left" :class="active.plain ? 'text-primary' : 'text-secondary'"></i> Text</button>
+          <button @click="toggle('markdown')"><i class="bi bi-markdown-fill" :class="active.markdown ? 'text-primary' : 'text-secondary'"></i> Markdown</button>
+          <button @click="toggle('image')"><i class="bi bi-image-fill" :class="active.image ? 'text-primary' : 'text-secondary'"></i> Image</button>
         </div>
 
         <!-- Reverse post order -->
         <div class="reverse">
-          <button @click=" this.reverse = !this.reverse">
+          <button @click="reversePosts">
             <i class="bi bi-calendar"></i>
             <i class="bi" :class="reverse ? 'bi-arrow-up' : 'bi-arrow-down'"></i>
           </button>
         </div>
+      </template>
+
+      <template #closeButtonText>Done</template>
+      <template #openModalButton>
+        <button type="button" class="btn btn-outline-primary open-filter-modal" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="bi bi-funnel-fill"></i> Filter Posts</button>
       </template>
 
     </SlotModal>
@@ -55,10 +60,9 @@ export default {
   data () {
     return {
       allPosts: [],
-      filteredPosts: [], // This is what we'll draw from
       author: null,
       loading: true,
-      active: ['text', 'markdown', 'image'],
+      active: { plain: true, markdown: true, image: true },
       reverse: false
     }
   },
@@ -73,15 +77,33 @@ export default {
 
     today () {
       return moment().format('DD/MM/YYYY')
+    },
+
+    filteredPosts () {
+      return this.allPosts.filter(post => {
+        return this.matchesActive(post)
+      })
     }
   },
   methods: {
     toggle (file) {
-      const index = this.active.findIndex(file)
+      this.active[file] = !this.active[file]
+    },
 
-      index === -1
-        ? this.active.splice(index, 1) // remove item
-        : this.active.push(file) // add item
+    reversePosts () {
+      this.reverse = !this.reverse
+      this.allPosts = this.allPosts.reverse()
+    },
+
+    matchesActive (post) {
+      // Helper to check if content type has atleast one of the filtered types
+      for (const [filetype, activeStatus] of Object.entries(this.active)) {
+        // Match atleast one
+        if (activeStatus && post.contentType.includes(filetype)) {
+          return true
+        }
+      }
+      return false
     },
 
     getPosts () {
@@ -89,7 +111,6 @@ export default {
         .get('/posts/')
         .then((res) => {
           this.allPosts = res.data
-          this.filteredPosts = this.allPosts
           this.loading = false
         })
         .catch((err) => {
