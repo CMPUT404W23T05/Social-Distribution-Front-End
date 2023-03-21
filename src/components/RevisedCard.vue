@@ -61,7 +61,7 @@ export default {
       return this.post.contentType.includes('text/markdown')
     },
     imageURL () {
-      return `http://localhost:8000/api/authors/${this.author.id}/posts/${this.post.id}/image`
+      return `http://localhost:8000/api/authors/${this.author._id}/posts/${this.post._id}/image`
     },
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
