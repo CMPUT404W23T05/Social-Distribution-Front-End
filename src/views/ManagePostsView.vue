@@ -1,137 +1,213 @@
 <template>
-  <h1>Manage your posts here</h1>
   <div class="manage-posts">
+    <h1>Manage <strong>Posts</strong></h1>
     <!-- Replace with a component later on -->
-    <button type="button" class="add-button btn btn-primary" @click="manage()">
+    <button type="button" class="add-button btn btn-primary float-start" data-bs-toggle="modal" data-bs-target="#managePost" @mouseenter="selected = { post: null, index: -1 }">
       Make A New Post
     </button>
-    <div class="card-list">
-      <Card
-        v-for="(post, index) in posts"
-        :key="post.id"
-        :post="post"
-        :author="author"
-      >
-        <template #footer>
-          <button type="button" class="edit-button btn" @click="manage(post, index)">
-            Edit ✐
-          </button>
-          <span class="divider"></span>
-          <button
-            type="button"
-            class="delete-button btn"
-            @click="displayPrompt(post)"
-          >
-          Delete 🔨
-          </button>
-        </template>
-      </Card>
-      <div v-if="posts.length === 0">You haven't made any posts yet!</div>
+    <div class="list-wrapper">
+      <div class="card-list">
+        <Card
+          v-for="(post, index) in posts"
+          :key="post.id"
+          :post="post"
+          :author="author"
+          @mousedown="selected = {post: post, index: index}"
+        >
+          <template #footer>
+            <span class="footer-totality">
+              <button type="button" class="edit-button btn" data-bs-toggle="modal" data-bs-target="#managePost">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <span class="divider"></span>
+              <button type="button" class="delete-button btn" data-bs-toggle="modal" data-bs-target="#deletePrompt">
+              <i class="bi bi-trash3-fill"></i>
+              </button>
+            </span>
+          </template>
+        </Card>
+        <div v-if="posts.length === 0">You haven't made any posts yet!</div>
+      </div>
     </div>
 
-    <PopUpPrompt v-if="showPrompt" @dismiss="closePrompt" @accept="deletePost">
-      You are about to delete <strong>{{ selectedPost.title }}</strong
-      >! Are you sure?
-    </PopUpPrompt>
+    <ManagePostModal
+      :existingPost="selected.post"
+      @edit-post="(post) => editPost(post)"
+      @create-post="(post) => createPost(post)">
+    </ManagePostModal>
 
-    <ManagePost
-      v-if="showManage"
-      :author="author"
-      :existingPost="selectedPost"
-      @end-manage="refreshPosts"
-    ></ManagePost>
+    <SlotModal modal-name="deletePrompt" v-if="selected.post">
+      <template #titleText>Delete <strong>{{ selected.post.title }}</strong> </template>
+      <template #body>Are you sure you want to delete this post?</template>
+      <template #closeButtonText>
+        No! Take me back!
+      </template>
+      <template #submitButton>
+        <button type="submit" class="btn btn-danger" data-bs-dismiss="modal" @click="delPost()">Yes, I'm sure</button>
+      </template>
+      <!-- Overwrite the fallback slot and prevent open modal button from appearing-->
+      <template #openModalButton><br class="d-none"></template>
+    </SlotModal>
+
   </div>
 </template>
 
 <script>
-import ManagePost from '@/components/ManagePost.vue'
 import Card from '@/components/RevisedCard.vue'
-import PopUpPrompt from '@/components/PopUpPrompt.vue'
+import SlotModal from '@/components/SlotModal.vue'
+import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
+  components: { ManagePostModal, Card, SlotModal },
   data () {
     return {
       posts: [],
-      selectedPost: null,
-      showManage: false,
+      selected: { post: null, index: -1 },
       showPrompt: false,
-      author: null
+      author: null // Load from user store
+    }
+  },
+  computed: {
+    ...mapStores(useUserStore),
+
+    // Update, delete
+    udEndPoint () {
+      if (this.selected.post) {
+        // const endpoint = `/authors/${this.author._id}/posts/${this.selected.post.id}/`
+        const endpoint = '/authors/' + this.author._id + '/posts/' + this.selected.post._id + '/'
+        return endpoint
+      } else {
+        return null
+      }
+    },
+
+    // Create, read
+    crEndPoint () {
+      // const endpoint = String.raw`/authors/${this.author._id}/posts/`
+      const endpoint = '/authors/' + this.author._id + '/posts/'
+      return endpoint
     }
   },
   methods: {
-    deletePost () {
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.author = userStore.user.author
+    },
+
+    // This view handles all CRUD Operations
+    // Existing post is already accessible via "this.selected"
+    createPost (post) {
+      // set missing fields in post
+      post.author = this.author
+      post._id = uuidv4()
+      post.id = this.author.id + '/posts/' + post._id
+      console.log(post)
       axios
-        .delete(`/authors/${this.author.id}/posts/${this.selectedPost.id}`)
-        .then((res) => {
-          console.log(res.data)
-          this.posts = this.posts.filter((post) => post !== this.selectedPost)
+        .post(this.crEndPoint, post)
+        .then(() => {
+          this.posts.unshift(post)
         })
-        .catch((err) => {
-          alert("Couldn't delete post!")
-          console.log(err)
+        .catch(() => {
+          alert("Couldn't add the post!")
         })
-      this.closePrompt()
+      this.showManage = false
     },
 
     getPosts () {
       axios
-        .get(`/authors/${this.author.id}/posts/`)
+        .get(this.crEndPoint)
         .then((res) => {
           this.posts = res.data
-          console.log(res)
         })
-        .catch((err) => {
-          alert("Couldn't get posts!")
-          console.log(err)
-          this.posts = []
+        .catch(() => {
+          alert("Couldn't get any posts!")
         })
     },
 
-    manage (post) {
-      this.setSelected(post)
-      this.showManage = true
-    },
-
-    displayPrompt (post) {
-      this.setSelected(post)
-      this.showPrompt = true
-    },
-
-    setSelected (post) {
-      this.selectedPost = post
-    },
-
-    refreshPosts () {
-      console.log('refreshing!')
-      this.getPosts()
-      this.$forceUpdate()
+    editPost (post) {
+      axios
+        .post(this.udEndPoint, post)
+        .then(() => {
+          this.posts[this.selected.index] = post
+        })
+        .catch(() => {
+          alert("Couldn't edit the post!")
+        })
       this.showManage = false
     },
 
-    closePrompt () {
-      this.showPrompt = false
-    },
-
-    getAuthorFromStore () {
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      this.author = userStore.user.author
+    delPost () {
+      axios
+        .delete(this.udEndPoint)
+        .then(() => {
+          this.posts.splice(this.selected.index, 1)
+        })
+        .catch(() => {
+          alert("Couldn't delete the post!")
+        })
     }
   },
   mounted () {
     this.getAuthorFromStore()
     this.getPosts()
-  },
-  components: { ManagePost, Card, PopUpPrompt }
+  }
 }
 </script>
 
-<style>
-.card-list {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 15pt 10%;
+<style scoped>
+
+.manage-posts {
+  margin: 2rem 5%;
 }
+
+.list-wrapper {
+  clear: left;
+}
+
+.card-list {
+  margin: 0 auto;
+  display: inline-flex;
+  justify-content: center; /* TODO: Try to center align the list, but flex-start each card */
+  flex-wrap: wrap;
+  gap: 3em;
+}
+
+.footer-totality {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  overflow: hidden;
+}
+
+.divider {
+  border: 1px solid #FFF;
+  height: 55%;
+}
+
+i {
+  font-size: 2em;
+  color: #FFF;
+  transition: all 0.2s;
+}
+
+i:hover {
+  color: #4998F5;
+}
+
+h1 {
+  text-align: left;
+  color: #1e1e1e;
+}
+
+strong {
+  color: #4998F5;
+}
+
 </style>

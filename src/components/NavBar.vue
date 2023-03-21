@@ -3,8 +3,10 @@
         <!-- Pass a default image if none is provided -->
         <router-link to="/settings#profile" class = "user-info">
             <div>
-                <img id = "profile-picture" class = "circle" :src="getProfilePicture" alt = 'User profile picture'/>
-                <span id = username>@{{ getDisplayName }}</span>
+              <!-- Get profile picture from userStore - using any data variable breaks reactivity at the moment so this is the only way -->
+                <img id = "profile-picture" v-if="user" class = "circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture' />
+                <!-- Get username from userStore -->
+                <span id = 'display-name'  v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
             </div>
         </router-link>
 
@@ -17,7 +19,7 @@
                 </ul>
             </li>
             <li class = 'nav-item'>
-                <router-link to = "/browse" class="nav-link"> Browse </router-link>
+                <router-link :to="{ name: 'browsepage' }" class="nav-link"> Browse </router-link>
             </li>
             <li class = 'nav-item dropdown'>
                 <router-link to = "/social" class="nav-link"> Social </router-link>
@@ -54,14 +56,20 @@
 import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
+import { mapStores, mapState } from 'pinia'
 export default {
+  name: 'NavBar',
   // Author json object
+  beforeMount () {
+    // this.getProfilePicture()
+    this.userStore.initializeStore() // initialize user store
+  },
   methods: {
     logout () {
       // post to remove token from server
       axios.post('token/logout').then(response => {
         console.log(response)
-        const token = useTokenStore()
+        const token = this.tokenStore
         token.removeToken() // remove token from store
         localStorage.removeItem('token') // remove token from local
         // remove user from local storage and store
@@ -73,30 +81,14 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    getAuthorPropertyIfDefined (prop) {
+      return this.userStore.user.author ? this.userStore.user.author[prop] : '' // return an author property only if author exists else return empty string
     }
   },
   computed: {
-    getDisplayName () { // get display name from user store
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
-      if (user.author) {
-        return user.author.displayName
-      } else {
-        console.log('No user found')
-        return '' // default name
-      }
-    },
-    getProfilePicture () { // get profile picture from user store
-      const userStore = useUserStore()
-      userStore.initializeStore()
-      const user = userStore.user
-      if (user.author) {
-        return user.author.profileImage
-      } else {
-        return 'http://i.imgur.com/k7XVwpB.jpeg' // default image
-      }
-    },
+    ...mapStores(useTokenStore, useUserStore),
+    ...mapState(useUserStore, ['user']),
     alreadyLoggedIn () {
       const defined = typeof this.$route !== 'undefined' && this.$route !== null
       if (defined && 'hash' in this.$route) {

@@ -40,7 +40,7 @@ describe('NavBar.vue', () => {
   it('renders the author name', () => {
     wrapper = shallowMount(NavBar)
     const author = useUserStore().user.author
-    const username = wrapper.get('#username')
+    const username = wrapper.get('#display-name')
     expect(username.text()).toMatch('@' + author.displayName)
   })
 
@@ -74,5 +74,25 @@ describe('NavBar.vue', () => {
     // both shallow mounting (can't find) and regular mounting (undefined error)
 
     // expect(wrapper.findAll('li .active').length).toBe(1)
+  })
+  it('updates displayname when it changes', async () => {
+    const user = useUserStore().user
+    const newDisplayName = 'Squirtle'
+    user.author.displayName = newDisplayName // change the user's display name
+    useUserStore().setUser(user) // update the user in the store
+    wrapper = shallowMount(NavBar)
+    await wrapper.vm.$nextTick()
+    const displayName = wrapper.get('#display-name')
+    expect(displayName.text()).toMatch('@' + newDisplayName) // check that the display name has changed
+  })
+  it('updates profile image when it changes', async () => {
+    const user = useUserStore().user
+    const newProfileImage = 'https://assets.pokemon.com/assets/cms2/img/pokedex/full/007.png' // squirtle image
+    user.author.profileImage = newProfileImage // change the user's profile image
+    useUserStore().setUser(user) // update the user in the store
+    wrapper = shallowMount(NavBar)
+    await wrapper.vm.$nextTick()
+    const profileImage = wrapper.get('img')
+    expect(profileImage.attributes().src).toEqual(newProfileImage) // check that the profile image has changed
   })
 })

@@ -49,7 +49,6 @@ export default {
           .then(response => {
             this.$router.push('/login') // redirect to login page
             console.log(response)
-            console.log(formData.password)
           })
           .catch(error => {
             console.log(error)
