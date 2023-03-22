@@ -14,8 +14,10 @@
 
     <!-- Bottom of the list when in loading/completed state-->
     <div v-if="loading" class="spinner-grow text-light" role="status"></div>
-    <hr v-if="exhausted && comments.length > 0" id="end-of-comments">
-    <small v-if="exhausted">There are no more comments. <a href="activateAddComment!">But you can add one</a></small>
+    <hr v-if="exhausted && comments.length > 0" id="end-of-comments" class="text-primary">
+    <small v-if="exhausted" class="text-light mt-3">There are no more comments.
+      <a class="text-primary" @click="$emit('addComment')">But you can add one</a>
+    </small>
 </template>
 
 <script>
@@ -24,6 +26,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 
 export default {
+  emits: ['addComment'],
   props: { post: Object, page: Number, pageTotal: Number, pagination: Number },
   components: { UserComment },
   mounted () {
@@ -90,6 +93,10 @@ export default {
   }
 
   i {
-    margin: 0 0.5em;
+    margin: 0 0.25em;
+  }
+
+  hr {
+    opacity: 0.8;
   }
 </style>

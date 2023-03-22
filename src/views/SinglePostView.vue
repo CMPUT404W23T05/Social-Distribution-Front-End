@@ -73,7 +73,7 @@ export default {
       return (!this.authorData || !this.postData)
     },
     pageTotal () {
-      return Math.ceil(this.postData.count / this.paginationSetting)
+      return Math.ceil(this.postData.count / this.paginationSetting) || 1 // Atleast 1 page
     }
   },
   data () {
@@ -191,6 +191,7 @@ export default {
     font-size: 2.2rem;
     padding: 0;
     line-height: 0;
+    cursor: pointer;
   }
 
   small {
