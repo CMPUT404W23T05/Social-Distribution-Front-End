@@ -18,17 +18,19 @@
 
         <ul class="btn-list">
           <li class="btn-with-label">
-            <button id="like-post-button" type="button" class="btn btn-light" @click="toggleLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
+            <button id="like-post-button" type="button" class="btn btn-light action-button" @click="toggleLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
             <!-- TODO: Implement like functionality -->
             <!-- <label for="like-post-button">{{ PostProper.likes }}</label> Not sure how this works yet...-->
           </li>
           <li class="btn-with-label">
-            <button id="comment-button" type="button" class="btn btn-light"><i class="bi bi-chat-left-text-fill"></i></button>
+            <button id="comment-button" type="button" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
+              <i class="bi bi-chat-left-text-fill"></i>
+            </button>
             <label for="comment-button">{{ postData.count }}</label>
           </li>
           <li>
             <!-- TODO: Implement share functionality -->
-            <button type="button" class="btn btn-light"><i class="bi bi-share-fill"></i></button>
+            <button type="button" class="btn btn-light action-button"><i class="bi bi-share-fill "></i></button>
           </li>
         </ul>
       </aside>
@@ -51,6 +53,19 @@
         </div>
       </aside>
 
+      <!-- Modal for adding comment -->
+      <SlotModal modalName="makeCommentModal" sizing="modal-lg" justification="modal-dialog-centered">
+        <template #titleText>Add a <strong>Comment</strong></template>
+        <template #body>
+          <textarea class="form-control" v-model="newComment" placeholder="Write a comment"/>
+        </template>
+        <template #submitButton>
+          <button type="submit" class="btn btn-primary" @click="submitComment">Submit</button>
+        </template>
+        <template #openModalButton><br/></template>
+      </SlotModal>
+      <!-- Overwrite openModalButton with my own -->
+
     </div>
     <!-- Idk if the sidebar for liking, commenting, etc should be a component, or unique to this page -->
 </template>
@@ -58,10 +73,11 @@
 <script>
 import PostProper from '@/components/viewPostComponents/SinglePost.vue'
 import CommentList from '@/components/commentComponents/CommentList.vue'
+import SlotModal from '@/components/SlotModal.vue'
 import axios from 'axios'
 
 export default {
-  components: { PostProper, CommentList },
+  components: { PostProper, CommentList, SlotModal },
   mounted () {
     // Get the post and author
     const pid = this.$route.params.pid
@@ -84,7 +100,8 @@ export default {
       isLiked: false,
       expandComments: true,
       currentCommentPage: 1,
-      paginationSetting: 5 // This will acquired from user once they set their pagination
+      paginationSetting: 5, // This will acquired from user once they set their pagination
+      newComment: '' // Used for making a new comment
     }
   },
   methods: {
@@ -174,7 +191,7 @@ export default {
     font-size: 1.2em;
   }
 
-  button {
+  .action-button {
     display: block;
     border-radius: 50%;
     background-color: #ebebeb;
@@ -206,6 +223,11 @@ export default {
   aside {
     position: fixed;
     width: min(20%, fit-content);
+  }
+
+  textarea {
+    resize: none;
+    min-height: 10em;
   }
 
   /* Right aside */

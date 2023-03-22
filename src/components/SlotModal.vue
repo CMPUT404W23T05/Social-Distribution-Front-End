@@ -1,7 +1,7 @@
 <template>
     <!-- modal starts hidden -->
-    <div class="modal fade" tabindex="-1" :id="this.modalName" :ref="this.modalName" :aria-labelledby="this.modalName + 'Label'" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal fade" :class="sizing" tabindex="-1" :id="this.modalName" :ref="this.modalName" :aria-labelledby="this.modalName + 'Label'" aria-hidden="true">
+    <div class="modal-dialog" :class="justification">
       <div class="modal-content">
         <div class="modal-header">
           <!-- Title text -->
@@ -46,7 +46,11 @@
 export default {
   name: 'SlotModal',
   emits: ['alert', 'submitMyForm', 'clearFields'],
-  props: ['modalName'],
+  props: {
+    modalName: String,
+    sizing: { default: null, type: String },
+    justification: { default: null, type: String }
+  },
   data () {
     return {
       errorMsg: ''
