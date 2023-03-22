@@ -99,4 +99,8 @@ export default {
   hr {
     opacity: 0.8;
   }
+
+  a {
+    cursor: pointer;
+  }
 </style>

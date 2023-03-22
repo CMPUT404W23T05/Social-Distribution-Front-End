@@ -23,7 +23,7 @@
             <!-- <label for="like-post-button">{{ PostProper.likes }}</label> Not sure how this works yet...-->
           </li>
           <li class="btn-with-label">
-            <button id="comment-button" type="button" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
+            <button id="comment-button" type="button" ref="commentButton" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
               <i class="bi bi-chat-left-text-fill"></i>
             </button>
             <label for="comment-button">{{ postData.count }}</label>
@@ -42,9 +42,9 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting"></CommentList>
-          <div class="position-absolute">
-            <div v-if="pageTotal > 1" class="move-page d-flex justify-content-space-evenly">
+          <CommentList :post="postData" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
+          <div class="move-page-wrapper">
+            <div v-if="pageTotal > 1" class="move-page">
               <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
               <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
               <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage !== pageTotal}" @click="changeCommentPage(1)"></i>
@@ -60,7 +60,7 @@
           <textarea class="form-control" v-model="newComment" placeholder="Write a comment"/>
         </template>
         <template #submitButton>
-          <button type="submit" class="btn btn-primary" @click="submitComment">Submit</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @click="submitComment">Submit</button>
         </template>
         <template #openModalButton><br/></template>
       </SlotModal>
@@ -98,10 +98,9 @@ export default {
       authorData: null,
       isFollowing: false,
       isLiked: false,
-      expandComments: true,
+      expandComments: false,
       currentCommentPage: 1,
-      paginationSetting: 5, // This will acquired from user once they set their pagination
-      newComment: '' // Used for making a new comment
+      paginationSetting: 5 // This will acquired from user once they set their pagination
     }
   },
   methods: {
@@ -135,6 +134,9 @@ export default {
       } else if (n > 0 && this.currentCommentPage + n <= this.pageTotal) {
         this.currentCommentPage += n
       }
+    },
+    submitComment () {
+      // Update this later to match the spec change
     }
   }
 }
@@ -268,10 +270,16 @@ export default {
   }
 
   .move-page {
-    margin-bottom: 5em;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+  }
+
+  .move-page-wrapper {
+    position: absolute;
+    bottom: 2em;
+    margin-bottom: 5em;
+    width: 100%;
   }
 
   .pages-count {
