@@ -40,11 +40,13 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :page="currentCommentPage" :pagination="paginationSetting"></CommentList>
-          <div v-if="pageTotal > 1" class="move-page">
-            <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(1)"></i>
-            <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
-            <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage < pageTotal}" @click="changeCommentPage(-1)"></i>
+          <CommentList :post="postData" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting"></CommentList>
+          <div class="position-absolute">
+            <div v-if="pageTotal > 1" class="move-page d-flex justify-content-space-evenly">
+              <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
+              <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
+              <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage !== pageTotal}" @click="changeCommentPage(1)"></i>
+            </div>
           </div>
         </div>
       </aside>
@@ -109,9 +111,12 @@ export default {
       this.expandComments = !this.expandComments
     },
     changeCommentPage (n) {
+      console.log('click buttons')
       // Check if the currentPage will put the user out of bounds
-      if (this.currentCommentPage + n < this.pageTotal && this.currentCommentPage - n > 0) {
-        this.currentCommentPage = this.currentCommentPage + n
+      if (n < 0 && this.currentCommentPage + n > 0) {
+        this.currentCommentPage += n
+      } else if (n > 0 && this.currentCommentPage + n <= this.pageTotal) {
+        this.currentCommentPage += n
       }
     }
   }

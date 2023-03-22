@@ -13,8 +13,8 @@
     </UserComment>
 
     <!-- Bottom of the list when in loading/completed state-->
-    <div v-if="loading" class="spinner-grow text-dark" role="status"></div>
-    <hr v-if="exhausted" id="end-of-comments">
+    <div v-if="loading" class="spinner-grow text-light" role="status"></div>
+    <hr v-if="exhausted && comments.length > 0" id="end-of-comments">
     <small v-if="exhausted">There are no more comments. <a href="activateAddComment!">But you can add one</a></small>
 </template>
 
@@ -24,22 +24,28 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 
 export default {
-  props: { post: Object, page: Number, pagination: Number },
+  props: { post: Object, page: Number, pageTotal: Number, pagination: Number },
   components: { UserComment },
   mounted () {
     const userStore = useUserStore()
     userStore.initializeStore()
     this.currentUser = userStore.user.author
-    this.getPosts(this.pagination)
+    this.getComments()
   },
-  updated () {
-    this.getPosts(this.pagination)
+  watch: {
+    page (updated) {
+      this.getComments()
+    }
+  },
+  computed: {
+    exhausted () {
+      return (this.comments.length < this.pagination) && (this.page === this.pageTotal)
+    }
   },
   data () {
     return {
       comments: [],
       loading: true, // Used in tandem with loading more posts
-      exhausted: false, // No more posts to load from server (Show message indicating no more posts)
       currentUser: null
     }
   },
@@ -51,9 +57,9 @@ export default {
     matchSession (comment) {
       return this.currentUser.id === comment.author.id || false
     },
-    getPosts () {
-      console.table(this.post)
-      axios.get(`${this.post.author._id}/posts/${this.post._id}/comments`, null,
+    getComments () {
+      console.table(this.post.comments)
+      axios.get(this.post.comments,
         {
           params: {
             page: this.page,
@@ -64,7 +70,6 @@ export default {
           if (res.data.length === 0) {
             this.exhausted = true
           }
-          console.log(res.data.comments)
           this.comments = res.data.comments // Replace existing comments
           this.loading = false
         })
