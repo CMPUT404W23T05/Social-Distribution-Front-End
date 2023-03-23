@@ -54,14 +54,12 @@ export default {
   },
   methods: {
     matchPost (comment) {
-      console.table(comment)
       return this.post.author.id === comment.author.id || false
     },
     matchSession (comment) {
       return this.currentUser.id === comment.author.id || false
     },
     getComments () {
-      console.table(this.post.comments)
       axios.get(this.post.comments,
         {
           params: {

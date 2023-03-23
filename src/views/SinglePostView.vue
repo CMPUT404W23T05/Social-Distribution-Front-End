@@ -75,6 +75,16 @@ import PostProper from '@/components/viewPostComponents/SinglePost.vue'
 import CommentList from '@/components/commentComponents/CommentList.vue'
 import SlotModal from '@/components/SlotModal.vue'
 import axios from 'axios'
+import { v4 as uuidv4 } from 'uuid'
+
+const commentTemplate = {
+  type: 'comment',
+  id: null, // Generate on submit
+  author: null, // Add on submit
+  comment: '',
+  contentType: 'text/plain', // Or text/markdown
+  published: '2023-03-01T21:18:38.908794Z' // Placeholder (maybe re-added on backend?)
+}
 
 export default {
   components: { PostProper, CommentList, SlotModal },
@@ -100,7 +110,8 @@ export default {
       isLiked: false,
       expandComments: false,
       currentCommentPage: 1,
-      paginationSetting: 5 // This will acquired from user once they set their pagination
+      paginationSetting: 5, // This will acquired from user once they set their pagination
+      newComment: ''
     }
   },
   methods: {
@@ -127,7 +138,6 @@ export default {
       this.expandComments = !this.expandComments
     },
     changeCommentPage (n) {
-      console.log('click buttons')
       // Check if the currentPage will put the user out of bounds
       if (n < 0 && this.currentCommentPage + n > 0) {
         this.currentCommentPage += n
@@ -135,8 +145,27 @@ export default {
         this.currentCommentPage += n
       }
     },
-    submitComment () {
-      // Update this later to match the spec change
+    submitComment (content) {
+      // Form the content
+      const comment = commentTemplate
+      const generatedId = uuidv4()
+      comment.author = this.authorData
+      comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
+      comment.comment = this.newComment
+      // comment.comment = content
+      console.table(comment)
+      axios.post(`${this.postData.id}/comments`, comment)
+        .then(() => {
+          // Navigate to last page to display the comment
+          this.postData.count++
+          this.currentCommentPage = this.pageTotal
+          this.expandComments = true
+          this.newComment = '' // clear
+        })
+        .catch((err) => {
+          console.log(err)
+          alert('Couldn\'t make comment!')
+        })
     }
   }
 }
