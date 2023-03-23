@@ -29,6 +29,8 @@
         requests: [''], // the requests that will be filtered from the inbox
         actor: null, // the author that is requesting to follow the current author
         object: null, // the current author
+        pendingRequests: [''],
+        updatedRequests: [''],
         followFormat: // the json object that will be sent
         {
           type: 'Follow',
@@ -43,7 +45,7 @@
     methods: {
       getTestFollowerAuthor () {
         axios
-          .get('/authors/939a4fe3-78dc-4977-b48b-cad07dca4344/')
+          .get('/authors/38f57b34-f1ff-4f3b-9e81-2be731a14a0e/')
           .then((res) => {
             this.actor = res.data
             this.testSendingRequest()
@@ -57,7 +59,7 @@
         this.followFormat.actor = this.actor
         this.followFormat.object = this.object
         axios
-          .post('/authors/c72da43a-3269-48b2-9cc3-98bddd22a70a/inbox/', this.followFormat)
+          .post('/authors/07e7050f-4bf6-4249-8cde-6d254bddce9e/inbox/', this.followFormat)
           .catch((err) => {
             console.log("Couldn't send test request")
             console.log(err)
@@ -69,7 +71,7 @@
         to this.actor, then post the follow request for the first time (i.e. it won't have a state field)
         */
         axios
-          .get('/authors/c72da43a-3269-48b2-9cc3-98bddd22a70a/')
+          .get('/authors/07e7050f-4bf6-4249-8cde-6d254bddce9e/')
           .then((res) => {
             this.object = res.data
             this.getTestFollowerAuthor()
@@ -86,7 +88,7 @@
         return '@' + username
       },
       getIdFromUrl (url) {
-        return url.split('/')[4]
+        return url.split('/')[5]
       },
       handleRequest (state, followerId) {
         axios
@@ -130,8 +132,10 @@
         axios
           .get(`/authors/${this.object._id}/inbox/`)
           .then((res) => {
-            this.inbox = res.data
-            this.requests = this.inbox.items.filter(item => item.type === 'Follow').filter(follow => follow.state === undefined)
+            this.inbox = res.data 
+            this.pendingRequests = this.inbox.items.filter(item => item.type === 'Follow').filter(follow => follow.state === undefined)
+            this.updatedRequests = this.inbox.items.filter(item => item.type === 'Follow').filter(follow => follow.state !== undefined)
+            this.requests = this.pendingRequests.filter(pending => !this.updatedRequests.some(updated => pending.actor.url === updated.actor.url));
           })
           .catch((err) => {
             console.log("Couldn't get inbox or requests!")
