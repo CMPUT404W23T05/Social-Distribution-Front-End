@@ -17,19 +17,19 @@
 
 <script>
 
-  export default {
-    props: {
-      // What to route to when clicked, if any
-      anchor: {
-        default: null,
-        type: String
-      },
-        // Comment, Post, Follow, etc
-        notificationType: {
-          default: 'Hello World',
-          type: String
-        }
-      },
+export default {
+  props: {
+    // What to route to when clicked, if any
+    anchor: {
+      default: null,
+      type: String
+    },
+    // Comment, Post, Follow, etc
+    notificationType: {
+      default: 'Hello World',
+      type: String
     }
+  }
+}
 
-<script>
+</script>

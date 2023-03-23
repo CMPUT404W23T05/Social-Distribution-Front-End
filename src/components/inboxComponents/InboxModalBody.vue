@@ -23,19 +23,19 @@
   </div>
 
   <!-- What things are we getting? Posts, comments, all, etc -->
-  <notificationList :source="selectedNotifications"/>
+  <NotificationList :source="selectedNotifications"/>
 
 </template>
 
 <script>
 
-import notificationList from '@/components/inboxComponents/notificationList.vue'
+import NotificationList from '@/components/inboxComponents/notificationList.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: [notificationList],
+  components: [NotificationList],
 
   data () {
     return {
