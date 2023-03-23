@@ -5,72 +5,65 @@
 <template>
   <!-- Used for toggling the listviews -->
   <div class="btn-group-vertical" role="group">
-    <button class="btn" value="all" @click="(e) => setActive(e.value)">
+    <button class="btn" @click="setActive('all')">
       <i class="bi bi-archive-fill"/>
     </button>
-    <button class="btn" value="post" @click="(e) => setActive(e.value)">
+    <button class="btn" @click="setActive('post')">
       <i class="bi bi-file-earmark-post"/>
     </button>
-    <button class="btn" value="Like" @click="(e) => setActive(e.value)">
+    <button class="btn" @click="setActive('Like')">
       <i class="bi bi-heart-fill"/>
     </button>
-    <button class="btn" value="comment" @click="(e) => setActive(e.value)">
-      <i class="bi bi-left-text-fill"/>
+    <button class="btn" @click="setActive('comment')">
+      <i class="bi bi-chat-left-fill"/>
     </button>
-    <button class="btn" value="Follow" @click="(e) => setActive(e.value)">
+    <button class="btn" @click="setActive('Follow')">
       <i class="bi bi-person-plus-fill"/>
     </button>
   </div>
 
   <!-- What things are we getting? Posts, comments, all, etc -->
-  <NotificationList :source="selectedNotifications"/>
+  <NotificationList :selectedNotifications="selectedNotifications"/>
 
 </template>
 
 <script>
 
-import NotificationList from '@/components/inboxComponents/notificationList.vue'
+import NotificationList from '@/components/inboxComponents/NotificationList.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: [NotificationList],
+  components: { NotificationList },
 
+  computed: {
+    ...mapStores(useUserStore),
+    selectedNotifications () {
+      return this.active === 'all'
+        ? this.allNotifications
+        : this.allNotifications.filter(notification => notification.type === this.active)
+    }
+  },
   data () {
     return {
       active: 'all',
       author: null,
-      allNotifications: [],
-      selectedNotifications: []
+      allNotifications: []
     }
   },
 
   mounted () {
     this.getAuthorFromStore()
     axios.get(this.author.id + '/inbox')
-      .then((res) => { this.allNotifications = res.data })
+      .then((res) => { this.allNotifications = res.data.items })
       .catch((err) => {
         console.log(err)
       })
   },
-
-  computed: {
-    ...mapStores(useUserStore)
-  },
-
   methods: {
     setActive (value) {
       this.active = value
-      this.filterNotifications()
-    },
-    filterNotifications () {
-      // Filter according to select option
-      if (this.active === 'all') {
-        this.selectedNotifications = this.allNotifications
-      } else {
-        this.selectedNotifications = this.allNotifications.filter(notification => notification.type === this.active)
-      }
     },
     getAuthorFromStore () {
       const userStore = this.userStore

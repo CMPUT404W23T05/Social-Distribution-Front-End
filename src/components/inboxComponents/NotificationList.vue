@@ -2,7 +2,7 @@
 
 <div class="notification-list">
     <!-- Anchor is where to re-direct on click -->
-    <InboxNotification v-for="notification in socialNotifications"
+    <InboxNotification v-for="notification in selectedNotifications"
       :key="notification._id"
       :notification-type="notification.type"
       :anchor="notification.id"
@@ -33,7 +33,7 @@
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div class="request-notif-content" v-else-if="notication.type==='Follow' && '!notification.state'">
+        <div class="request-notif-content" v-else-if="notification.type==='Follow' && '!notification.state'">
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
@@ -41,7 +41,7 @@
         <!-- Jane accepted your follow request -->
         <div class="request-notif-content" v-else-if="notification.type==='Follow' && 'notification.state'">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
-          <p> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
+          <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
       </template>
     </InboxNotification>
@@ -49,13 +49,13 @@
 </template>
 
 <script>
-import InboxNotification from '@/components/inboxComponents'
+import InboxNotification from '@/components/inboxComponents/InboxNotification.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: [InboxNotification],
+  components: { InboxNotification },
   props: {
     selectedNotifications: {
       type: Array
@@ -103,10 +103,11 @@ export default {
           return 'one of your posts'
         })
     },
-    getActor (object) {
-      return this.author.id === object.author.id
-        ? 'You'
-        : object.authorDisplayName
+    getActor (user) {
+    // An author object
+      return this.author.id === user.id
+        ? 'you'
+        : user.displayName
     },
     updateList () {
       this.stream = this.selectedNotifications
@@ -120,3 +121,9 @@ export default {
 }
 
 </script>
+<style>
+  .request-notif-message {
+    text-transform: capitalize;
+  }
+
+</style>
