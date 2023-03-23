@@ -57,6 +57,13 @@
       <SlotModal modalName="makeCommentModal" sizing="modal-lg" justification="modal-dialog-centered">
         <template #titleText>Add a <strong>Comment</strong></template>
         <template #body>
+          <div class="form-check form-switch d-flex justify-content-center gap-3 mb-2">
+            <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
+            <label class="form-check-label" for="markdown-toggle">
+              <i class="bi-markdown-fill"></i>
+              Use Markdown
+            </label>
+          </div>
           <textarea class="form-control" v-model="newComment" placeholder="Write a comment"/>
         </template>
         <template #submitButton>
@@ -111,7 +118,8 @@ export default {
       expandComments: false,
       currentCommentPage: 1,
       paginationSetting: 5, // This will acquired from user once they set their pagination
-      newComment: ''
+      newComment: '',
+      markDownEnabled: false
     }
   },
   methods: {
@@ -152,6 +160,7 @@ export default {
       comment.author = this.authorData
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
+      comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
       // comment.comment = content
       console.table(comment)
       axios.post(`${this.postData.id}/comments`, comment)
