@@ -72,31 +72,6 @@ export default {
         this.selectedNotifications = this.allNotifications.filter(notification => notification.type === this.active)
       }
     },
-    getPostFromComment (comment) {
-      axios.get(comment.post_id)
-        .then((res) => {
-          return res.data.title
-        })
-        .catch(() => {
-          return 'one of your posts'
-        })
-    },
-    postCommentsMsg (like) {
-      // Return one of two values dependant on the liked object (post or comment)
-      axios.get(like.object)
-        .then((res) => {
-          const content = res.data
-          return content.type === 'post'
-            ? content.title
-            : `your comment: ${content.comment}`
-        })
-        .catch(() => {
-          return 'one of your posts'
-        })
-    },
-    getActor () {
-
-    },
     getAuthorFromStore () {
       const userStore = this.userStore
       userStore.initializeStore()

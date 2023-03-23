@@ -51,6 +51,8 @@
 <script>
 import inboxNotification from '@/components/inboxComponents'
 import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 
 export default {
   components: [inboxNotification],
@@ -66,11 +68,16 @@ export default {
   },
   data () {
     return {
-      stream: null
+      stream: null,
+      author: null
     }
   },
   mounted () {
     this.updateList()
+    this.getAuthorFromStore()
+  },
+  computed: {
+    ...mapStores(useUserStore)
   },
 
   methods: {
@@ -96,9 +103,20 @@ export default {
           return 'one of your posts'
         })
     },
+    getActor(object) {
+      return this.author.id === object.author.id
+      ? 'You'
+      : object.authorDisplayName
+    },
     updateList() {
       this.stream = this.selectedNotifications
-    }
+    },
+
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.author = userStore.user.author
+    },
   }
 
 
