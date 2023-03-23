@@ -4,20 +4,20 @@
 
 <template>
   <!-- Used for toggling the listviews -->
-  <div class="btn-group-vertical" role="group">
-    <button class="btn" @click="setActive('all')">
+  <div class="btn-group-vertical d-flex flex-column justify-content-space-around" role="group">
+    <button class="btn m-2" :class="{active: active === 'all'}" @click="setActive('all') ">
       <i class="bi bi-archive-fill"/>
     </button>
-    <button class="btn" @click="setActive('post')">
+    <button class="btn m-2" :class="{active: active === 'post'}" @click="setActive('post')">
       <i class="bi bi-file-earmark-post"/>
     </button>
-    <button class="btn" @click="setActive('Like')">
+    <button class="btn m-2" :class="{active: active === 'Like'}" @click="setActive('Like')">
       <i class="bi bi-heart-fill"/>
     </button>
-    <button class="btn" @click="setActive('comment')">
+    <button class="btn m-2" :class="{active: active === 'comment'}" @click="setActive('comment')">
       <i class="bi bi-chat-left-fill"/>
     </button>
-    <button class="btn" @click="setActive('Follow')">
+    <button class="btn m-2" :class="{active: active === 'Follow'}" @click="setActive('Follow')">
       <i class="bi bi-person-plus-fill"/>
     </button>
   </div>
@@ -74,3 +74,13 @@ export default {
 }
 
 </script>
+<style>
+  .btn-group-vertical {
+    float: left;
+  }
+
+  .active {
+    color: var(--bs-blue);
+  }
+
+</style>

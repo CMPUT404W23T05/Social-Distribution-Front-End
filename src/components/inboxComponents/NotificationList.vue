@@ -17,29 +17,29 @@
         <!-- No actionables yet, let's get a read-only version done first. -->
 
         <!-- Followed by relevant summary, if any. -->
-        <div class="post-notif-content" v-if="notification.type==='post'">
+        <div class="post-notif-content notification" v-if="notification.type==='post'">
           <p> {{ notification.author.displayName }} posted <strong>{{ notification.title }}</strong></p>
           <!-- Post summary stuff here? -->
         </div>
 
-        <div class="comment-notif-content" v-else-if="notification.type==='comment'">
+        <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
           <p> {{ notification.author.displayName }} commented on <strong>{{ getPostTitleFromComment(notification) }}</strong> </p>
           <p class="actual-comment"> {{ comment.comment }} </p>
         </div>
 
         <!-- Yes, the casing is correct according to the spec -->
-        <div class="like-notif-content" v-else-if="notification.type==='Like'">
+        <div class="like-notif-content notification" v-else-if="notification.type==='Like'">
           <p> {{ notification.author.displayName }} liked {{ postCommentsMsg }} </p>
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div class="request-notif-content" v-else-if="notification.type==='Follow' && '!notification.state'">
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && '!notification.state'">
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
         <!-- Notice that request was rejected/accepted -->
         <!-- Jane accepted your follow request -->
-        <div class="request-notif-content" v-else-if="notification.type==='Follow' && 'notification.state'">
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && 'notification.state'">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
           <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
@@ -124,6 +124,10 @@ export default {
 <style>
   .request-notif-message {
     text-transform: capitalize;
+  }
+
+  .notification {
+    margin: 1em;
   }
 
 </style>
