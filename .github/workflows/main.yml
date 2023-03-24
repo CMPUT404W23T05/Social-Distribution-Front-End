@@ -20,7 +20,8 @@ jobs:
         run: npm run test:unit
       - name: Build
         run: npm run build --if-present
-      - name: Deploy
+      - name: Deploy if on main branch
+        if: github.ref == 'refs/heads/master'
         uses: cpina/github-action-push-to-another-repository@v1.6
         env:
           SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
