@@ -20,3 +20,15 @@ jobs:
         run: npm run test:unit
       - name: Build
         run: npm run build --if-present
+      - name: Deploy
+        uses: cpina/github-action-push-to-another-repository@v1.6
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+        with: 
+          source-directory : 'dist'
+          destination-github-username: 'CMPUT404W23T05'
+          destination-repository-name: 'CMPUT404-project-socialdistribution'
+          target-branch: postgres #TODO: Change to main once merged
+          
+
+
