@@ -1,6 +1,6 @@
 <template>
     <div class="card" @click="goTo()">
- 
+
         <img :src="author.profileImage"  id='profile-picture' alt="profile picture">
 
         <div class="card-header" id = "title">
