@@ -212,7 +212,7 @@ export default {
         })
     },
     sharePost (friend) {
-      axios.post(`${friend.id}/inbox`)
+      axios.post(`${friend.id}/inbox/`, this.postData)
         .then(() => {
           alert(`You shared the post with ${friend.displayName}`)
         })
