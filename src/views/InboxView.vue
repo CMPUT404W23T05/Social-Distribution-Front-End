@@ -1,8 +1,8 @@
 <template>
   <h1> Your <strong>Feed</strong></h1>
-  <NotificationList :selectedNotifications="stream.items"></NotificationList>
+  <NotificationList v-if="!loading" :selectedNotifications="stream.items"></NotificationList>
 
-  <SlotModal modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
+  <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
     <template #titleText><h2>Inbox</h2></template>
     <template #body>
       <InboxModalBody/>
@@ -30,10 +30,13 @@ export default {
     ...mapStores(useUserStore)
   },
 
-  mounted () {
+  created () {
     this.getAuthorFromStore()
     axios.get(this.author.id + '/inbox')
-      .then((res) => { this.stream = res.data })
+      .then((res) => {
+        this.stream = res.data
+        this.loading = false
+      })
       .catch((err) => {
         console.log(err)
       })
@@ -41,7 +44,8 @@ export default {
   data () {
     return {
       stream: [],
-      author: null
+      author: null,
+      loading: true
     }
   },
   methods: {
