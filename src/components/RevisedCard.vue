@@ -8,7 +8,7 @@
       @mouseover="hovered = true"
       @mouseleave="hovered = false"
     >
-      <div class="content-container">
+      <div class="content-container" @click="goTo">
         <div class="decoration-accent"></div>
         <div class="scrim" :class="{open: hovered}"></div>
         <vue-markdown
@@ -65,6 +65,11 @@ export default {
     },
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
+    }
+  },
+  methods: {
+    goTo () {
+      this.$router.push({ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } })
     }
   }
 }

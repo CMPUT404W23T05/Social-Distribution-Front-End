@@ -156,16 +156,16 @@ export default {
   padding: 0;
 }
 
-    .navbar .navbar-nav {
-        vertical-align: top;
-        justify-content: center;
-        margin: 0 auto;
-        padding: 0;
-    }
-    span {
-        color: #fff;
-        margin: 5pt;
-        vertical-align: middle;
-    }
+.navbar .navbar-nav {
+  vertical-align: top;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
+span {
+  color: #fff;
+  margin: 5pt;
+  vertical-align: middle;
+}
 
 </style>
