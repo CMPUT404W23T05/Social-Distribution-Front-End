@@ -329,7 +329,7 @@ export default {
 
   .scrollable {
     overflow-y: scroll;
-    height: 100%;
+    height: calc(100% - 11em);
   }
   .scrollable::-webkit-scrollbar {
     display: none;
