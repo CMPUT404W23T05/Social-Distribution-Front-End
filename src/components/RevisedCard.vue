@@ -18,11 +18,11 @@
           :source="post.content"
         ></vue-markdown>
         <!-- Post is plain text -->
-        <p v-else-if="post.content" class="text-content" :class="{singleton: isSingleton}">{{ post.content }}</p>
+        <p v-else-if="post.content && includesText" class="text-content" :class="{singleton: isSingleton}">{{ post.content }}</p>
         <img
           class="image-content"
           :class="{singleton: isSingleton}"
-          v-if="post.image"
+          v-if=includesImage
           :src="imageURL"
           :alt="post.description"
         />
@@ -61,10 +61,20 @@ export default {
       return this.post.contentType.includes('text/markdown')
     },
     imageURL () {
-      return `https://social-t30.herokuapp.com/api/authors/${this.author._id}/posts/${this.post._id}/image`
+      // One team does't have image endpoint, and provides it in their content instead.
+      if (this.includesImage && !this.includesText) {
+        return `data:${this.post.contentType},${this.post.content}`
+      }
+      return `${this.post.id}/image`
     },
     isSingleton () {
-      return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
+      return (!this.includesText && this.includesImage) || (this.includesText && !this.includesImage)
+    },
+    includesText () {
+      return this.post.contentType.includes('text')
+    },
+    includesImage () {
+      return this.post.contentType.includes('image')
     }
   },
   methods: {
