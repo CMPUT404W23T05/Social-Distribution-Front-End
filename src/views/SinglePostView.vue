@@ -178,9 +178,11 @@ export default {
     },
     toggleFollow () {
       this.isFollowing = !this.isFollowing
+      alert('Sorry! You can\'t follow people yet')
     },
     toggleLike () {
       this.isLiked = !this.isLiked
+      alert('Sorry! You can\'t like posts yet')
     },
     toggleComments () {
       this.expandComments = !this.expandComments
@@ -240,9 +242,9 @@ export default {
     margin: 0;
   }
 
-  .liked {
+  /* .liked {
     color: #FF0000;
-  }
+  } */
 
   .activated {
     color: #4998F5;
