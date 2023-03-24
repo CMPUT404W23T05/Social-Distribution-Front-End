@@ -120,6 +120,9 @@ export default {
       } else {
         return null
       }
+    },
+    imageOnlyPost () {
+      return (this.post.contentType && this.post.contentType.length === 1 && this.post.contentType[0].includes('image'))
     }
   },
 
@@ -137,6 +140,9 @@ export default {
         this.post.contentType = this.post.contentType.split(',')
         if (this.post.contentType.includes('text/markdown')) {
           this.markDownEnabled = true
+        } else if (this.imageOnlyPost) { // convert image-only body post to our way of doing image posts
+          this.post.image = this.post.content
+          this.post.content = ''
         }
       } else {
         this.post = this.getTemplate()
@@ -205,6 +211,12 @@ export default {
       // Emit post back to parent for respective AJAX call
       if (this.errors.length === 0) {
         // Re-format to to spec format
+        if (this.imageOnlyPost || (this.post.content === '' && this.post.image)) {
+          // convert image-only post to the spec compliant way of doing image posts
+          this.post.content = this.post.image
+          this.post.image = ''
+          this.post.contentType = this.post.contentType.find(contentType => contentType.includes('image'))
+        }
         this.post.contentType = this.post.contentType.toString()
         console.table(this.post)
 
