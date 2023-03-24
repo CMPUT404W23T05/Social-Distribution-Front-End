@@ -51,6 +51,11 @@ export default {
     sizing: { default: null, type: String },
     justification: { default: null, type: String }
   },
+  data () {
+    return {
+      errorMsg: ''
+    }
+  },
   methods: {
     submitForm (e) {
       console.log('submitting form')
