@@ -113,9 +113,9 @@ export default {
     },
 
     getPosts () {
-      axios.request({ baseURL: 'https://socialdistcmput404.herokuapp.com/api/', url: 'posts', headers: { Authorization: 'Token ee62913898b9e9d756d74dd229b258d739e9ab19' } })
+      axios.request({ baseURL: 'https://socialdistcmput404.herokuapp.com/api/', url: 'posts/', headers: { Authorization: 'Token ee62913898b9e9d756d74dd229b258d739e9ab19' } })
         .then((res) => {
-          this.allPosts = res.data
+          this.allPosts = res.data.items
           this.loading = false
         })
         .catch((err) => {
