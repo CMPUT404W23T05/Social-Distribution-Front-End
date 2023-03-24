@@ -113,11 +113,14 @@ export default {
     },
 
     getPosts () {
-      axios.request({ baseURL: 'https://socialdistcmput404.herokuapp.com/api/', url: 'posts/', headers: { Authorization: 'Token ee62913898b9e9d756d74dd229b258d739e9ab19' } })
-        .then((res) => {
-          this.allPosts = res.data.items
+      axios.all([axios.request({ baseURL: 'https://socialdistcmput404.herokuapp.com/api/', url: 'posts/', headers: { Authorization: 'Token ee62913898b9e9d756d74dd229b258d739e9ab19' } }),
+        axios.request({ baseURL: 'https://sd-7-433-api.herokuapp.com/api/', url: 'posts/', headers: { Authorization: 'Basic ' + btoa('node01:P*ssw0rd!') } })])
+        .then(axios.spread((r1, r2) => {
+          console.log(r2.data)
+          this.allPosts = r1.data.items.concat(r2.data.items)
+          console.log(this.allPosts)
           this.loading = false
-        })
+        }))
         .catch((err) => {
           console.log(err)
         })
