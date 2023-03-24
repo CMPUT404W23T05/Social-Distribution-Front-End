@@ -30,7 +30,7 @@
           </li>
           <li>
             <!-- TODO: Implement share functionality -->
-            <button type="button" class="btn btn-light action-button"><i class="bi bi-share-fill "></i></button>
+            <button type="button" class="btn btn-light action-button" data-bs-toggle="modal" data-bs-target="#sharePostModal"><i class="bi bi-share-fill "></i></button>
           </li>
         </ul>
       </aside>
@@ -69,9 +69,23 @@
         <template #submitButton>
           <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @click="submitComment">Submit</button>
         </template>
+         <!-- Overwrite openModalButton with my own -->
         <template #openModalButton><br/></template>
       </SlotModal>
-      <!-- Overwrite openModalButton with my own -->
+
+      <!-- v-if so that we don't make API calls when this isn't open -->
+      <SlotModal modalName="sharePostModal" sizing="modal-lg" justification="modal-dialog-centered">
+        <template #titleText>Share the <strong>Post</strong></template>
+        <template #body>
+          <h4>Your <strong>Friends</strong></h4>
+          <hr/>
+          <!-- Switch w/ cards later on -->
+          <p v-for="friend in friends" :key="friend.id" @click="sharePost(friend)">{{ friend.displayName }}</p>
+          <p v-if="friends.length === 0 ">You have no friends :C</p>
+        </template>
+        <!-- Overwrite openModalButton with my own -->
+        <template #openModalButton><br/></template>
+      </SlotModal>
 
     </div>
     <!-- Idk if the sidebar for liking, commenting, etc should be a component, or unique to this page -->
@@ -111,13 +125,23 @@ export default {
   },
   data () {
     return {
+      // Basic information to load post stuff
       postData: null,
       authorData: null,
+
+      // Used for seeing likes
+      isLiked: false, // (no backend yet)
+
+      // Used for social stuff
       isFollowing: false,
-      isLiked: false,
+      friends: [], // Update when modal is opened
+      friendsLoading: true,
+      // Used for comment list
       expandComments: false,
       currentCommentPage: 1,
       paginationSetting: 5, // This will acquired from user once they set their pagination
+
+      // Used for creating a new comment
       newComment: '',
       markDownEnabled: false
     }
@@ -135,6 +159,17 @@ export default {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
+
+      axios.get(`/authors/${aid}/friends`)
+        .then((res) => {
+          this.friends = res.data.items
+          this.friendsLoading = false
+        })
+        .catch((err) => {
+          this.friends = []
+          alert("Couldn't get friends list")
+          console.log(err)
+        })
     },
     toggleFollow () {
       this.isFollowing = !this.isFollowing
@@ -153,7 +188,7 @@ export default {
         this.currentCommentPage += n
       }
     },
-    submitComment (content) {
+    submitComment () {
       // Form the content
       const comment = commentTemplate
       const generatedId = uuidv4()
@@ -174,6 +209,15 @@ export default {
         .catch((err) => {
           console.log(err)
           alert('Couldn\'t make comment!')
+        })
+    },
+    sharePost (friend) {
+      axios.post(`${friend.id}/inbox`)
+        .then(() => {
+          alert(`You shared the post with ${friend.displayName}`)
+        })
+        .catch(() => {
+          alert(`Couldn't share the post with ${friend.displayName}`)
         })
     }
   }
