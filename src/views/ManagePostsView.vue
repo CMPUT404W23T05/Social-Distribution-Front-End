@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import Card from '@/components/RevisedCard.vue'
+import Card from '@/components/PostCard.vue'
 import SlotModal from '@/components/SlotModal.vue'
 import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'

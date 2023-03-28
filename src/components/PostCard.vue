@@ -1,83 +1,113 @@
+<!-- Extends Generic Card (but gets its own component as it too appears in multiple views) -->
+
 <template>
-    <div class="card" @click="goTo()">
+  <GenericCard @hovered="hovered=true" @unhover="hovered=false" :title="post.title">
 
-        <img :src="author.profileImage"  id='profile-picture' alt="profile picture">
+    <template #card-content>
+      <vue-markdown
+      v-if="markdownEnabled"
+      class="text-content"
+      :class="{singleton: isSingleton}"
+      :source="post.content"
+      ></vue-markdown>
+      <!-- Post is plain text -->
+      <p v-else-if="post.content" class="text-content" :class="{singleton: isSingleton}">{{ post.content }}</p>
+      <img
+        class="image-content"
+        :class="{singleton: isSingleton}"
+        v-if="post.image"
+        :src="imageURL"
+        :alt="post.description"
+      />
+    </template>
 
-        <div class="card-header" id = "title">
-            {{ post.title }}
-        </div>
-
-        <!-- Post is an image -->
+    <!-- This content can also change depending on the post card -->
+    <template #footer>
+      <slot name="footer">
         <img
-        v-if="post.type === 'image'"
-        :src="post.postSource"
-        class="card-img-top"
-        alt="content image"/>
-        <!-- Post is markdown-->
-        <div v-else-if="post.type === 'markdown'" class="card-body">
-            <vue-markdown :source="post.content"></vue-markdown>
-        </div>
-        <!-- Post is plain text -->
-        <div v-else class="card-body">
-            <p>{{ post.content }}</p>
-        </div>
-    </div>
+          class="profile-image"
+          :class="{ open: hovered }"
+          :src="author.profileImage"
+          :alt="author.profileName"
+        />
+        <h6 id="username" v-if="hovered">
+          @{{ author.displayName }}
+        </h6>
+        </slot>
+    </template>
+  </GenericCard>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown-render'
+import GenericCard from './GenericCard.vue'
 
 export default {
-  data () {
-    return {}
-  },
+  // doAction is an optional event handler (i.e edit post, open as view, etc.)
+  components: { VueMarkdown, GenericCard },
   props: ['author', 'post'],
-  methods: {
-    // Dynamically route to post page on click
-    goTo () {
-      return {}
+  data () {
+    return {
+      hovered: false
     }
   },
-  components: {
-    VueMarkdown
+  computed: {
+    markdownEnabled () {
+      return this.post.contentType.includes('text/markdown')
+    },
+    imageURL () {
+      return `${this.post.id}/image`
+    },
+    isSingleton () {
+      return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
+    }
+  },
+  methods: {
+    goTo () {
+      this.$router.push({ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } })
+    }
   }
 }
 </script>
 
-<style>
-    /* Largely for preliminary testing, see how it looks with flex when added to parent container */
-    #profile-picture {
-        width: 32pt;
-        aspect-ratio: 1/1;
-        border-radius: 50%;
-        object-fit: scale-down;
-        position: absolute;
-        top: -16pt;
-        right: 12pt;
-        border: black solid 2pt;
-    }
+<style scoped>
+  .image-content {
+    max-width: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    flex: 0 0 50%;
+  }
 
-    #title {
-        font-weight: bold;
-        font-size: larger;
-        text-align: left;
-        text-transform: capitalize;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+  .text-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 9;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 90%; /* Jank to get it to line up with image */
+    flex: 0 0 50%;
+    padding-left: 1em;
+    white-space: pre-wrap;
+  }
 
-    .card {
-        width: 15%;
-        min-width: 120pt;
-        aspect-ratio: 5/6;
-    }
+  *.singleton{
+    flex: 0 0 100%;
+  }
 
-    .card-body {
-        height: 140pt;
-        text-align: left;
-        text-transform: capitalize;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+  .profile-image {
+    height: 0em;
+    width: 0em;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: 0.4s;
+  }
+
+  .profile-image.open {
+    height: 5em;
+    width: 5em;
+  }
+
+  h6 {
+    line-height: 0;
+  }
+
 </style>
