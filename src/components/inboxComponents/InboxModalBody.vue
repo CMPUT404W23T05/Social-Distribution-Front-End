@@ -30,12 +30,12 @@
 <script>
 
 import NotificationList from '@/components/inboxComponents/NotificationList.vue'
-import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
   components: { NotificationList },
+  props: ['allNotifications'],
 
   computed: {
     ...mapStores(useUserStore),
@@ -48,19 +48,18 @@ export default {
   data () {
     return {
       active: 'all',
-      author: null,
-      allNotifications: []
+      author: null
     }
   },
 
-  mounted () {
-    this.getAuthorFromStore()
-    axios.get(this.author.id + '/inbox')
-      .then((res) => { this.allNotifications = res.data.items })
-      .catch((err) => {
-        console.log(err)
-      })
-  },
+  // mounted () {
+  //   this.getAuthorFromStore()
+  //   axios.get(this.author.id + '/inbox/')
+  //     .then((res) => { this.allNotifications = res.data.items })
+  //     .catch((err) => {
+  //       console.log(err)
+  //     })
+  // },
   methods: {
     setActive (value) {
       this.active = value

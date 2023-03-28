@@ -5,7 +5,7 @@
   <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
     <template #titleText><h2>Inbox</h2></template>
     <template #body>
-      <InboxModalBody/>
+      <InboxModalBody :allNotifications="stream.items"/>
     </template>
     <template #closeButtonText>Done</template>
     <template #openModalButton>
@@ -32,7 +32,7 @@ export default {
 
   created () {
     this.getAuthorFromStore()
-    axios.get(this.author.id + '/inbox')
+    axios.get(this.author.id + '/inbox/')
       .then((res) => {
         this.stream = res.data
         this.loading = false
