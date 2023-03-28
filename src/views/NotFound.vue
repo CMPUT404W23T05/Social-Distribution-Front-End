@@ -37,14 +37,14 @@
 }
 
 h1 {
-  font-size: 2.1vw;
+  font-size: calc(0.7em + 1.5vw);
 }
 h2 {
-  font-size: 1.5vw;
+  font-size:calc(0.4em + 1vw); /* maintain minimum font size */
 }
 a {
   color: var(--bs-primary);
   text-decoration: none;
-  font-size: 1.2vw;
+  font-size: calc(0.3em + 1vw)
 }
 </style>
