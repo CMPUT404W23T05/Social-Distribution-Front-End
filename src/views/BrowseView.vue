@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import Card from '../components/RevisedCard.vue'
+import Card from '../components/PostCard.vue'
 import SlotModal from '../components/SlotModal.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
@@ -137,7 +137,7 @@ export default {
 
     getPosts () {
       axios
-        .get('/posts/')
+        .get('https://social-t30.herokuapp.com/api/posts/')
         .then((res) => {
           this.allPosts = res.data
           this.loading = false
