@@ -97,6 +97,8 @@ import CommentList from '@/components/commentComponents/CommentList.vue'
 import SlotModal from '@/components/SlotModal.vue'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 
 const commentTemplate = {
   type: 'comment',
@@ -113,9 +115,11 @@ export default {
     // Get the post and author
     const pid = this.$route.params.pid
     const aid = this.$route.params.aid
+    this.getAuthorFromStore()
     this.getData(pid, aid)
   },
   computed: {
+    ...mapStores(useUserStore),
     loading () {
       return (!this.authorData || !this.postData)
     },
@@ -127,7 +131,8 @@ export default {
     return {
       // Basic information to load post stuff
       postData: null,
-      authorData: null,
+      authorData: null, // Get from post
+      currentAuthor: null, // Load from store
 
       // Used for seeing likes
       isLiked: false, // (no backend yet)
@@ -194,7 +199,7 @@ export default {
       // Form the content
       const comment = commentTemplate
       const generatedId = uuidv4()
-      comment.author = this.authorData
+      comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
       comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
@@ -221,6 +226,11 @@ export default {
         .catch(() => {
           alert(`Couldn't share the post with ${friend.displayName}`)
         })
+    },
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.currentAuthor = userStore.user.author
     }
   }
 }
