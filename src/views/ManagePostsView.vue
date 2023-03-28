@@ -106,6 +106,7 @@ export default {
       post.author = this.author
       post._id = uuidv4()
       post.id = this.author.id + '/posts/' + post._id
+      post.comments = post.id + '/comments'
       console.log(post)
       axios
         .post(this.crEndPoint, post)

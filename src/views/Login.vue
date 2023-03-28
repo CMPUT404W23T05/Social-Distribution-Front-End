@@ -59,13 +59,12 @@ export default {
               const user = response.data
               const store = this.userStore
               store.setUser(user)
+              // go to home page
+              this.$router.push('/home')
             })
             .catch(error => {
               console.log(error)
             })
-
-          // go to home page
-          this.$router.push('/home')
         })
         .catch(error => {
           console.log(error)

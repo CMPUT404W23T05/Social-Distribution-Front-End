@@ -61,6 +61,11 @@ export default {
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
     }
+  },
+  methods: {
+    goTo () {
+      this.$router.push({ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } })
+    }
   }
 }
 </script>

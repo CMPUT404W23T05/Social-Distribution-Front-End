@@ -66,10 +66,16 @@ export default {
   },
   methods: {
     logout () {
+      const token = this.tokenStore
       // post to remove token from server
       axios.post('token/logout').then(response => {
         console.log(response)
-        const token = this.tokenStore
+      }).catch(error => {
+        console.log("'Server logout failed")
+        console.log(error)
+      }).finally(() => {
+        // do this regardless of success or failure
+
         token.removeToken() // remove token from store
         localStorage.removeItem('token') // remove token from local
         // remove user from local storage and store
@@ -78,8 +84,6 @@ export default {
         this.$router.push('/login') // go to login page
         // reset axios header
         axios.defaults.headers.common.Authorization = ''
-      }).catch(error => {
-        console.log(error)
       })
     },
     getAuthorPropertyIfDefined (prop) {
@@ -156,16 +160,16 @@ export default {
   padding: 0;
 }
 
-    .navbar .navbar-nav {
-        vertical-align: top;
-        justify-content: center;
-        margin: 0 auto;
-        padding: 0;
-    }
-    span {
-        color: #fff;
-        margin: 5pt;
-        vertical-align: middle;
-    }
+.navbar .navbar-nav {
+  vertical-align: top;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
+span {
+  color: #fff;
+  margin: 5pt;
+  vertical-align: middle;
+}
 
 </style>
