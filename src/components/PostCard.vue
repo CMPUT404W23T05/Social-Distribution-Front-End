@@ -1,7 +1,11 @@
 <!-- Extends Generic Card (but gets its own component as it too appears in multiple views) -->
 
 <template>
-  <GenericCard @hovered="hovered=true" @unhover="hovered=false" :title="post.title">
+  <GenericCard
+  @hovered="hovered=true"
+  @unhover="hovered=false"
+  :title="post.title"
+  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } }">
 
     <template #card-content>
       <vue-markdown

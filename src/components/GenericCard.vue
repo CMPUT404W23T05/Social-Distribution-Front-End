@@ -10,7 +10,7 @@
       @mouseover="enableHover"
       @mouseleave="disableHover"
     >
-      <div class="content-container">
+      <div class="content-container" @click="goTo(anchor)">
         <div class="decoration-accent" v-if="title"></div>
         <div class="scrim" :class="{open: hovered}"></div>
         <slot name="card-content">
@@ -28,7 +28,7 @@
 
 export default {
   emits: ['hovered', 'unhover'],
-  props: ['title'],
+  props: ['title', 'anchor'],
   methods: {
     // We can't just use a ternary condition with a toggle here -- that will result in flickering/unregistered toggles, etc. (Trust me on this; I tried)
     enableHover () {
@@ -38,6 +38,14 @@ export default {
     disableHover () {
       this.hovered = false
       this.$emit('unhover')
+    },
+    goTo (anchor) {
+      if (!anchor) {
+        // If no anchor is provided, nothing will happen
+        console.log('No anchor to go to!')
+      } else {
+        this.$router.push(anchor)
+      }
     }
   },
   data () {
