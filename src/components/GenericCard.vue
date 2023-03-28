@@ -7,8 +7,8 @@
     </div>
     <div
       class="card-body card"
-      @mouseover="toggleHover"
-      @mouseleave="toggleHover"
+      @mouseover="enableHover"
+      @mouseleave="disableHover"
     >
       <div class="content-container">
         <div class="decoration-accent" v-if="title"></div>
@@ -30,9 +30,14 @@ export default {
   emits: ['hovered', 'unhover'],
   props: ['title'],
   methods: {
-    toggleHover () {
-      this.hovered = !this.hovered
-      this.$emit(this.hovered ? 'hovered' : 'unhover')
+    // We can't just use a ternary condition with a toggle here -- that will result in flickering/unregistered toggles, etc. (Trust me on this; I tried)
+    enableHover () {
+      this.hovered = true
+      this.$emit('hovered')
+    },
+    disableHover () {
+      this.hovered = false
+      this.$emit('unhover')
     }
   },
   data () {
