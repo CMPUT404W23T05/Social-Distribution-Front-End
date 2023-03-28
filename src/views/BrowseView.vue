@@ -50,7 +50,6 @@
     </div>
   </div>
 
-  <h1>hey</h1>
   <div class="authors">
     <div v-for="author in authors.items" :key="author.id">
       <author_card :author="author"/>

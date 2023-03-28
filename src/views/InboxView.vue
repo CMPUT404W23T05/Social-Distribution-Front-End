@@ -37,7 +37,7 @@ import axios from 'axios'
 import git_card from '../components/GitHubFeed.vue'
   
 const github_data = {
-  "token": "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",
+  "token": "token here",
   "username": "kirat21"
 };
 const baseURL = "https://api.github.com/users/kirat21/events";
@@ -66,7 +66,8 @@ export default {
   data () {
     return {
       stream: [],
-      author: null
+      author: null,
+      git_feeds: []
     }
   },
   methods: {
@@ -77,7 +78,7 @@ export default {
         console.log(res.data)
       })
       .catch(function(err) {
-        console.log(JSON.stringify(err));
+        console.log(err);
       });
     },
     getAuthorFromStore () {
@@ -103,6 +104,7 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    width: 100%;
     padding: 2% 2% 2% 2%;
     justify-content: space-around;
     row-gap: 20px;

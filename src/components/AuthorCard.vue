@@ -8,8 +8,10 @@
     <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
   </div>
 </div>
-<!-- <h3>{{author}}</h3> -->
-<h3>{{curr_author}}</h3>
+<!-- <h3>{{author}}</h3>
+<br>
+<h3>{{curr_author}}</h3> -->
+<h3>{{ follow_confirm }}</h3>
 
 
 </template>
@@ -29,7 +31,8 @@ import { mapStores } from 'pinia'
     props: ['author'],
     data() {
         return {
-            curr_author: []
+            curr_author: [],
+            follow_confirm: null
         }
     },
     methods: {
@@ -41,14 +44,14 @@ import { mapStores } from 'pinia'
         followAuthor(auth) {
             axios.post(`/authors/${auth._id}/inbox/`,
             {
-            'type':'Follow',
-            'actor':`${this.curr_author}`,
-            'object':`${auth}`,
+            type:'Follow',
+            actor:this.curr_author,
+            object:auth,
             }
             )
             .then((res) => {
-                this.authors = res.data
                 console.log(res.data)
+                this.follow_confirm = res.data
             })
             .catch(function(err) {
                 console.log(err);
