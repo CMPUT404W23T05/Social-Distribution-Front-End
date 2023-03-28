@@ -45,6 +45,6 @@ h2 {
 a {
   color: var(--bs-primary);
   text-decoration: none;
-  font-size: calc(0.3em + 1vw)
+  font-size: calc(0.3em + 0.8vw)
 }
 </style>
