@@ -8,6 +8,7 @@ import SocialView from '../views/SocialView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import InboxView from '../views/InboxView.vue'
 import SinglePostView from '../views/SinglePostView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 // Routes go here
 export default [
@@ -55,5 +56,17 @@ export default [
     path: '/authors/:aid/posts/:pid',
     name: 'postpage',
     component: SinglePostView
+  }, {
+    path: '/:pathMatch(.*)*',
+    beforeEnter: () => {
+      window.location.assign('/404') // redirect to 404 page to trigger Django to send 404 response
+    },
+    name: 'NotFound',
+    component: NotFoundView
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: NotFoundView
   }
 ]
