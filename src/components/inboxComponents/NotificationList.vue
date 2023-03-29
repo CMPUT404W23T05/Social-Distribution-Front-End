@@ -1,15 +1,15 @@
 <template>
 
-<div class="notification-list">
+<div class="notification-list d-flex flex-wrap">
     <!-- Anchor is where to re-direct on click -->
-    <InboxNotification v-for="notification in selectedNotifications"
-      :key="notification._id"
-      :notification-type="notification.type"
-      :anchor="notification.id"
+    <GenericCard
+      v-for="notification in feed"
+      :key="notification.id"
+      :anchor="getAnchor(notification)"
+      class="m-2"
     >
 
-    <!-- This is so yucky but I don't want 5 other components AAAAAAAAAAAAAAAAAAAAAAAAA -->
-      <template #notification-content>
+      <template #card-content>
         <!-- Should be of the form: {actor} {verb (past-tense)} {preposition (optional)} {target} -->
         <!-- e.g) <Sandy> <commented> <on> <'Selling seashells by the seashore'> -->
         <!-- e.g) <Jim> <sent> <friend request> <to you> -->
@@ -23,39 +23,52 @@
         </div>
 
         <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
-          <p> {{ notification.author.displayName }} commented on <strong>{{ getPostTitleFromComment(notification) }}</strong> </p>
-          <p class="actual-comment"> {{ comment.comment }} </p>
+          <p> {{ notification.author.displayName }} commented </p>
+          <p class="actual-comment"> {{ notification.comment }} </p>
         </div>
 
         <!-- Yes, the casing is correct according to the spec -->
         <div class="like-notif-content notification" v-else-if="notification.type==='Like'">
-          <p> {{ notification.author.displayName }} liked {{ postCommentsMsg }} </p>
+          <p> {{ notification.summary }} </p>
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && '!notification.state'">
+        <div
+        class="request-notif-content notification"
+        v-else-if="notification.type==='Follow' && '!notification.state'"
+        >
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
         <!-- Notice that request was rejected/accepted -->
         <!-- Jane accepted your follow request -->
-        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && 'notification.state'">
+        <div class="request-notif-content notification"
+         v-else-if="notification.type==='Follow' && 'notification.state'"
+        >
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
           <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
       </template>
-    </InboxNotification>
+
+    <template #footer>
+      <h6 class="notification-type">
+        {{ notification.type }}
+      </h6>
+    </template>
+
+    </GenericCard>
   </div>
 </template>
 
 <script>
-import InboxNotification from '@/components/inboxComponents/InboxNotification.vue'
+import GenericCard from '@/components/GenericCard.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: { InboxNotification },
+  emits: ['redirect'],
+  components: { GenericCard },
   props: {
     selectedNotifications: {
       type: Array
@@ -66,31 +79,33 @@ export default {
       this.updateList()
     }
   },
-  data () {
-    return {
-      stream: null,
-      author: null
-    }
-  },
-  mounted () {
-    this.updateList()
-    this.getAuthorFromStore()
-  },
   computed: {
     ...mapStores(useUserStore)
   },
-
+  async created () {
+    this.getAuthorFromStore()
+    this.updateList()
+  },
+  data () {
+    return {
+      feed: [],
+      supplementary: [],
+      author: null
+    }
+  },
   methods: {
     getPostFromComment (comment) {
-      axios.get(comment.post_id)
+      // Return a post associated with the comment
+      axios.get(comment.id.split('/comments')[0]) // The post endpoint
         .then((res) => {
+          console.log(res.data)
           return res.data.title
         })
         .catch(() => {
           return 'one of your posts'
         })
     },
-    postCommentsMsg (like) {
+    getPostComment (like) {
       // Return one of two values dependant on the liked object (post or comment)
       axios.get(like.object)
         .then((res) => {
@@ -104,30 +119,47 @@ export default {
         })
     },
     getActor (user) {
-    // An author object
+      // An author object
       return this.author.id === user.id
         ? 'you'
         : user.displayName
     },
     updateList () {
-      this.stream = this.selectedNotifications
+      this.feed = this.selectedNotifications
     },
     getAuthorFromStore () {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+    getAnchor (notification) {
+      if (notification.type === 'Follow') {
+        return { name: 'SocialPage' }
+      } else if (notification.type === 'comment' || notification.type === 'post') {
+        const parts = notification.id.split('/')
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] } }
+      } else if (notification.type === 'Like') {
+        const parts = notification.object.split('/')
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] } }
+      }
     }
   }
 }
 
 </script>
-<style>
+<style scoped>
   .request-notif-message {
     text-transform: capitalize;
   }
 
   .notification {
     margin: 1em;
+  }
+
+  h6 {
+    text-align: center;
+    width: 100%;
+    text-transform: capitalize;
   }
 
 </style>

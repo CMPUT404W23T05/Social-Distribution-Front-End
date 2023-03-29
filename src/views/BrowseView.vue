@@ -116,7 +116,7 @@ export default {
 
     getPosts () {
       axios
-        .get('https://social-t30.herokuapp.com/api/posts/')
+        .get('/posts/')
         .then((res) => {
           this.allPosts = res.data
           this.loading = false

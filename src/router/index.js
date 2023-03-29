@@ -26,4 +26,13 @@ router.beforeEach((to, from) => {
     return '/home#loggedin' // if the user is logged in and tries to access login or signup, redirect to home
   }
 })
+router.afterEach((to, from) => {
+  if (from.name === 'homepage') {
+    const deadModal = document.querySelector('.modal-backdrop')
+    if (deadModal) {
+      deadModal.remove()
+    }
+  }
+})
+
 export default router

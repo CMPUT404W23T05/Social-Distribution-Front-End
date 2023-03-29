@@ -1,20 +1,22 @@
 <template>
-  <h1> Your <strong>Feed</strong></h1>
+  <div class="inbox-view">
+    <h1 class="mt-5 text-left"> Your <strong>Feed</strong></h1>
+    <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
+      <template #titleText><h2>Inbox</h2></template>
+      <template #body>
+        <InboxModalBody :allNotifications="stream.items"/>
+      </template>
+      <template #closeButtonText>Done</template>
+      <template #openModalButton>
+        <button type="button" class="btn btn-outline-primary d-flex justify-self-start" data-bs-toggle="modal" :data-bs-target="'#inboxModal'">
+          Inbox
+        </button>
+      </template>
+    </SlotModal>
 
-  <NotificationList :selectedNotifications="stream.items"></NotificationList>
+    <NotificationList v-if="!loading" :selectedNotifications="stream.items" class="list"></NotificationList>
 
-  <SlotModal modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
-    <template #titleText><h2>Inbox</h2></template>
-    <template #body>
-      <InboxModalBody/>
-    </template>
-    <template #closeButtonText>Done</template>
-    <template #openModalButton>
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" :data-bs-target="'#inboxModal'">
-        Inbox
-      </button>
-    </template>
-  </SlotModal>
+  </div>
 </template>
 
 <script>
@@ -31,10 +33,13 @@ export default {
     ...mapStores(useUserStore)
   },
 
-  mounted () {
+  created () {
     this.getAuthorFromStore()
-    axios.get(this.author.id + '/inbox')
-      .then((res) => { this.stream = res.data })
+    axios.get(this.author.id + '/inbox/')
+      .then((res) => {
+        this.stream = res.data
+        this.loading = false
+      })
       .catch((err) => {
         console.log(err)
       })
@@ -42,7 +47,8 @@ export default {
   data () {
     return {
       stream: [],
-      author: null
+      author: null,
+      loading: true
     }
   },
   methods: {
@@ -52,10 +58,21 @@ export default {
       this.author = userStore.user.author
     }
   }
-
 }
 
 </script>
 
-<style>
+<style scoped>
+  .inbox-view {
+    margin: 2rem 5%;
+  }
+
+  strong {
+    color: var(--bs-blue)
+  }
+
+  h1 {
+    text-align: left;
+  }
+
 </style>
