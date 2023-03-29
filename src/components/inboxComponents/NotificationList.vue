@@ -5,7 +5,7 @@
     <GenericCard
       v-for="notification in feed"
       :key="notification.id"
-      :anchor="notification.id"
+      :anchor="getAnchor(notification)"
     >
 
       <template #card-content>
@@ -32,17 +32,29 @@
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && '!notification.state'">
+        <div
+        class="request-notif-content notification"
+        v-else-if="notification.type==='Follow' && '!notification.state'"
+        >
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
         <!-- Notice that request was rejected/accepted -->
         <!-- Jane accepted your follow request -->
-        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && 'notification.state'">
+        <div class="request-notif-content notification"
+         v-else-if="notification.type==='Follow' && 'notification.state'"
+         :anchor="{ name: 'SocialPage' }">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
           <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
       </template>
+
+    <template #footer>
+      <h6 class="notification-type">
+        {{ notification.type }}
+      </h6>
+    </template>
+
     </GenericCard>
   </div>
 </template>
@@ -54,6 +66,7 @@ import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
+  emits: ['redirect'],
   components: { GenericCard },
   props: {
     selectedNotifications: {
@@ -115,18 +128,35 @@ export default {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+    getAnchor (notification) {
+      switch (notification.type) {
+        case 'Follow':
+          return { name: 'SocialPage' } // Redirect to social page
+        case 'post':
+          return notification.post.id // Single post view page
+        case 'comment':
+          return notification.id.split('/comment')[0] // Single post view page
+        case 'Like':
+          return notification.items.object.split('/comment')[0] // Single post of the post/comment that was liked
+      }
     }
   }
 }
 
 </script>
-<style>
+<style scoped>
   .request-notif-message {
     text-transform: capitalize;
   }
 
   .notification {
     margin: 1em;
+  }
+
+  h6 {
+    text-align: center;
+    width: 100%;
   }
 
 </style>
