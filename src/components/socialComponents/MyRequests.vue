@@ -7,8 +7,8 @@
         <img :src="author.actor.profileImage">
         <p>{{displayUsername(author.actor.displayName)}}</p>
         <span>
-          <button @click="handleRequest('Accepted', getIdFromUrl(author.actor.url))" id="accept-button" class="btn btn-success">Accept</button>
-          <button @click="handleRequest('Declined', getIdFromUrl(author.actor.url))" id="decline-button" class="btn btn-danger">Decline</button>
+          <button @click="handleRequest('Accepted', author.actor)" id="accept-button" class="btn btn-success">Accept</button>
+          <button @click="handleRequest('Declined', author.actor)" id="decline-button" class="btn btn-danger">Decline</button>
         </span>
         </template>
       </li>
@@ -90,17 +90,9 @@ export default {
     getIdFromUrl (url) {
       return url.split('/')[5]
     },
-    handleRequest (state, followerId) {
-      axios
-        .get(`/authors/${followerId}/`) // info about the author who wants to follow the current author
-        .then((res) => {
-          this.actor = res.data
-          this.updateRequestInformation(state)
-        })
-        .catch((err) => {
-          console.log("Couldn't get author actor!")
-          console.log(err)
-        })
+    handleRequest (state, actor) {
+      this.actor = actor
+      this.updateRequestInformation(state)
     },
     updateRequestInformation (state) {
       /*
@@ -146,7 +138,7 @@ export default {
   mounted () {
     this.getAuthorFromStore()
     this.getRequests()
-    // this.testExampleRequest()
+    //this.testExampleRequest()
   }
 }
 

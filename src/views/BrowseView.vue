@@ -60,6 +60,7 @@ import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD'
+
 export default {
   name: 'BrowsePage',
   components: { Card, SlotModal },
@@ -92,6 +93,7 @@ export default {
     }
   },
   methods: {
+
     toggle (file) {
       this.active[file] = !this.active[file]
     },

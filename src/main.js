@@ -7,7 +7,7 @@ import 'bootstrap'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:8000/api' // API URL
+axios.defaults.baseURL = 'https://social-t30.herokuapp.com/api' // API URL
 
 const app = createApp(App)
 app.use(router, axios).use(createPinia()).mount('#app')
