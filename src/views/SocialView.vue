@@ -17,7 +17,7 @@
   <br><br>
   <!-- <h4>{{ authors_remote }}</h4><br> -->
   <!-- <h4>{{ authors_remote2 }}</h4><br> -->
-  <h3 style="text-align: left; margin-left: 12%;">Other node's authors</h3>
+  <h3 style="text-align: left; margin-left: 12%;">Other node's authors (Team 7)</h3>
   <div class="authors">
     <div v-for="author in authors_remote2.items" :key="author.id">
       <author_card :author="author"/>
@@ -25,7 +25,7 @@
   </div>
 
   <br><br>
-  <h3 style="text-align: left; margin-left: 12%;">Other node's authors (1)</h3>
+  <h3 style="text-align: left; margin-left: 12%;">Other node's authors (Team 10)</h3>
   <div class="authors">
     <div v-for="author in authors_remote.items" :key="author.id">
       <author_card :author="author"/>
