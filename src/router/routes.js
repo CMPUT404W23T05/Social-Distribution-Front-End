@@ -6,6 +6,7 @@ import LogIn from '../views/Login.vue'
 import SignUp from '../views/SignUp.vue'
 import SocialView from '../views/SocialView.vue'
 import SettingsView from '../views/SettingsView.vue'
+import InboxView from '../views/InboxView.vue'
 import SinglePostView from '../views/SinglePostView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
@@ -18,7 +19,7 @@ export default [
   {
     path: '/home',
     name: 'homepage',
-    component: Home
+    component: InboxView
   },
   {
     path: '/browse',

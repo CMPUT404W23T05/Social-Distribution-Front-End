@@ -2,7 +2,7 @@
 
 <template>
   <div id="card-totality">
-    <div  v-if="title" class="post-title">
+    <div v-if="title" class="post-title">
       <h3 class="title-text">{{ title }}</h3>
     </div>
     <div
@@ -28,7 +28,7 @@
 
 export default {
   emits: ['hovered', 'unhover'],
-  props: ['title', 'anchor'],
+  props: ['title', 'anchor'], // Optional
   methods: {
     // We can't just use a ternary condition with a toggle here -- that will result in flickering/unregistered toggles, etc. (Trust me on this; I tried)
     enableHover () {
