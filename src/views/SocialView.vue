@@ -15,9 +15,17 @@
   </div>
 
   <br><br>
-  <!-- <h4>{{ authors_remote }}</h4><br>
-  <h4>{{ authors_remote2 }}</h4><br> -->
+  <!-- <h4>{{ authors_remote }}</h4><br> -->
+  <!-- <h4>{{ authors_remote2 }}</h4><br> -->
   <h3 style="text-align: left; margin-left: 12%;">Other node's authors</h3>
+  <div class="authors">
+    <div v-for="author in authors_remote2.items" :key="author.id">
+      <author_card :author="author"/>
+    </div>
+  </div>
+
+  <br><br>
+  <h3 style="text-align: left; margin-left: 12%;">Other node's authors (1)</h3>
   <div class="authors">
     <div v-for="author in authors_remote.items" :key="author.id">
       <author_card :author="author"/>
@@ -64,9 +72,9 @@ export default {
       });
     },
     getRemoteAuthors2() {
-      axios.request({baseURL: 'https://sd7-api.herokuapp.com/api/', url:'authors/', headers: {Authorization: 'Basic '+ btoa('node01:P*ssw0rd!')}})
+      axios.request({baseURL: 'https://sd-7-433-api.herokuapp.com/api/', url:'authors/', headers: {Authorization: 'Basic '+ btoa('node01:P*ssw0rd!')}})
       .then((res) => {
-        this.authors_remote = res.data
+        this.authors_remote2 = res.data
         console.log(res.data)
       })
       .catch(function(err) {

@@ -1,18 +1,35 @@
 <template>
+    <!-- <GenericCard
+    @hovered="hovered=true"
+    @unhover="hovered=false"
+    :title=" author.displayName ">
 
-<div class="card" style="width: 18rem;">
-  <!-- <img src= class="card-img-top" alt="Image Here!"> -->
-  <div class="card-body">
-    <h5 class="card-title">{{ author.displayName }}</h5>
-    <p class="card-text">Host: {{ author.host }}</p>
-    <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
-  </div>
-</div>
-<!-- <h3>{{author}}</h3>
-<br>
-<h3>{{curr_author}}</h3> -->
-<h3>{{ follow_confirm }}</h3>
+        <template #card-content>
 
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ author.displayName }}</h5>
+                    <p class="card-text">Host: {{ author.host }}</p>
+                    <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
+                </div>
+            </div>
+            <br>
+        </template>
+    </GenericCard> -->
+    
+    
+    <div class="card" style="width: 18rem;">
+        <!-- <img src= class="card-img-top" alt="Image Here!"> -->
+        <div class="card-body">
+            <h5 class="card-title">{{ author.displayName }}</h5>
+            <p class="card-text">Host: {{ author.host }}</p>
+            <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
+        </div>
+    </div>
+    <!-- <h3>{{author}}</h3> -->
+    <br>
+    <!-- <h3>{{curr_author}}</h3> -->
+    <!-- <h3>{{ follow_confirm }}</h3> -->
 
 </template>
 
@@ -20,8 +37,10 @@
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
+import GenericCard from './GenericCard.vue'
 
     export default {
+        components: { GenericCard },
     props: ['author'],
     data() {
         return {
@@ -36,20 +55,68 @@ import { mapStores } from 'pinia'
             this.curr_author = userStore.user.author
         },
         followAuthor(auth) {
-            axios.post(`/authors/${auth._id}/inbox/`,
-            {
-            type:'Follow',
-            actor:this.curr_author,
-            object:auth,
+            let authIdString = auth.host;
+            let appLocalName = authIdString.slice(8,18);
+            if (appLocalName === 'social-t30') {
+                axios.post(`/authors/${auth._id}/inbox/`,
+                {
+                type:'Follow',
+                actor:this.curr_author,
+                object:auth,
+                }
+                )
+                .then((res) => {
+                    console.log(res)
+                    this.follow_confirm = res.data
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
             }
-            )
-            .then((res) => {
-                console.log(res.data)
-                this.follow_confirm = res.data
-            })
-            .catch(function(err) {
-                console.log(err);
-            });
+            else if (appLocalName === 'sd-7-433-a') {
+                axios.request({
+                    method: 'POST',
+                    baseURL: `${auth.id}/inbox/`,
+                    headers: {
+                        'Content-Type':'Application/JSON', 
+                        Authorization: 'Basic '+ btoa('node01:P*ssw0rd!')
+                    }, 
+                    data: {
+                        "context": "https://www.w3.org/ns/activitystreams",
+                        "summary": "string",
+                        "type": "Follow",
+                        "author": {'url': `${this.curr_author.id}`},
+                        "object": {'url': `${this.curr_author.id}`},
+                    }
+                })
+                .then((res) => {
+                    this.follow_confirm = res.data
+                    console.log(res)
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+            }
+            else {
+                axios.request({
+                    method: 'POST',
+                    baseURL: `${auth.id}/inbox/`,
+                    headers: {
+                        'Content-Type':'Application/JSON', 
+                        Authorization: 'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'
+                    }, 
+                    data: {
+                        "author":`${this.curr_author.id}`,
+                    }
+                })
+                .then((res) => {
+                    this.follow_confirm = res.data
+                    console.log(res)
+                })
+                .catch(function(err) {
+                    console.log(err);
+                });
+            }
         }
     },
     computed: {
