@@ -50,14 +50,6 @@
     </div>
   </div>
 
-  <div class="authors">
-    <div v-for="author in authors.items" :key="author.id">
-      <author_card :author="author"/>
-    </div>
-  </div>
-  <!-- <h4>{{authors}}</h4> -->
-  <br><br>
-
 </template>
 
 <script>
@@ -68,19 +60,17 @@ import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD'
-import author_card from '../components/AuthorCard.vue'
 
 export default {
   name: 'BrowsePage',
-  components: { Card, SlotModal, author_card },
+  components: { Card, SlotModal },
   data () {
     return {
       allPosts: [],
       author: null,
       loading: true,
       active: { plain: true, markdown: true, image: true },
-      reverse: false,
-      authors: []
+      reverse: false
     }
   },
   computed: {
@@ -103,17 +93,6 @@ export default {
     }
   },
   methods: {
-    getAuthors() {
-      axios.get(
-        '/authors/')
-      .then((res) => {
-        this.authors = res.data
-        console.log(res.data)
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
-    },
 
     toggle (file) {
       this.active[file] = !this.active[file]
@@ -164,22 +143,11 @@ export default {
   mounted () {
     this.getAuthorFromStore()
     this.getPosts()
-    this.getAuthors()
   }
 }
 </script>
 
 <style scoped>
-.authors{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 2% 2% 2% 2%;
-    justify-content: space-around;
-    row-gap: 20px;
-    margin-left: 10%;
-    margin-right: 10%;
-  }
 .browse-posts {
   margin: 2rem 5%;
 }

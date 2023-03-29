@@ -17,12 +17,6 @@
 </template>
 
 <script>
-// import send_follow from '@views/BrowseView.vue'
-// { "type": "author", "id": "http://127.0.0.1:8000/api/authors/07e7050f-4bf6-4249-8cde-6d254bddce9e", 
-// "_id": "07e7050f-4bf6-4249-8cde-6d254bddce9e", 
-// "url": "http://127.0.0.1:8000/api/authors/07e7050f-4bf6-4249-8cde-6d254bddce9e",
-// "host": "http://127.0.0.1:8000/", "displayName": "testsocial123", "github": "", 
-// "profileImage": "https://i.imgur.com/k7XVwpB.jpeg" }
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
