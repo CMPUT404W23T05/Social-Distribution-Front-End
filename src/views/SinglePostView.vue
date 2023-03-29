@@ -117,6 +117,7 @@ export default {
     const aid = this.$route.params.aid
     this.getAuthorFromStore()
     this.getData(pid, aid)
+    this.getAxiosTarget()
   },
   computed: {
     ...mapStores(useUserStore),
@@ -148,24 +149,36 @@ export default {
 
       // Used for creating a new comment
       newComment: '',
-      markDownEnabled: false
+      markDownEnabled: false,
+      myBaseURL: ''
     }
   },
   methods: {
+    getAxiosTarget () {
+      // get origin from query
+      const origin = this.$route.query.origin
+      const theRealOrigin = origin === 'http://anotherplaceholderurlfornow.yucky' ? 'https://social-t30.herokuapp.com' : origin // stop gap for old posts with bad origin
+      const hostname = new URL(theRealOrigin).hostname // get hostname from origin
+      const myBaseURL = hostname + '/api/' // append api
+      const axiosTarget = axios.create({
+        baseURL: myBaseURL
+      })
+      return axiosTarget
+    },
     async getData (pid, aid) {
-      axios.get(`/authors/${aid}/posts/${pid}`)
+      this.getAxiosTarget().get(`/authors/${aid}/posts/${pid}`)
         .then((res) => {
           this.postData = res.data
         })
         .catch((err) => { console.log(err) })
 
-      axios.get(`/authors/${aid}`)
+      this.getAxiosTarget().get(`/authors/${aid}`)
         .then((res) => {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
 
-      axios.get(`/authors/${aid}/friends`)
+      this.getAxiosTarget().get(`/authors/${aid}/friends`)
         .then((res) => {
           this.friends = res.data.items
           this.friendsLoading = false
@@ -205,7 +218,7 @@ export default {
       comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
       // comment.comment = content
       console.table(comment)
-      axios.post(`${this.postData.id}/comments`, comment)
+      this.getAxiosTarget().post(`${this.postData.id}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
@@ -219,7 +232,7 @@ export default {
         })
     },
     sharePost (friend) {
-      axios.post(`${friend.id}/inbox/`, this.postData)
+      this.getAxiosTarget().post(`${friend.id}/inbox/`, this.postData)
         .then(() => {
           alert(`You shared the post with ${friend.displayName}`)
         })

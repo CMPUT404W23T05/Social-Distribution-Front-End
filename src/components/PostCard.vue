@@ -5,7 +5,7 @@
   @hovered="hovered=true"
   @unhover="hovered=false"
   :title="post.title"
-  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } }">
+  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id}, query : { origin: this.post.origin} }">
 
     <template #card-content>
       <vue-markdown
@@ -64,11 +64,6 @@ export default {
     },
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
-    }
-  },
-  methods: {
-    goTo () {
-      this.$router.push({ name: 'postpage', params: { aid: this.author._id, pid: this.post._id } })
     }
   }
 }
