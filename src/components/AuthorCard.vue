@@ -1,31 +1,31 @@
 <template>
-    <!-- <GenericCard
-    @hovered="hovered=true"
-    @unhover="hovered=false"
+    <GenericCard
     :title=" author.displayName ">
 
         <template #card-content>
 
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">{{ author.displayName }}</h5>
+            <!-- <div class="card" style="width: 18rem;"> -->
+                <!-- <div class="card-body"> -->
+                    <!-- <h5 class="card-title">{{ author.displayName }}</h5> -->
                     <p class="card-text">Host: {{ author.host }}</p>
-                    <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
-                </div>
-            </div>
-            <br>
+                    <!-- <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button> -->
+                    
+                <!-- </div> -->
+            <!-- </div> -->
         </template>
-    </GenericCard> -->
+        <template #footer>
+            <button @click="followAuthor(author)" class="btn d-flex justify-content-center text-light">Send Request</button>
+        </template>
+    </GenericCard>
     
     
-    <div class="card" style="width: 18rem;">
-        <!-- <img src= class="card-img-top" alt="Image Here!"> -->
+    <!-- <div class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">{{ author.displayName }}</h5>
             <p class="card-text">Host: {{ author.host }}</p>
             <button @click="followAuthor(author)" class="btn btn-primary">Send Request</button>
         </div>
-    </div>
+    </div> -->
     <!-- <h3>{{author}}</h3> -->
     <br>
     <!-- <h3>{{curr_author}}</h3> -->
@@ -58,20 +58,26 @@ import GenericCard from './GenericCard.vue'
             let authIdString = auth.host;
             let appLocalName = authIdString.slice(8,18);
             if (appLocalName === 'social-t30') {
-                axios.post(`/authors/${auth._id}/inbox/`,
-                {
-                type:'Follow',
-                actor:this.curr_author,
-                object:auth,
+                if (auth.id === this.curr_author.id){
+                    alert(`Can't follow yourself`)
                 }
-                )
-                .then((res) => {
-                    console.log(res)
-                    this.follow_confirm = res.data
-                })
-                .catch(function(err) {
-                    console.log(err);
-                });
+                else {
+                    axios.post(`/authors/${auth._id}/inbox/`,
+                    {
+                    type:'Follow',
+                    actor:this.curr_author,
+                    object:auth,
+                    }
+                    )
+                    .then((res) => {
+                        console.log(res)
+                        alert(`Request sent to ${auth.displayName}`)
+                        this.follow_confirm = res.data
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
+                }
             }
             else if (appLocalName === 'sd-7-433-a') {
                 axios.request({
@@ -91,6 +97,7 @@ import GenericCard from './GenericCard.vue'
                 })
                 .then((res) => {
                     this.follow_confirm = res.data
+                    alert(`Request sent to ${auth.displayName}`)
                     console.log(res)
                 })
                 .catch(function(err) {
@@ -117,6 +124,7 @@ import GenericCard from './GenericCard.vue'
                 })
                 .then((res) => {
                     this.follow_confirm = res.data
+                    alert(`Request sent to ${auth.displayName}`)
                     console.log(res)
                 })
                 .catch(function(err) {
