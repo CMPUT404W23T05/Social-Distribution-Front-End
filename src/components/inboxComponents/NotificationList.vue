@@ -159,6 +159,7 @@ export default {
   h6 {
     text-align: center;
     width: 100%;
+    text-transform: capitalize;
   }
 
 </style>
