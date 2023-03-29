@@ -98,15 +98,21 @@ import GenericCard from './GenericCard.vue'
                 });
             }
             else {
+                let auth_id_list = auth.id.split('/');
+                let auth_id = auth_id_list[auth_id_list.length - 1]
                 axios.request({
                     method: 'POST',
-                    baseURL: `${auth.id}/inbox/`,
+                    baseURL: `${auth.host}api/authors/${auth_id}/inbox/`,
                     headers: {
                         'Content-Type':'Application/JSON', 
-                        Authorization: 'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'
-                    }, 
+                        Authorization:'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'
+                    },  
                     data: {
-                        "author":`${this.curr_author.id}`,
+                        "type": "Follow",
+                        "summary": `${this.curr_author.displayName} wants to follow ${auth.displayName}`,
+                        "actor":this.curr_author,
+                        "object":auth
+
                     }
                 })
                 .then((res) => {
