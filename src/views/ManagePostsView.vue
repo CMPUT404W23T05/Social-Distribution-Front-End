@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import Card from '@/components/RevisedCard.vue'
+import Card from '@/components/PostCard.vue'
 import SlotModal from '@/components/SlotModal.vue'
 import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
@@ -78,7 +78,7 @@ export default {
     udEndPoint () {
       if (this.selected.post) {
         // const endpoint = `/authors/${this.author._id}/posts/${this.selected.post.id}/`
-        const endpoint = '/authors/' + this.author._id + '/posts/' + this.selected.post._id + '/'
+        const endpoint = `${this.post.id}/`
         return endpoint
       } else {
         return null
@@ -88,7 +88,7 @@ export default {
     // Create, read
     crEndPoint () {
       // const endpoint = String.raw`/authors/${this.author._id}/posts/`
-      const endpoint = '/authors/' + this.author._id + '/posts/'
+      const endpoint = `${this.author.id}/posts/`
       return endpoint
     }
   },
