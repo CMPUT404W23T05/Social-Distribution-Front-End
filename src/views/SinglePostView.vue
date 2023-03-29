@@ -157,28 +157,29 @@ export default {
     getAxiosTarget () {
       // get origin from query
       const origin = this.$route.query.origin
-      const theRealOrigin = origin === 'http://anotherplaceholderurlfornow.yucky' ? 'https://social-t30.herokuapp.com' : origin // stop gap for old posts with bad origin
+      const theRealOrigin = origin.includes('http://anotherplaceholderurlfornow.yucky') ? 'https://social-t30.herokuapp.com' : origin // stop gap for old posts with bad origin
       const hostname = new URL(theRealOrigin).hostname // get hostname from origin
-      const myBaseURL = hostname + '/api/' // append api
+      console.log(hostname)
+      const myBaseURL = 'http://' + hostname + '/api/' // append api
       const axiosTarget = axios.create({
         baseURL: myBaseURL
       })
       return axiosTarget
     },
     async getData (pid, aid) {
-      this.getAxiosTarget().get(`/authors/${aid}/posts/${pid}`)
+      this.getAxiosTarget().get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
         })
         .catch((err) => { console.log(err) })
 
-      this.getAxiosTarget().get(`/authors/${aid}`)
+      this.getAxiosTarget().get(`/authors/${aid}/`)
         .then((res) => {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
 
-      this.getAxiosTarget().get(`/authors/${aid}/friends`)
+      this.getAxiosTarget().get(`/authors/${aid}/friends/`)
         .then((res) => {
           this.friends = res.data.items
           this.friendsLoading = false
