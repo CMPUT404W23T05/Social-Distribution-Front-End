@@ -158,16 +158,20 @@ export default {
       const hostname = new URL(theRealOrigin).hostname // get hostname from origin
       const myBaseURL = 'http://' + hostname + '/api/' // append api
       let remoteAuth = null
+      let axiosTarget = axios.create({
+        baseURL: myBaseURL
+      })
       if (hostname !== 'social-t30.herokuapp.com') { // if the origin is different from our host, we need a token
         console.log('Getting remote auth from ' + myBaseURL)
         remoteAuth = this.getRemoteAuth(myBaseURL)
+        axiosTarget = axios.create({
+          baseURL: myBaseURL,
+          headers: { Authorization: remoteAuth }
+        })
       }
       console.log('a ' + myBaseURL + ' b ' + 'http://socialdistcmput404.herokuapp.com/api/')
       console.log(remoteAuth)
-      const axiosTarget = axios.create({
-        baseURL: myBaseURL,
-        headers: { Authorization: remoteAuth }
-      })
+
       return axiosTarget
     },
     getRemoteAuth (myBaseURL) {
