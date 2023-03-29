@@ -18,9 +18,7 @@
 
         <ul class="btn-list">
           <li class="btn-with-label">
-            <button id="like-post-button" type="button" class="btn btn-light action-button" @click="toggleLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
-            <!-- TODO: Implement like functionality -->
-            <!-- <label for="like-post-button">{{ PostProper.likes }}</label> Not sure how this works yet...-->
+            <button id="like-post-button" type="button" class="btn btn-light action-button" @click="addLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
           </li>
           <li class="btn-with-label">
             <button id="comment-button" type="button" ref="commentButton" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
@@ -136,7 +134,7 @@ export default {
       currentAuthor: null, // Load from store
 
       // Used for seeing likes
-      isLiked: false, // (no backend yet)
+      isLiked: false,
 
       // Used for social stuff
       isFollowing: false,
@@ -170,6 +168,21 @@ export default {
       this.getAxiosTarget().get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
+          // get author's likes
+          axios.get(`${this.currentAuthor.id}/liked/`)
+            .then((res) => {
+              const likes = res.data.items
+              console.log(likes)
+              for (const like of likes) {
+                if (like.object === this.postData.id) { // If this post is liked
+                  this.isLiked = true // Set liked to true
+                  break
+                }
+              }
+            })
+            .catch((err) => {
+              console.log(err)
+            })
         })
         .catch((err) => { console.log(err) })
 
@@ -194,9 +207,24 @@ export default {
       this.isFollowing = !this.isFollowing
       alert('Sorry! You can\'t follow people yet')
     },
-    toggleLike () {
-      this.isLiked = !this.isLiked
-      alert('Sorry! You can\'t like posts yet')
+    addLike () {
+      if (!this.isLiked) {
+        this.isLiked = true
+        const newLike = {
+          type: 'Like',
+          context: 'https://www.w3.org/ns/activitystreams',
+          author: this.currentAuthor,
+          summary: `${this.currentAuthor.displayName} likes your post`,
+          object: this.postData.id
+        }
+        axios.post(`${this.postData.author.id}/inbox/`, newLike)
+          .then((res) => {
+            console.log(res)
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      }
     },
     toggleComments () {
       this.expandComments = !this.expandComments
@@ -256,9 +284,9 @@ export default {
     margin: 0;
   }
 
-  /* .liked {
+  .liked {
     color: #FF0000;
-  } */
+  }
 
   .activated {
     color: #4998F5;
