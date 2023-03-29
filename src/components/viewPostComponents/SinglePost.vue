@@ -45,7 +45,7 @@ export default {
       return this.post.contentType.split(',').includes('text/markdown')
     },
     imageSrc () {
-      return `http://localhost:8000/api/authors/${this.author._id}/posts/${this.post._id}/image`
+      return this.post.id + '/' + 'image'
     }
   },
   data () {
