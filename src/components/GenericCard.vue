@@ -1,8 +1,8 @@
 <!-- This represents the most basic card with only hover functionality -->
 
 <template>
-  <div id="card-totality" v-if="title">
-    <div class="post-title">
+  <div id="card-totality">
+    <div  v-if="title" class="post-title">
       <h3 class="title-text">{{ title }}</h3>
     </div>
     <div
