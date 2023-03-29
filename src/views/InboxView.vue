@@ -58,7 +58,6 @@ export default {
       this.author = userStore.user.author
     }
   }
-
 }
 
 </script>

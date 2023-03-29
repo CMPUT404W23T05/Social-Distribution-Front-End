@@ -6,6 +6,7 @@
       v-for="notification in feed"
       :key="notification.id"
       :anchor="getAnchor(notification)"
+      class="m-2"
     >
 
       <template #card-content>
@@ -22,13 +23,13 @@
         </div>
 
         <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
-          <p> {{ notification.author.displayName }} commented on <strong>{{ getPostFromComment(notification) }}</strong> </p>
+          <p> {{ notification.author.displayName }} commented </p>
           <p class="actual-comment"> {{ notification.comment }} </p>
         </div>
 
         <!-- Yes, the casing is correct according to the spec -->
         <div class="like-notif-content notification" v-else-if="notification.type==='Like'">
-          <p> {{ notification.author.displayName }} liked {{ getPostComment(notification) }} </p>
+          <p> {{ notification.summary }} </p>
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
@@ -43,7 +44,7 @@
         <!-- Jane accepted your follow request -->
         <div class="request-notif-content notification"
          v-else-if="notification.type==='Follow' && 'notification.state'"
-         :anchor="{ name: 'SocialPage' }">
+        >
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
           <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
@@ -81,21 +82,23 @@ export default {
   computed: {
     ...mapStores(useUserStore)
   },
-  mounted () {
+  async created () {
     this.getAuthorFromStore()
     this.updateList()
   },
   data () {
     return {
       feed: [],
+      supplementary: [],
       author: null
     }
   },
   methods: {
     getPostFromComment (comment) {
       // Return a post associated with the comment
-      axios.get(comment.post_id)
+      axios.get(comment.id.split('/comments')[0]) // The post endpoint
         .then((res) => {
+          console.log(res.data)
           return res.data.title
         })
         .catch(() => {
@@ -130,15 +133,14 @@ export default {
       this.author = userStore.user.author
     },
     getAnchor (notification) {
-      switch (notification.type) {
-        case 'Follow':
-          return { name: 'SocialPage' } // Redirect to social page
-        case 'post':
-          return notification.post.id // Single post view page
-        case 'comment':
-          return notification.id.split('/comment')[0] // Single post view page
-        case 'Like':
-          return notification.items.object.split('/comment')[0] // Single post of the post/comment that was liked
+      if (notification.type === 'Follow') {
+        return { name: 'SocialPage' }
+      } else if (notification.type === 'comment' || notification.type === 'post') {
+        const parts = notification.id.split('/')
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] } }
+      } else if (notification.type === 'Like') {
+        const parts = notification.object.split('/')
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] } }
       }
     }
   }
