@@ -156,7 +156,7 @@ export default {
       const origin = this.$route.query.origin
       const theRealOrigin = origin.includes('http://anotherplaceholderurlfornow.yucky') ? 'https://social-t30.herokuapp.com' : origin // stop gap for old posts with bad origin
       const hostname = new URL(theRealOrigin).hostname // get hostname from origin
-      const myBaseURL = 'http://' + hostname + '/api/' // append api
+      const myBaseURL = 'https://' + hostname + '/api/' // append api
       let remoteAuth = null
       let axiosTarget = axios.create({
         baseURL: myBaseURL
