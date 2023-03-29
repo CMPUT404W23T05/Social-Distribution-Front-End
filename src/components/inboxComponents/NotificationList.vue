@@ -2,13 +2,13 @@
 
 <div class="notification-list d-flex flex-wrap">
     <!-- Anchor is where to re-direct on click -->
-    <InboxNotification v-for="notification in feed"
-      :key="notification._id"
-      :notification-type="notification.type"
+    <GenericCard
+      v-for="notification in feed"
+      :key="notification.id"
       :anchor="notification.id"
     >
 
-      <template #notification-content>
+      <template #card-content>
         <!-- Should be of the form: {actor} {verb (past-tense)} {preposition (optional)} {target} -->
         <!-- e.g) <Sandy> <commented> <on> <'Selling seashells by the seashore'> -->
         <!-- e.g) <Jim> <sent> <friend request> <to you> -->
@@ -43,18 +43,18 @@
           <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
         </div>
       </template>
-    </InboxNotification>
+    </GenericCard>
   </div>
 </template>
 
 <script>
-import InboxNotification from '@/components/inboxComponents/InboxNotification.vue'
+import GenericCard from '@/components/GenericCard.vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: { InboxNotification },
+  components: { GenericCard },
   props: {
     selectedNotifications: {
       type: Array
