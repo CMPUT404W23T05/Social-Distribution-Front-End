@@ -1,5 +1,5 @@
 <template>
-  <div class="post-template container">
+  <div class="post-template">
     <section class="post-title">
       <h1 class = post-title>{{post.title}}</h1>
     </section>

@@ -344,8 +344,8 @@ export default {
   }
   .author-picture {
     border-radius: 50%;
-    width: 144pt;
-    height: 144pt;
+    width: 128pt;
+    height: 128pt;
   }
 
   .btn-with-label {
