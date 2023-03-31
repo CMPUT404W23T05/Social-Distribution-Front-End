@@ -1,8 +1,5 @@
 <template>
-    <div class="d-flex flex-column flex-shrink-0" id="single-post-container">
-      <!-- Components: Post, Comments list, profile picture -->
-      <PostProper v-if="!loading" :post="postData" :author="authorData" class="col-9"></PostProper>
-
+    <div class="d-flex flex-shrink-0" id="single-post-container">
       <!--Left sidebar w/ features and author stuff-->
       <aside v-if="!loading" class="post-left-bar">
         <section class="author-info">
@@ -32,6 +29,8 @@
           </li>
         </ul>
       </aside>
+      <!-- Components: Post, Comments list, profile picture -->
+      <PostProper v-if="!loading" :post="postData" :author="authorData" class="col-9"></PostProper>
 
       <!-- Right comment aside -->
       <aside v-if="!loading" class="post-right-bar" :class="{expanded: expandComments}">
@@ -328,6 +327,7 @@ export default {
   /* Left aside */
 
   .post-left-bar {
+
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -344,8 +344,8 @@ export default {
   }
   .author-picture {
     border-radius: 50%;
-    width: 144pt;
-    height: 144pt;
+    width: 128pt;
+    height: 128pt;
   }
 
   .btn-with-label {
@@ -391,7 +391,7 @@ export default {
   }
 
   aside {
-    position: fixed;
+    position: relative;
     width: min(20%, fit-content);
   }
 
@@ -402,6 +402,7 @@ export default {
 
   /* Right aside */
   .post-right-bar {
+    position: fixed;
     right: 0;
     background-color: rgba(0,0,0,0.7);
     height: 100%;
