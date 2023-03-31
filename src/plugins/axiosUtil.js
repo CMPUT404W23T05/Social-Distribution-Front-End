@@ -57,7 +57,7 @@ async function queryAllNodes (method = 'get', endpoint, params = null, data = nu
 export default {
   install (app) {
     app.config.globalProperties.$localNode = localNode
-    app.config.globalProperties.$node7 = localNode
-    app.config.globalProperties.$node10 = localNode
+    app.config.globalProperties.$node7 = node7
+    app.config.globalProperties.$node10 = node10
   }
 }
