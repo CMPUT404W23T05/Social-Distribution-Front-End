@@ -8,12 +8,12 @@ import axios from 'axios'
 const localNode = axios.create({
   baseURL: 'https://social-t30.herokuapp.com/api/',
   headers: {
-    Authorization: 'Token itQmiFiX.HVJyCDX61EIHHjWRYm5naspa204iMrQA'
+    // Authorization will be set through upon initializing Store
   }
 })
 
 const node7 = axios.create({
-  baseURL: 'https://sd7-api.herokuapp.com/api/',
+  baseURL: 'https://sd-7-433-api.herokuapp.com/api/',
   headers: {
     Authorization: `Basic ${btoa('node01:P*ssw0rd!')}`
   }

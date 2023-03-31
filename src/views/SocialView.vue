@@ -42,13 +42,12 @@ import MyFollowees from '@/components/socialComponents/MyFollowees.vue'
 import author_card from '../components/AuthorCard.vue'
 import axios from 'axios'
 
-
 export default {
   name: 'SocialPage',
-  data() {
+  data () {
     return {
-      authors:[],
-      authors_remote:[],
+      authors: [],
+      authors_remote: [],
       authors_remote2: []
     }
   },
@@ -60,37 +59,37 @@ export default {
     author_card
   },
   methods: {
-    getAuthors() {
-      axios.get(
-        '/authors/')
-      .then((res) => {
-        this.authors = res.data
-        console.log(res.data)
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
+    getAuthors () {
+      this.$localNode.get('authors/')
+        .then((res) => {
+          this.authors = res.data
+        })
+        .catch((err) => {
+          console.log('Our Teams Error is:' + err)
+          console.log(this.$localNode.defaults)
+        })
     },
-    getRemoteAuthors2() {
-      axios.request({baseURL: 'https://sd-7-433-api.herokuapp.com/api/', url:'authors/', headers: {Authorization: 'Basic '+ btoa('node01:P*ssw0rd!')}})
-      .then((res) => {
-        this.authors_remote2 = res.data
-        console.log(res.data)
-      })
-      .catch(function(err) {
-        console.log(err);
-      });
+    getRemoteAuthors2 () {
+      this.$node7.get('authors/')
+        .then((res) => {
+          this.authors_remote2 = res.data
+          console.log(res.data)
+        })
+        .catch((err) => {
+          console.log('T7 Error is: ' + err)
+          console.log(this.$node7.defaults)
+        })
     },
-    getRemoteAuthors() {
-      axios.request({ baseURL: 'https://socialdistcmput404.herokuapp.com/api/', url:'authors/', headers:{ Authorization: 'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'}})
-      .then((res) => {
-        this.authors_remote = res.data
-        console.log(res.data)
-      })
-      .catch(function(err) {
-        console.log(err);
-      }); 
-
+    getRemoteAuthors () {
+      this.$node10.get('authors/')
+        .then((res) => {
+          this.authors_remote = res.data
+          console.log(res.data)
+        })
+        .catch(function (err) {
+          console.log('T10 error is: ' + err)
+          console.log(this.$node7.defaults)
+        })
     },
     updateFollowers () {
       this.$refs.followers.getFollowers()
