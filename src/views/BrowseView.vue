@@ -55,7 +55,6 @@
 <script>
 import Card from '../components/PostCard.vue'
 import SlotModal from '../components/SlotModal.vue'
-import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import moment from 'moment'
@@ -115,7 +114,7 @@ export default {
     },
 
     getPosts () {
-      axios
+      this.$localNode
         .get('/posts/')
         .then((res) => {
           this.allPosts = res.data

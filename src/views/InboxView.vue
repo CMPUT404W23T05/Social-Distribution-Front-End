@@ -35,7 +35,8 @@ export default {
 
   created () {
     this.getAuthorFromStore()
-    axios.get(this.author.id + '/inbox/')
+    this.$localNode
+      .get(this.author.id + '/inbox/')
       .then((res) => {
         this.stream = res.data
         this.loading = false

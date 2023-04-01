@@ -173,7 +173,7 @@ export default {
       const user = this.userStore.user
       const author = user.author
       author[type] = newValue
-      axios.post('/authors/' + author._id + '/', author)
+      this.$localNode.post('/authors/' + author._id + '/', author)
         .then((response) => {
           console.log(response)
           this.showAlert(readableFieldNames[type] + ' sucessfully updated!', 'success')
@@ -201,7 +201,7 @@ export default {
         current_password: this.fields.currentPassword,
         new_username: this.fields.newUsername
       }
-      axios
+      this.$localNode
         .post('/users/set_username/', formData)
         .then(response => {
           console.log(response)
@@ -238,7 +238,7 @@ export default {
       if (this.fields.newPassword !== this.fields.confirmNewPassword) {
         e('New passwords do not match.')
       } else {
-        axios
+        this.$localNode
           .post('/users/set_password/', formData)
           .then(response => {
             console.log(response)
