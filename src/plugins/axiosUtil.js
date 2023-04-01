@@ -34,6 +34,8 @@ const nodes = [localNode, node7, node10]
 export function getAxiosTarget (endpoint) {
   // Returns the axios target for that endpoint
   // e.g) 'https://social-t30.herokuapp.com/api/...' => localNode
+
+  console.log('Endpoint format is: ' + endpoint)
   const hostname = new URL(endpoint).host
 
   if (hostname.includes('social-t30')) {
@@ -43,6 +45,7 @@ export function getAxiosTarget (endpoint) {
   } else if (hostname.includes('socialdistcmput404')) {
     return node10
   }
+
   // Add more teams here if needed
 }
 
