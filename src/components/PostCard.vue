@@ -5,7 +5,7 @@
   @hovered="hovered=true"
   @unhover="hovered=false"
   :title="post.title"
-  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id}, query : { origin: this.post.origin} }">
+  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id}, query : { hostURL: this.post.id} }">
 
     <template #card-content>
       <vue-markdown
