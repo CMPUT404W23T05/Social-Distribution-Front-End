@@ -26,23 +26,38 @@ const node10 = axios.create({
   }
 })
 
+const nodes = [localNode, node7, node10]
+
 // These are not configured in app; import them as you need them per component.
 // e.g in <script>: import {queryAllNodes} from 'axiosUtil.js'
 
-function retrieveCredentials (endpoint) {
+export function getAxiosTarget (endpoint) {
+  // Returns the axios target for that endpoint
+  // e.g) 'https://social-t30.herokuapp.com/api/...' => localNode
+  const hostname = new URL(endpoint).host
+
+  if (hostname.includes('social-t30')) {
+    return localNode
+  } else if (hostname.includes('sd-7-433-api')) {
+    return node7
+  } else if (hostname.includes('socialdistcmput404')) {
+    return node10
+  }
+  // Add more teams here if needed
+}
+
+export function retrieveCredentials (endpoint) {
   // In case we don't want to store the credentials on front-end (Probably a good idea)
 }
 
 // To use this,
-async function queryAllNodes (method = 'get', endpoint, params = null, data = null) {
+export async function queryAllNodes (method = 'get', endpoint, params = null, data = null) {
   // method is axios.get/post/put (a function)
   // endpoint is the part the succeeds the base url e.g '/authors/4/posts/'
   // params is additional queries. These are optional; ignored if null
   // data is the JS object that is to be passed to server (if any)
 
   // Append more nodes here
-  const nodes = [localNode, node7, node10]
-
   const responses = {}
 
   for (const node of nodes) {
