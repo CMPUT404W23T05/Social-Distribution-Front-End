@@ -2,10 +2,10 @@
 
   <div v-if='loading' class="load-spinner spinner-border text-info text-center" role="loading"></div>
 
-  <div v-if='!loading' class='follow-accounts'>
+  <div v-if='!loading' class='follow-accounts' id="follows">
     <!-- Different footer to accept/request -->
     <!-- My Friends, My Followers, etc -->
-    <div v-for="category in friendlies" :key="category">
+    <div v-for="category in friendlies" :key="category" :id="category">
       <h2 class="section-header">My <strong>{{ textTransform(category.type, false, true) }}</strong></h2>
       <!-- Each person in each category -->
       <p v-if="category.items?.length === 0" class="mb-5">You don't have any {{category.type}} 😒</p>
@@ -40,7 +40,7 @@
 
   <!-- All of the authors on our social distribution (across registered nodes) -->
   <div v-if='!loading' class="all-authors pb-5">
-    <div v-for="nodeName in Object.keys(authorNodes)" :key="nodeName">
+    <div v-for="nodeName in Object.keys(authorNodes)" :key="nodeName" :id="nodeName">
       <h2 class="section-header"> <strong>{{ nodeName === "localNode" ? "Local" : `${textTransform(nodeName, false, true)}'s`}}</strong> Authors</h2>
       <div class="d-flex flex-wrap justify-content-center mb-5">
         <GenericCard v-for="author in authorNodes[nodeName].data.items" :key="author.id" class="m-2">
