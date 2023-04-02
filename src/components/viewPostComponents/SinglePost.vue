@@ -17,12 +17,12 @@
       </span>
     </div>
 
-    <section v-if="post.image" class="image-content">
+    <section v-if="hasImage && !loading" class="image-content">
       <img class="img-fluid" :src="imageSrc"/>
     </section>
 
     <!-- Text content (if any) -->
-    <section v-if="post.content" class="text-content">
+    <section v-if="hasContent" class="text-content">
       <p v-if="post.content && !markdown" id="post-content-plain" class="text">{{post.content}}</p>
       <VueMarkdown v-else-if="post.content && markdown" id="post-content-markdown" :source="post.content" class="text"></VueMarkdown>
     </section>
@@ -30,7 +30,9 @@
 </template>
 
 <script>
+import { getAxiosTarget } from '@/util/axiosUtil'
 import VueMarkdown from 'vue-markdown-render'
+import axios from 'axios'
 
 export default {
   components: {
@@ -44,13 +46,26 @@ export default {
     markdown () {
       return this.post.contentType.split(',').includes('text/markdown')
     },
-    imageSrc () {
-      return `http://localhost:8000/api/authors/${this.author._id}/posts/${this.post._id}/image`
+    hasImage () {
+      return this.post.contentType.includes('image')
+    },
+    hasContent () {
+      return this.post.contentType.includes('text')
+    },
+    imageMime () {
+      return this.post.contentType.match(/^image\/.+?(?=;base64|$)/)[0]
     }
   },
+
+  async mounted () {
+    await this.getImage()
+    this.loading = false
+  },
+
   data () {
     return {
-      descIsHovered: false
+      descIsHovered: false,
+      imageSrc: `${this.$localNode.defaults.baseURL}/${new URL(this.post.id).pathname.replace(/^\/api\//, '')}/image`
     }
   },
   methods: {
@@ -60,6 +75,21 @@ export default {
         case /^text\/markdown$/.test(contentType): return ('bi-markdown-fill')
         case /^text\/plain$/.test(contentType): return ('bi-blockquote-left')
         case /^image/.test(contentType): return ('bi-image-fill')
+      }
+    },
+    async getImage () {
+      if (this.hasImage) {
+        const hostNode = getAxiosTarget(this.post.id)
+
+        // let postPath = new URL(this.post.id).pathname.replace(/^\/api\//, '')
+        const postPath = 'https://social-t30.herokuapp.com/api/authors/6e81afb3-f4eb-48f1-9d26-445b9aa197ea/posts/28e8b870-9cbe-43ff-916e-7c180d538289/image'
+
+        axios.get('https://social-t30.herokuapp.com/api/authors/6e81afb3-f4eb-48f1-9d26-445b9aa197ea/posts/28e8b870-9cbe-43ff-916e-7c180d538289/image', { responseType: 'blob' })
+          .then((res) => {
+            const blob = new Blob([res.data], { type: this.imageMime })
+            this.imageSrc = URL.createObjectURL(blob)
+            // this.imageSrc = `data:${this.imageMime};base64,${this.post.image}`
+          })
       }
     }
   }
