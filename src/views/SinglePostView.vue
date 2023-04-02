@@ -93,11 +93,10 @@
 import PostProper from '@/components/viewPostComponents/SinglePost.vue'
 import CommentList from '@/components/commentComponents/CommentList.vue'
 import SlotModal from '@/components/SlotModal.vue'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import { getAxiosTarget } from '@/plugins/axiosUtil.js'
+import { getAxiosTarget } from '@/util/axiosUtil.js'
 
 const commentTemplate = {
   type: 'comment',
