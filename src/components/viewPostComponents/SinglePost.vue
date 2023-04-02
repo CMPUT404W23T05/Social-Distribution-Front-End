@@ -17,8 +17,9 @@
       </span>
     </div>
 
-    <section v-if="hasImage && !loading" class="image-content">
-      <img class="img-fluid" :src="imageSrc"/>
+    <section v-if="hasImage" class="image-content">
+      <img v-if=!loading class="img-fluid" :src="imageSrc"/>
+      <div v-else class="spinner-border text-info"></div>
     </section>
 
     <!-- Text content (if any) -->
@@ -65,7 +66,7 @@ export default {
   data () {
     return {
       descIsHovered: false,
-      imageSrc: `${this.$localNode.defaults.baseURL}/${new URL(this.post.id).pathname.replace(/^\/api\//, '')}/image`
+      imageSrc: null
     }
   },
   methods: {
@@ -87,7 +88,10 @@ export default {
           .then((res) => {
             const blob = new Blob([res.data], { type: this.imageMime })
             this.imageSrc = URL.createObjectURL(blob)
-            // this.imageSrc = `data:${this.imageMime};base64,${this.post.image}`
+          })
+          .catch((err) => {
+            console.log(err)
+            this.imageSrc = 'https://commons.wikimedia.org/wiki/File:No-Image-Placeholder.svg'
           })
       }
     }
