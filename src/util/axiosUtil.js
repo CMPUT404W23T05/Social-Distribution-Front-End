@@ -78,6 +78,7 @@ export async function queryAllNodes (method = 'get', endpoint, data = null, para
     }
   }
 
+  console.log(responses)
   // Output: {node7: {...}, node10: {...}, ...}
   return responses
 }

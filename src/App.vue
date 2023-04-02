@@ -17,7 +17,7 @@ export default {
     if (token) {
       this.$localNode.defaults.headers.common.Authorization = `Token ${token}`
     } else {
-      this.$localNode.defaults.headers.common.Authorization = 'null'
+      this.$localNode.defaults.headers.common.Authorization = ''
     }
   },
   components: {

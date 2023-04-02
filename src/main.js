@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import axios from 'axios'
-import axiosUtil from './plugins/axiosUtil.js'
+import axiosUtil from './util/axiosUtil.js'
 
 const app = createApp(App)
 app.use(axiosUtil)
