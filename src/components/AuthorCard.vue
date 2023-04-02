@@ -103,6 +103,20 @@ import GenericCard from './GenericCard.vue'
                 .catch(function(err) {
                     console.log(err);
                 });
+
+                axios.put(`/authors/${this.curr_author._id}/remote-requests/`,
+                    {
+                    type:'Follow',
+                    actor:this.curr_author,
+                    object:auth,
+                    }
+                    )
+                    .then((res) => {
+                        console.log(res)
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
             }
             else {
                 let auth_id_list = auth.id.split('/');
@@ -130,6 +144,20 @@ import GenericCard from './GenericCard.vue'
                 .catch(function(err) {
                     console.log(err);
                 });
+
+                axios.put(`/authors/${this.curr_author._id}/remote-requests/`,
+                    {
+                    type:'Follow',
+                    actor:this.curr_author,
+                    object:auth,
+                    }
+                    )
+                    .then((res) => {
+                        console.log(res)
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
             }
         }
     },
