@@ -6,6 +6,7 @@ import axios from 'axios'
 // this.$localNode.get(/authors/${authorid}/$posts)
 
 const localNode = axios.create({
+  name: 'localNode',
   baseURL: 'https://social-t30.herokuapp.com/api/',
   headers: {
     // Authorization will be set through upon initializing Store
@@ -13,6 +14,7 @@ const localNode = axios.create({
 })
 
 const node7 = axios.create({
+  name: 'node7',
   baseURL: 'https://sd-7-433-api.herokuapp.com/api/',
   headers: {
     Authorization: `Basic ${btoa('node01:P*ssw0rd!')}`
@@ -20,6 +22,7 @@ const node7 = axios.create({
 })
 
 const node10 = axios.create({
+  name: 'node10',
   baseURL: 'https://socialdistcmput404.herokuapp.com/api/',
   headers: {
     Authorization: 'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'
@@ -64,7 +67,13 @@ export async function queryAllNodes (method = 'get', endpoint, params = null, da
   const responses = {}
 
   for (const node of nodes) {
-    responses[node] = await node[method](endpoint, data, params)
+    console.table(node)
+    try {
+      responses[node.defaults.name] = await node.get(endpoint, data, params)
+    } catch (err) {
+      console.log('Failed on ' + node.defaults.baseURL)
+      console.log(err)
+    }
   }
 
   // Output: {node7: {...}, node10: {...}, ...}
