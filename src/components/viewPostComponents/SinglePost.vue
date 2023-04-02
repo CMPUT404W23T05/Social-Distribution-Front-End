@@ -81,10 +81,9 @@ export default {
       if (this.hasImage) {
         const hostNode = getAxiosTarget(this.post.id)
 
-        // let postPath = new URL(this.post.id).pathname.replace(/^\/api\//, '')
-        const postPath = 'https://social-t30.herokuapp.com/api/authors/6e81afb3-f4eb-48f1-9d26-445b9aa197ea/posts/28e8b870-9cbe-43ff-916e-7c180d538289/image'
+        const postPath = new URL(this.post.id).pathname.replace(/^\/api\//, '')
 
-        axios.get('https://social-t30.herokuapp.com/api/authors/6e81afb3-f4eb-48f1-9d26-445b9aa197ea/posts/28e8b870-9cbe-43ff-916e-7c180d538289/image', { responseType: 'blob' })
+        hostNode.get(`${postPath}/image`, { responseType: 'blob' })
           .then((res) => {
             const blob = new Blob([res.data], { type: this.imageMime })
             this.imageSrc = URL.createObjectURL(blob)
