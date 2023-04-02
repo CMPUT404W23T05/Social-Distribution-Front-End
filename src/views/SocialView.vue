@@ -26,8 +26,8 @@
 
           <template #footer>
             <div v-if="category.type === 'requests'" class="accept-footer d-flex align-items-center justify-content-around">
-              <button class="btn text-info" @click="handleRequest('Accept', person)">Accept</button>
-              <button class="btn text-light" @click="handleRequest('Decline', person)">Reject</button>
+              <button class="btn text-info" @click="handleRequest('Accepted', person)">Accept</button>
+              <button class="btn text-light" @click="handleRequest('Declined', person)">Reject</button>
             </div>
             <div v-else class="d-flex justify-content-center align-items-center">
               <p>{{ textTransform(category.type, true, true) }}</p>
@@ -160,22 +160,45 @@ export default {
     },
 
     // Related to the friend request logic
-    handleRequest (state, sender) {
+    handleRequest (state, existingFollow) {
       // Create a new follow object with a state (accepted/rejected)
       const followToSend = followTemplate
 
       followToSend.state = state
-      followToSend.actor = sender
+      followToSend.actor = existingFollow.actor
       followToSend.object = this.sessionAuthor
+
+      console.table(followToSend)
 
       this.$localNode
         .post(`${this.basePath}/inbox/`, followToSend)
         .then(() => {
-          alert(`${state}ed the Request`) // Computed pendingRequests should auto-update
+          alert(`${state} the Request`) // Computed pendingRequests should auto-update
+          if (state === 'Accepted') {
+            this.inbox.push(followToSend) // Update local version of allRequests
+            this.moveToFriendsOrFollower(followToSend.actor)
+          }
         })
         .catch((err) => {
           console.log(err)
         })
+    },
+
+    moveToFriendsOrFollower (acceptedFollow) {
+      // Helper function to move people from the requests to the appropriate field for the local
+
+      // Sheesh this funciton is incredibly inefficient but that's web dev for you am I right?
+      const allRequests = this.inbox.filter(item => item.type === 'Follow')
+
+      const recipricalFollow = acceptedFollow
+      recipricalFollow.author = acceptedFollow.actor
+      recipricalFollow.actor = acceptedFollow.author
+
+      if (allRequests.includes(acceptedFollow) && allRequests.includes(recipricalFollow)) {
+        this.friendliesProxy.friends.push(acceptedFollow.actor)
+      } else {
+        this.friendliesProxy.followers.push(acceptedFollow.actor)
+      }
     },
 
     sendFollow (author) {
@@ -183,6 +206,11 @@ export default {
       const followToSend = followTemplate
       followToSend.actor = this.sessionAuthor
       followToSend.object = author
+
+      if (author.id === this.sessionAuthor.id) {
+        alert('You can\'t send a follow request to yourself')
+        return
+      }
 
       // Set up axios
       const hostNode = getAxiosTarget(author.host) // Gets the corresponding axios instance
@@ -203,7 +231,11 @@ export default {
           this.inbox = res.data.items
         })
         .catch((err) => {
-          alert('Couldn\'nt get requests')
+          if (err.response.status === 409) {
+            alert('You\'ve already sent a request')
+          } else {
+            alert('Couldn\'nt get requests')
+          }
           console.log(err)
         })
     },
