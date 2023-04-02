@@ -42,7 +42,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
   /* Style overall content when flair is present */
   .decoration {
     font-weight: bold;
