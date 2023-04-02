@@ -15,7 +15,6 @@
 
 <script>
 import { useTokenStore } from '@/stores/token'
-import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
@@ -40,7 +39,7 @@ export default {
         console.log('Removed existing token')
       }
       // Send formData to backend
-      axios
+      this.$localNode
         .post('token/login', formData)
         .then(response => {
           console.log(response)
@@ -49,11 +48,11 @@ export default {
           const token = response.data.auth_token
           const store = useTokenStore()
           store.setToken(token)
-          axios.defaults.headers.common.Authorization = `Token ${token}`
+          this.$localNode.defaults.headers.common.Authorization = `Token ${token}`
           localStorage.setItem('token', token)
 
           // store user in local storage
-          axios.get('users/me')
+          this.$localNode.get('users/me')
             .then(response => {
               this.authError = '' // clear error message
               const user = response.data

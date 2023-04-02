@@ -15,7 +15,6 @@
   </template>
 
 <script>
-import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'sign-up',
@@ -44,7 +43,7 @@ export default {
           localStorage.removeItem('token') // remove any old tokens from local
           console.log('Removed existing token')
         }
-        axios
+        this.$localNode
           .post('/users/', formData)
           .then(response => {
             this.$router.push('/login') // redirect to login page
