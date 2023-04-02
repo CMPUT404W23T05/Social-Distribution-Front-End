@@ -6,19 +6,19 @@
   <!-- Used for toggling the listviews -->
   <div class="btn-group-vertical d-flex flex-column justify-content-space-around border-primary" role="group">
     <button class="btn" :class="{'btn-primary': active === 'all'}" @click="setActive('all') ">
-      <i class="bi bi-archive-fill"/>
+      <i class="bi bi-archive-fill" title="Inbox" />
     </button>
     <button class="btn" :class="{'btn-primary': active === 'post'}" @click="setActive('post')">
-      <i class="bi bi-file-earmark-post"/>
+      <i class="bi bi-file-earmark-post" title="Posts" />
     </button>
     <button class="btn" :class="{'btn-primary': active === 'Like'}" @click="setActive('Like')">
-      <i class="bi bi-heart-fill"/>
+      <i class="bi bi-heart-fill" title="Likes"/>
     </button>
     <button class="btn" :class="{'btn-primary': active === 'comment'}" @click="setActive('comment')">
-      <i class="bi bi-chat-left-fill"/>
+      <i class="bi bi-chat-left-fill" title="Comments"/>
     </button>
     <button class="btn" :class="{'btn-primary': active === 'Follow'}" @click="setActive('Follow')">
-      <i class="bi bi-person-plus-fill"/>
+      <i class="bi bi-person-plus-fill" title="Follows"/>
     </button>
   </div>
 
