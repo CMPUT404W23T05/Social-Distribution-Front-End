@@ -66,7 +66,7 @@
 import GenericCard from '@/components/GenericCard.vue'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/stores/user'
-import { queryAllNodes, getAxiosTarget } from '@/plugins/axiosUtil'
+import { queryAllNodes, getAxiosTarget } from '@/util/axiosUtil.js'
 
 const followTemplate = {
   type: 'Follow',
