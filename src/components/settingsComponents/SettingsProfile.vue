@@ -2,7 +2,7 @@
   <div class="child-root">
   <div class="alert fade show alert-dismissible" :class="[alert.type]" role="alert" v-if="alert.msg">
     {{ alert.msg }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    <button type="button" class="btn-close" @click="alert.msg = ''" aria-label="Close"></button></div>
   <h1>Profile</h1>
   <h2>Settings</h2>
   <div class="d-flex mt-4" id="profile-container">
@@ -25,7 +25,7 @@
       <button type="submit" class="btn btn-primary" form="profileImageForm">Change profile picture</button>
     </template>
     <template #openModalButton>
-      <div class="edit-overlay rounded-circle" role="button" data-bs-toggle="modal" data-bs-target="#profileImageModal" @click="prefillProfileImageURL"><i class="bi bi-pencil-fill overlay-icon" id="edit-image-icon"></i></div>
+      <div class="edit-overlay rounded-circle" role="button" data-bs-toggle="modal" title="Edit profile picture" data-bs-target="#profileImageModal" @click="prefillProfileImageURL"><i class="bi bi-pencil-fill overlay-icon" id="edit-image-icon"></i></div>
     </template>
       </SlotModal>
   <!-- <div class="edit-overlay rounded-circle" role="button" @click="promptImageURL"><i class="bi bi-pencil-fill overlay-icon"></i></div> -->
@@ -33,11 +33,10 @@
   <!-- Settings for names and password, with lvl 4 gap between each item -->
   <div class="d-flex flex-column gap-3 text-start">
     <!-- Display name field with clickable edit icon -->
-  <div><span class="display-name"><span class="field-name">Display Name:</span> @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;
-    <!-- Edit display name modal -->
+  <div><span class="display-name"><span class="field-name">Display Name:</span> @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<!-- Edit display name modal -->
     <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="prefillDisplayName" >
     <template #openModalButton>
-      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="prefillDisplayName"></i>
+      <i class="bi bi-pencil-fill" title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="prefillDisplayName"></i>
     </template>
     <template #titleText>Edit display name</template>
     <template #body="scoped">
@@ -48,7 +47,6 @@
             <span class="input-group-text" id="basic-addon1">@</span>
             <input class="form-control" type="text" id="newDisplayName" v-model="fields.newDisplayName" aria-label="Display name" aria-describedby="basic-addon1" required>
           </div>
-
         </form>
         </template>
           <template #submitButton>
@@ -58,9 +56,7 @@
     ></SlotModal>
   </div>
   <!-- Username field with clickable edit icon -->
-  <div><span class="username"><span class="field-name">Username:</span> {{ this.userStore.user.username }}</span>&nbsp;
-
-  <!-- Edit username modal -->
+  <div><span class="username"><span class="field-name">Username:</span> {{ this.userStore.user.username }}</span>&nbsp;<!-- Edit username modal -->
   <SlotModal
     :modal-name="'usernameModal'"
      @submit-my-form="submitUsernameForm" @clear-fields="clearFields">
@@ -81,10 +77,12 @@
       <button type="submit" class="btn btn-primary" form="usernameForm">Change username</button>
     </template>
     <template #openModalButton>
-      <i class="bi bi-pencil-fill"  role="button" data-bs-toggle="modal" data-bs-target="#usernameModal"></i>
+      <i class="bi bi-pencil-fill" title="Edit"  role="button" data-bs-toggle="modal" data-bs-target="#usernameModal"></i>
     </template>
       <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
   </SlotModal></div>
+  <!-- Show user's UUID -->
+  <div><span class="field-name">User ID:</span> {{ this.userStore.user.author._id }}&nbsp;<i class="bi bi-clipboard2-fill" role="button" title="Copy to clipboard" @click="copyUUIDToClipboard"></i></div>
 <!-- Change password modal -->
 <SlotModal :modal-name="'passwordModal'" @submit-my-form="submitPasswordForm" @clear-fields="clearFields">
   <template #titleText>Change password</template>
@@ -193,6 +191,11 @@ export default {
       for (const field in this.fields) {
         this.fields[field] = ''
       }
+    },
+    copyUUIDToClipboard () {
+      const uuid = this.userStore.user.author._id
+      navigator.clipboard.writeText(uuid)
+      this.showAlert('User ID copied to clipboard!', 'success')
     },
     // Methods for username change modal
     submitUsernameForm ({ done, e }) {
@@ -313,6 +316,9 @@ export default {
 }
 .field-name {
   color: var(--bs-blue);
+}
+i:hover {
+  color:var(--bs-blue);
 }
 
 </style>
