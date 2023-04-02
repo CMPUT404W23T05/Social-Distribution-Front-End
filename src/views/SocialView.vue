@@ -39,18 +39,22 @@
   </div>
 
   <!-- All of the authors on our social distribution (across registered nodes) -->
-  <div v-if='!loading' class="all-authors">
+  <div v-if='!loading' class="all-authors pb-5">
     <div v-for="nodeName in Object.keys(authorNodes)" :key="nodeName">
       <h2 class="section-header"> <strong>{{ nodeName === "localNode" ? "Local" : `${textTransform(nodeName, false, true)}'s`}}</strong> Authors</h2>
       <div class="d-flex flex-wrap justify-content-center mb-5">
         <GenericCard v-for="author in authorNodes[nodeName].data.items" :key="author.id" class="m-2">
           <template #card-content>
-            <img :src='author.profileImage' class="profile-image"/>
-            <h3 class="mt-1"> <strong>@{{author.displayName}}</strong></h3>
+            <div class="wrapper d-flex flex-column justify-content-center text-center">
+              <img :src='author.profileImage' class="profile-image"/>
+              <h3 class="mt-1"> <strong>@{{author.displayName}}</strong></h3>
+            </div>
           </template>
-          <div class="request-footer d-flex align-items-center justify-content-around">
-            <button class="btn text-info" @click="sendFollow">Send Follow Request</button>
-          </div>
+          <template #footer>
+            <div class="request-footer d-flex align-items-center justify-content-around">
+              <button class="btn text-info" @click="sendFollow(author)">Send Follow Request</button>
+            </div>
+          </template>
         </GenericCard>
       </div>
     </div>
@@ -60,22 +64,21 @@
 
 <script>
 import GenericCard from '@/components/GenericCard.vue'
-import author_card from '../components/AuthorCard.vue'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/stores/user'
-import { queryAllNodes } from '@/plugins/axiosUtil'
+import { queryAllNodes, getAxiosTarget } from '@/plugins/axiosUtil'
 
 const followTemplate = {
   type: 'Follow',
   actor: Object,
   object: Object,
-  state: String || null // Null if not accepted/rejected
+  state: null // Null if not accepted/rejected
 }
 
 export default {
   name: 'SocialPage',
 
-  components: { GenericCard, author_card },
+  components: { GenericCard },
 
   computed: {
     ...mapStores(useUserStore),
@@ -106,7 +109,7 @@ export default {
   },
 
   async mounted () {
-    this.currentAuthor = this.getAuthorFromStore()
+    this.getAuthorFromStore()
     this.basePath = new URL(this.sessionAuthor.id).pathname.replace(/\/api\//, '')
     await this.getRequests()
     await this.getFriendlies()
@@ -158,12 +161,12 @@ export default {
 
     // Related to the friend request logic
     handleRequest (state, sender) {
-      // Create a new follow object with a state
+      // Create a new follow object with a state (accepted/rejected)
       const followToSend = followTemplate
 
       followToSend.state = state
       followToSend.actor = sender
-      followToSend.object = this.currentAuthor
+      followToSend.object = this.sessionAuthor
 
       this.$localNode
         .post(`${this.basePath}/inbox/`, followToSend)
@@ -172,6 +175,25 @@ export default {
         })
         .catch((err) => {
           console.log(err)
+        })
+    },
+
+    sendFollow (author) {
+      // Create follow object
+      const followToSend = followTemplate
+      followToSend.actor = this.sessionAuthor
+      followToSend.object = author
+
+      // Set up axios
+      const hostNode = getAxiosTarget(author.host) // Gets the corresponding axios instance
+      const endpoint = new URL(author.id).pathname.replace(/^\/api/, '')
+
+      hostNode.post(`${endpoint}/inbox/`, followToSend)
+        .then(() => {
+          alert(`Succesfully sent follow request to ${author.displayName}`)
+        })
+        .catch(() => {
+          alert(`Couldn't send the request to ${author.displayName}`)
         })
     },
     async getRequests () {
@@ -208,48 +230,6 @@ export default {
       userStore.initializeStore()
       this.sessionAuthor = userStore.user.author
     }
-
-  //   getAuthors () {
-  //     this.$localNode.get('authors/')
-  //       .then((res) => {
-  //         this.authors = res.data
-  //       })
-  //       .catch((err) => {
-  //         console.log('Our Teams Error is:' + err)
-  //         console.log(this.$localNode.defaults)
-  //       })
-  //   },
-  //   getRemoteAuthors2 () {
-  //     this.$node7.get('authors/')
-  //       .then((res) => {
-  //         this.authors_remote2 = res.data
-  //         console.log(res.data)
-  //       })
-  //       .catch((err) => {
-  //         console.log('T7 Error is: ' + err)
-  //         console.log(this.$node7.defaults)
-  //       })
-  //   },
-  //   getRemoteAuthors () {
-  //     this.$node10.get('authors/')
-  //       .then((res) => {
-  //         this.authors_remote = res.data
-  //         console.log(res.data)
-  //       })
-  //       .catch(function (err) {
-  //         console.log('T10 error is: ' + err)
-  //         console.log(this.$node7.defaults)
-  //       })
-  //   },
-  //   updateFollowers () {
-  //     this.$refs.followers.getFollowers()
-  //     this.$refs.friends.getFriends()
-  //   }
-  // },
-  // mounted () {
-  //   this.getAuthors()
-  //   this.getRemoteAuthors()
-  //   this.getRemoteAuthors2()
   }
 }
 </script>
@@ -273,6 +253,9 @@ export default {
     height: 100pt;
   }
 
+  .btn {
+    border: none;
+  }
   .authors{
     display: flex;
     flex-direction: row;
