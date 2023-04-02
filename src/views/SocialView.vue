@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if='loading' class="spinner-border text-info text-center" role="loading"></div>
+  <div v-if='loading' class="load-spinner spinner-border text-info text-center" role="loading"></div>
 
   <div v-if='!loading' class='follow-accounts'>
     <!-- Different footer to accept/request -->
@@ -38,30 +38,24 @@
     </div>
   </div>
 
-  <!-- <h3 style="text-align: left; margin-left: 12%;">My node's authors</h3>
-  <div class="authors">
-    <div v-for="author in authors.items" :key="author.id">
-      <author_card :author="author"/>
+  <!-- All of the authors on our social distribution (across registered nodes) -->
+  <div v-if='!loading' class="all-authors">
+    <div v-for="nodeName in Object.keys(authorNodes)" :key="nodeName">
+      <h2 class="section-header"> <strong>{{ nodeName === "localNode" ? "Local" : `${textTransform(nodeName, false, true)}'s`}}</strong> Authors</h2>
+      <div class="d-flex flex-wrap justify-content-center mb-5">
+        <GenericCard v-for="author in authorNodes[nodeName].data.items" :key="author.id" class="m-2">
+          <template #card-content>
+            <img :src='author.profileImage' class="profile-image"/>
+            <h3 class="mt-1"> <strong>@{{author.displayName}}</strong></h3>
+          </template>
+          <div class="request-footer d-flex align-items-center justify-content-around">
+            <button class="btn text-info" @click="sendFollow">Send Follow Request</button>
+          </div>
+        </GenericCard>
+      </div>
     </div>
   </div>
 
-  <br><br>
-  <h4>{{ authors_remote }}</h4><br> -->
-  <!-- <h4>{{ authors_remote2 }}</h4><br> -->
-  <!-- <h3 style="text-align: left; margin-left: 12%;">Other node's authors (Team 7)</h3>
-  <div class="authors">
-    <div v-for="author in authors_remote2.items" :key="author.id">
-      <author_card :author="author"/>
-    </div>
-  </div>
-
-  <br><br>
-  <h3 style="text-align: left; margin-left: 12%;">Other node's authors (Team 10)</h3>
-  <div class="authors">
-    <div v-for="author in authors_remote.items" :key="author.id">
-      <author_card :author="author"/>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -116,7 +110,7 @@ export default {
     this.basePath = new URL(this.sessionAuthor.id).pathname.replace(/\/api\//, '')
     await this.getRequests()
     await this.getFriendlies()
-    // await this.getAllAuthors()
+    await this.getAllAuthors()
     this.loading = false
   },
 
@@ -134,7 +128,7 @@ export default {
       inbox: [], // All requests that will need to be filtered
 
       // All people across our social distribution network
-      authors: {
+      authorNodes: {
         local: [],
         node10: [],
         node7: []
@@ -148,13 +142,18 @@ export default {
   methods: {
     // Used to transform "followers" -> "follower"
     textTransform (word, singularize, capitalize) {
-      if (capitalize) {
-        word = word?.charAt(0).toUpperCase() + word?.slice(1)
+      try {
+        if (capitalize) {
+          word = word?.charAt(0).toUpperCase() + word?.slice(1)
+        }
+        if (singularize) {
+          word = word?.replace(/s$/, '')
+        }
+        return word
+      } catch {
+        console.log('Failed on: ' + word)
+        console.table(word)
       }
-      if (singularize) {
-        word = word?.replace(/s$/, '')
-      }
-      return word
     },
 
     // Related to the friend request logic
@@ -201,7 +200,7 @@ export default {
     },
 
     async getAllAuthors () {
-      this.authors = queryAllNodes('authors/')
+      this.authorNodes = await queryAllNodes('get', '/authors')
     },
 
     getAuthorFromStore () {
@@ -256,7 +255,6 @@ export default {
 </script>
 
 <style scoped>
-
   .profile-image {
     width: 128pt;
     height: 128pt;
@@ -265,6 +263,14 @@ export default {
 
   strong {
     color: #4998F5;
+  }
+
+  .load-spinner {
+    position: fixed;
+    margin: 0 auto;
+    top: 40%;
+    width: 100pt;
+    height: 100pt;
   }
 
   .authors{
