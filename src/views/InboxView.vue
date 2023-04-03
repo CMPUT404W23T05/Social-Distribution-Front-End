@@ -14,7 +14,7 @@
       </template>
     </SlotModal>
 
-    <NotificationList v-if="!loading" :selectedNotifications="stream.items" class="list"></NotificationList>
+    <NotificationList v-if="!loading" :selectedNotifications="stream.items" class="list pb-2"></NotificationList>
 
   </div>
 </template>
