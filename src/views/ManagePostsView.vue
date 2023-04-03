@@ -33,7 +33,8 @@
     <ManagePostModal
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
-      @create-post="(post) => createPost(post)">
+      @create-post="(post) => createPost(post)"
+      @create-private-post="(post, authors) => createPrivatePost(post, authors)">
     </ManagePostModal>
 
     <SlotModal modal-name="deletePrompt" v-if="selected.post">
@@ -78,7 +79,7 @@ export default {
     udEndPoint () {
       if (this.selected.post) {
         // const endpoint = `/authors/${this.author._id}/posts/${this.selected.post.id}/`
-        const endpoint = `${this.post.id}/`
+        const endpoint = `${this.selected.post.id}`
         return endpoint
       } else {
         return null
@@ -97,6 +98,39 @@ export default {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+
+    createPrivatePost(post, authorss){
+      post.author = this.author
+      post._id = uuidv4()
+      post.id = this.author.id + '/posts/' + post._id
+      post.comments = post.id + '/comments'
+      // console.log(post)
+      this.$localNode
+        .post(this.crEndPoint, post)
+        .then(() => {
+          this.posts.unshift(post)
+        })
+        .catch(() => {
+          alert("Couldn't add the post!")
+        })
+      this.showManage = false
+      
+      // console.log(authorss)
+      for (var i =0; i < authorss.length; i++){
+        let id_list = authorss[i].id.split('/')
+        let id = id_list[id_list.length - 1]
+
+        // console.log(authorss[i])
+        this.$localNode
+          .post(`/authors/${id}/inbox/`, post)
+          .then(() => {
+            console.log(`sent`)
+          })
+          .catch(() => {
+            alert(`Couldn't send the post`)
+          })
+      }
     },
 
     // This view handles all CRUD Operations

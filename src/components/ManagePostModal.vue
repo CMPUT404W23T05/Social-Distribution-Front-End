@@ -47,6 +47,19 @@
               </div>
             </div>
 
+            <div v-if="post.visibility == 'PRIVATE'">
+              <!-- <button type="button" class="btn btn-primary btn-sm" @click="selectAuthor(author)">select</button> -->
+              <h6 style="text-align: left; margin-left: 8%;">Select from your followers</h6>
+              <ul class="list-group">
+                <li class="list-group-item" v-for="sing_author in my_followers" :key="sing_author.id">
+                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." @click="update_selected(sing_author)">
+                  {{ sing_author.displayName }}
+                </li>
+              </ul>
+            </div>
+
+            
+
             <!-- Textbody -->
             <textarea v-model="post.content" @input="setText" class="text-input form-control" placeholder="Give your post some body text"></textarea>
 
@@ -72,20 +85,28 @@
 <script>
 
 import ImagePostBody from '@/components/ImagePostBody.vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 
 export default {
   components: { ImagePostBody },
   props: ['existingPost'], // Create pass-by-value copy to avoid mutating original post
-  emits: ['createPost', 'editPost', 'dismiss'],
+  emits: ['createPost', 'editPost', 'dismiss', 'createPrivatePost'],
   data () {
     return {
       // Initialize a default post
       post: null,
       markDownEnabled: false,
-      invalidSubmit: false
+      invalidSubmit: false,
+      my_followers: [],
+      curr_auth: [],
+      selected_auths: [],
     }
   },
   computed: {
+    ...mapStores(useUserStore),
+
     modalTitleMode () {
       return this.existingPost
         ? 'Edit'
@@ -129,6 +150,8 @@ export default {
 
   mounted () {
     const modalEl = this.$refs.managePost
+    this.getAuthorFromStore()
+    this.getFollowers()
     modalEl.addEventListener('show.bs.modal', () => {
       // Load a copy of an existing post if supplied
       if (this.existingPost) {
@@ -149,6 +172,48 @@ export default {
     })
   },
   methods: {
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.curr_auth = userStore.user.author
+    },
+
+    update_selected(auth) {
+      if (auth.is_selected === false){
+        auth.is_selected = true
+        this.selected_auths.push(auth)
+      }
+      else{
+        auth.is_selected = false
+        const index = this.selected_auths.indexOf(auth);
+        this.selected_auths.splice(index, 1)
+      }
+
+      console.log(this.selected_auths)
+      
+    },
+
+    // getSelectedAuths(){
+    //   for (var i =0; i < this.my_followers.length; i++){
+    //     if(this.my_followers[i].is_selected === true){
+    //       this.selected_auths.push(this.my_followers[i])
+    //     }
+    //   }
+    // },
+
+    getFollowers() {
+      this.$localNode.get(`/authors/${this.curr_auth._id}/followers/`)
+      .then(response => {
+          response.data.items.forEach(author =>
+          author.is_selected = false);
+          console.log(response)
+          this.my_followers = response.data.items
+      })
+      .catch(function(err) {
+          console.log(err);
+      });
+    },
+    
     setText () {
       this.sanitizeContentTypes('text')
       this.appendMime(this.markDownEnabled ? 'text/markdown' : 'text/plain')
@@ -209,13 +274,23 @@ export default {
         console.table(this.post)
 
         this.$refs.Close.click()
-        if (this.existingPost) {
+        if ((this.existingPost)) {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
-        } else {
+        }
+        else if (this.post.visibility === "PRIVATE"){
+          // this.getSelectedAuths()
+          console.log(`selected auths are here`)
+          console.log(this.selected_auths)
+          console.log('ends here')
+          this.$emit('createPrivatePost', this.post, this.selected_auths)
+          this.$emit('dismiss')
+        }
+        else {
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
         }
+
       } else {
         this.invalidSubmit = true
       }

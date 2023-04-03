@@ -244,6 +244,7 @@ export default {
         this.$localNode.get(`${this.basePath}/${friendly}`)
           .then((res) => {
             this.friendliesProxy[friendly] = res.data // The array with friends, followers, etc.
+            console.log(res)
           })
           .catch((err) => {
             this.friendliesProxy[friendly] = { type: friendly, items: [] }
