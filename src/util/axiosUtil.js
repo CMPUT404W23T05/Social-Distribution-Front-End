@@ -54,6 +54,13 @@ for (const node of nodes) {
   })
 }
 
+// Node specific interceptors
+node10.interceptors.request.use((config) => {
+  if (!config.url.endsWith('/')) {
+    config.url += '/'
+  }
+  return config
+})
 // These are not configured in app; import them as you need them per component.
 // e.g in <script>: import {queryAllNodes} from 'axiosUtil.js'
 

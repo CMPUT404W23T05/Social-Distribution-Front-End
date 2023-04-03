@@ -5,17 +5,27 @@
         <section class="author-info">
           <img :src="authorData.profileImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
-          <!-- TODO: Do NOT display follow-status if the post author matches session author -->
-          <span class="follow-status">
-            <!-- Will always encourage person to follow through colour contrast -->
-            <small :class="{activated: isFollowing}"> {{ isFollowing ? "Following" : "Not Following" }} </small>
-            <small :class="{activated: !isFollowing}" @click="toggleFollow"> {{ isFollowing ? "Unfollow" : "Follow" }} </small>
+          <span class="likers">
+            <img
+            v-for="like in likers"
+            :key = "like"
+            class="like-profile-picture"
+            src="public/defaultProfileImage.png"
+            />
           </span>
         </section>
 
         <ul class="btn-list">
           <li class="btn-with-label">
-            <button id="like-post-button" type="button" class="btn btn-light action-button" @click="addLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
+            <button
+            id="like-post-button"
+            type="button"
+            class="btn btn-light action-button"
+            @click="addLike"
+            >
+              <i class="bi bi-heart-fill"  :class="{liked: isLiked}"></i>
+            </button>
+            <label for="like-post-button">{{ likedList?.length }}</label>
           </li>
           <li class="btn-with-label">
             <button id="comment-button" type="button" ref="commentButton" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
@@ -39,7 +49,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :axiosTarget=postHost :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
+          <CommentList :post="postData" :axiosTarget="postHost" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
           <div class="move-page-wrapper">
             <div v-if="pageTotal > 1" class="move-page">
               <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
@@ -106,6 +116,8 @@ const commentTemplate = {
   published: '2023-03-01T21:18:38.908794Z' // Placeholder (maybe re-added on backend?)
 }
 
+const likersToShow = 3 // How many profile pictures to show before giving a +x for the remainder
+
 export default {
   components: { PostProper, CommentList, SlotModal },
   async mounted () {
@@ -114,6 +126,7 @@ export default {
     const aid = this.$route.params.aid
     this.getAuthorFromStore()
     await this.getData(pid, aid)
+    await this.getLikes()
   },
   computed: {
     ...mapStores(useUserStore),
@@ -122,6 +135,22 @@ export default {
     },
     pageTotal () {
       return Math.ceil(this.postData.count / this.paginationSetting) || 1 // Atleast 1 page
+    },
+    // Below are all for displaying liked status
+    isLiked () {
+      for (const like in this.likes) {
+        if (like.author.id === this.currentAuthor) {
+          return true
+        }
+      }
+      return false
+    },
+    firstFewLikers () {
+      return this.likes.slice(0, likersToShow - 1) // Show the first n authors
+    },
+    cutOffLikerCount () {
+      // The number to append for the likers whose profile images were not shown
+      return this.likes.length <= likersToShow ? 0 : this.likes.length - likersToShow
     }
   },
   data () {
@@ -132,7 +161,7 @@ export default {
       currentAuthor: null, // Load from store
 
       // Used for seeing likes
-      isLiked: false,
+      likes: [],
 
       // Used for social stuff
       isFollowing: false,
@@ -153,32 +182,32 @@ export default {
   },
   methods: {
     async getData (pid, aid) {
-      this.postHost.get(`/authors/${aid}/posts/${pid}/`)
+      await this.postHost.get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
           // get author's likes
-          this.postHost.get(`${this.currentAuthor.id}/liked/`)
-            .then((res) => {
-              const likes = res.data.items
-              for (const like of likes) {
-                if (like.object === this.postData.id) { // If this post is liked
-                  this.isLiked = true // Set liked to true
-                  break
-                }
-              }
-            })
-            .catch((err) => {
-              console.log(err)
-            })
         })
         .catch((err) => { console.log(err) })
 
-      this.postHost.get(`/authors/${aid}/`)
+      await this.postHost.get(`/authors/${aid}/`)
         .then((res) => {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
     },
+
+    async getLikes () {
+      const postPath = new URL(this.postData.id).pathname
+      await this.postHost.get(`${postPath}/likes`)
+        .then((res) => {
+          this.likes = res.data.items
+        }
+        )
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+
     toggleFollow () {
       this.isFollowing = !this.isFollowing
       alert('Sorry! You can\'t follow people yet')
@@ -225,7 +254,8 @@ export default {
       comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
       // comment.comment = content
       console.table(comment)
-      this.postHost.post(`${this.postData.id}/comments`, comment)
+      const postPath = new URL(this.postData.id).pathname
+      this.postHost.post(`${postPath}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
