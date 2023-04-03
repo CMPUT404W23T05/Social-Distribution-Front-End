@@ -54,7 +54,7 @@ export default {
       return this.post.contentType.includes('text')
     },
     imageMime () {
-      return this.post.contentType.match(/^image\/.+?(?=;base64|$)/)[0]
+      return this.post.contentType.match(/^image\/.+?(?=;base64|$)/)
     }
   },
 
