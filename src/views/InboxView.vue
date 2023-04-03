@@ -4,7 +4,7 @@
     <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
       <template #titleText><h2>Inbox</h2></template>
       <template #body>
-        <InboxModalBody :allNotifications="stream.items"/>
+        <InboxModalBody :allNotifications="stream"/>
       </template>
       <template #closeButtonText>Done</template>
       <template #openModalButton>
@@ -38,7 +38,7 @@ export default {
     this.$localNode
       .get(this.author.id + '/inbox/')
       .then((res) => {
-        this.stream = res.data
+        this.stream = res.data.items.reverse()
         this.loading = false
       })
       .catch((err) => {
