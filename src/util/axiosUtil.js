@@ -44,7 +44,7 @@ const node10 = axios.create({
 const nodes = [localNode, node7, node9, node10]
 
 // Interceptors here
-for (const node in nodes) {
+for (const node of nodes) {
   node.interceptors.request.use((config) => {
     if (config.url.startsWith('/api/')) {
       // Remove /api/ prefix
