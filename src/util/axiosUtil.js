@@ -43,6 +43,17 @@ const node10 = axios.create({
 
 const nodes = [localNode, node7, node9, node10]
 
+// Interceptors here
+for (const node of nodes) {
+  node.interceptors.request.use((config) => {
+    if (config.url.startsWith('/api/')) {
+      // Remove /api/ prefix
+      config.url = config.url.replace('/api/')
+    }
+    return config
+  })
+}
+
 // These are not configured in app; import them as you need them per component.
 // e.g in <script>: import {queryAllNodes} from 'axiosUtil.js'
 
