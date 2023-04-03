@@ -6,12 +6,8 @@
           <img :src="authorData.profileImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
           <span class="likers">
-            <img
-            v-for="like in likers"
-            :key = "like"
-            class="like-profile-picture"
-            src="public/defaultProfileImage.png"
-            />
+            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="like.author.profileImage || 'public/defaultProfileImage.png'"/>
+            <small><small v-if="overflowLikes > 0">+ {{overflowLikes}}</small>likes this post</small>
           </span>
         </section>
 
@@ -25,7 +21,7 @@
             >
               <i class="bi bi-heart-fill"  :class="{liked: isLiked}"></i>
             </button>
-            <label for="like-post-button">{{ likedList?.length }}</label>
+            <label for="like-post-button">{{ likes?.length }}</label>
           </li>
           <li class="btn-with-label">
             <button id="comment-button" type="button" ref="commentButton" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
@@ -138,8 +134,9 @@ export default {
     },
     // Below are all for displaying liked status
     isLiked () {
-      for (const like in this.likes) {
-        if (like.author.id === this.currentAuthor) {
+      for (const like of this.likes) {
+        console.log(like)
+        if (like?.author?.id === this.currentAuthor.id) {
           return true
         }
       }
@@ -148,9 +145,9 @@ export default {
     firstFewLikers () {
       return this.likes.slice(0, likersToShow - 1) // Show the first n authors
     },
-    cutOffLikerCount () {
+    overflowLikes () {
       // The number to append for the likers whose profile images were not shown
-      return this.likes.length <= likersToShow ? 0 : this.likes.length - likersToShow
+      return this.likes?.length <= likersToShow ? 0 : this.likes?.length - likersToShow
     }
   },
   data () {
@@ -185,7 +182,6 @@ export default {
       await this.postHost.get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
-          // get author's likes
         })
         .catch((err) => { console.log(err) })
 
@@ -198,7 +194,7 @@ export default {
 
     async getLikes () {
       const postPath = new URL(this.postData.id).pathname
-      await this.postHost.get(`${postPath}/likes`)
+      this.postHost.get(`${postPath}/likes`)
         .then((res) => {
           this.likes = res.data.items
         }
@@ -221,12 +217,12 @@ export default {
           summary: `${this.currentAuthor.displayName} likes your post`,
           object: this.postData.id
         }
-        const authorPath = new URL(this.postData.author.id).pathname
+        const authorPath = new URL(this.authorData.id).pathname
+        console.log(authorPath)
         this.postHost.post(`${authorPath}/inbox/`, newLike)
           .then((res) => {
             console.log('Like sent to ' + `${authorPath}/inbox/`)
             alert('Liked the post')
-            this.isLiked = true
           })
           .catch((err) => {
             console.log(err)
@@ -309,6 +305,12 @@ export default {
     flex-direction: column;
     justify-content: space-evenly;
     margin: 2em 4em;
+  }
+
+  .like-profile-picture {
+    width: 16pt;
+    height: 16pt;
+    border-radius: 50%;
   }
 
   .btn-list {

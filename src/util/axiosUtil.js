@@ -48,7 +48,7 @@ for (const node of nodes) {
   node.interceptors.request.use((config) => {
     if (config.url.startsWith('/api/')) {
       // Remove /api/ prefix
-      config.url = config.url.replace('/api/')
+      config.url = config.url.replace('/api/', '')
     }
     return config
   })
