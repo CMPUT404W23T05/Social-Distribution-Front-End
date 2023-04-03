@@ -135,12 +135,15 @@ export default {
       if (notification.type === 'Follow') {
         return { name: 'SocialPage' }
       } else if (notification.type === 'comment' || notification.type === 'post') {
-        const parts = notification.id.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.id } }
+        return this.anchorHelper(notification.id)
       } else if (notification.type === 'Like') {
-        const parts = notification.object.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.object } }
+        return this.anchorHelper(notification.object)
       }
+    },
+    anchorHelper (queryObject) {
+      const url = new URL(queryObject).pathname.replace('/api/', '').replace(/^\//)
+      const parts = url.split('/')
+      return { name: 'postpage', params: { aid: parts[1], pid: parts[3] }, query: { hostURL: queryObject } } // authors/[aid]/posts/[pid]
     }
   }
 }
