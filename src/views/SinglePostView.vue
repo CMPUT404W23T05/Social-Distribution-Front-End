@@ -3,10 +3,10 @@
       <!--Left sidebar w/ features and author stuff-->
       <aside v-if="!loading" class="post-left-bar">
         <section class="author-info">
-          <img :src="authorData.profileImage" class="author-picture">
+          <img :src="!!authorData.profileImage ? authorData.profileImage : defaultImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
           <span class="likers">
-            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="like.author.profileImage || 'public/defaultProfileImage.png'"/>
+            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"/>
             <small><small v-if="overflowLikes > 0">+ {{overflowLikes}}</small>likes this post</small>
           </span>
         </section>
@@ -156,6 +156,7 @@ export default {
       postData: null,
       authorData: null, // Get from post
       currentAuthor: null, // Load from store
+      defaultImage: '/defaultProfileImage.png',
 
       // Used for seeing likes
       likes: [],
