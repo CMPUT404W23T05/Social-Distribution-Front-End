@@ -108,12 +108,12 @@ const commentTemplate = {
 
 export default {
   components: { PostProper, CommentList, SlotModal },
-  mounted () {
+  async mounted () {
     // Get the post and author
     const pid = this.$route.params.pid
     const aid = this.$route.params.aid
     this.getAuthorFromStore()
-    this.getData(pid, aid)
+    await this.getData(pid, aid)
   },
   computed: {
     ...mapStores(useUserStore),
@@ -185,7 +185,6 @@ export default {
     },
     addLike () {
       if (!this.isLiked) {
-        this.isLiked = true
         const newLike = {
           type: 'Like',
           context: 'https://www.w3.org/ns/activitystreams',
@@ -193,9 +192,12 @@ export default {
           summary: `${this.currentAuthor.displayName} likes your post`,
           object: this.postData.id
         }
-        this.postHost.post(`${this.postData.author.id}/inbox/`, newLike)
+        const authorPath = new URL(this.postData.author.id).pathname
+        this.postHost.post(`${authorPath}/inbox/`, newLike)
           .then((res) => {
-            console.log('Like sent')
+            console.log('Like sent to ' + `${authorPath}/inbox/`)
+            alert('Liked the post')
+            this.isLiked = true
           })
           .catch((err) => {
             console.log(err)
@@ -223,7 +225,7 @@ export default {
       comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
       // comment.comment = content
       console.table(comment)
-      this.postaHost.post(`${this.postData.id}/comments`, comment)
+      this.postHost.post(`${this.postData.id}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
