@@ -23,6 +23,15 @@ const node7 = axios.create({
   defaults: {}
 })
 
+const node9 = axios.create({
+  name: 'node9',
+  baseURL: 'http://ultimate-teapot.herokuapp.com/main/api/',
+  headers: {
+    Authorization: `Basic ${btoa('team5:jN2!42GUtCgB')}`
+  },
+  defaults: {}
+})
+
 const node10 = axios.create({
   name: 'node10',
   baseURL: 'https://socialdistcmput404.herokuapp.com/api/',
@@ -32,7 +41,7 @@ const node10 = axios.create({
   defaults: {}
 })
 
-const nodes = [localNode, node7, node10]
+const nodes = [localNode, node7, node9, node10]
 
 // These are not configured in app; import them as you need them per component.
 // e.g in <script>: import {queryAllNodes} from 'axiosUtil.js'
@@ -48,10 +57,11 @@ export function getAxiosTarget (endpoint) {
     return localNode
   } else if (hostname.includes('sd-7-433-api')) {
     return node7
+  } else if (hostname.includes('ultimate-teapot')) {
+    return node9
   } else if (hostname.includes('socialdistcmput404')) {
     return node10
   }
-
   // Add more teams here if needed
 }
 
@@ -88,6 +98,7 @@ export default {
   install (app) {
     app.config.globalProperties.$localNode = localNode
     app.config.globalProperties.$node7 = node7
+    app.config.globalProperties.$node9 = node9
     app.config.globalProperties.$node10 = node10
   }
 }
