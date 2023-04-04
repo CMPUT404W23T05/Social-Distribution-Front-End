@@ -56,6 +56,18 @@
             <!-- Description -->
             <input v-model="post.description" class="text-input form-control mb-3" placeholder="Write an (optional) description here"/>
 
+            <!-- Tag system -->
+            <div>
+              <!-- Won't error on posts w/o categories -->
+              <span v-for="tagVal, index in this.post?.categories" :key="index">
+                <span class="tag badge rounded-pill border border-primary text-primary mx-1">
+                  {{ tagVal }}
+                  <button type="button" class="btn btn-close clear-tag-button" @click="removeTag(index)"></button>
+                </span>
+              </span>
+            </div>
+            <input @keyup.enter="addTag($event)" placeholder="Add a tag" class="text-input form-control mt-2"/>
+
             <div class="modal-footer">
               <div v-if="invalidSubmit" class="error-container">
                 <small v-for="error in errors" :key="error" class="error-message text-danger" :class="{visible: invalidSubmit}">{{ error + " "}} </small>
@@ -149,6 +161,14 @@ export default {
     })
   },
   methods: {
+
+    addTag (event) {
+      this.post.categories.push(event.target.value)
+      event.target.value = '' // Clear
+    },
+    removeTag (index) {
+      this.post.categories.splice(index, 1)
+    },
     setText () {
       this.sanitizeContentTypes('text')
       this.appendMime(this.markDownEnabled ? 'text/markdown' : 'text/plain')
@@ -168,12 +188,13 @@ export default {
       return {
         type: 'post',
         title: '',
-        source: 'http://placeholderurlfornow.yummy/',
-        origin: 'http://anotherplaceholderurlfornow.yucky/',
+        source: 'https://social-t30.herokuapp.com',
+        origin: 'https://social-t30.herokuapp.com',
         description: '',
         contentType: [],
         content: '',
         image: null,
+        categories: [],
         count: 0,
         unlisted: false,
         visibility: 'PUBLIC', // Public by default for now
@@ -225,7 +246,16 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
+
+  .rounded-pill {
+    min-width: 2rem;
+  }
+
+  .clear-tag-button {
+    /* Shrink size of x per tag */
+    font-size: 0.8em;
+  }
   textarea.text-input {
   display: -webkit-box;
   -webkit-box-orient: vertical;
