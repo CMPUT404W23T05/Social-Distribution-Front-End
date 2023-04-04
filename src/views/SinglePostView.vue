@@ -238,7 +238,6 @@ export default {
         this.postHost.post(`${authorPath}/inbox/`, newLike)
           .then((res) => {
             console.log('Like sent to ' + `${authorPath}/inbox/`)
-            alert('Liked the post')
             this.likes.push(newLike) // Update local
           })
           .catch((err) => {
