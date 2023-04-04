@@ -109,6 +109,7 @@ export default {
     max-width: 100%;
     min-height: 100%;
     object-fit: cover;
+    overflow: hidden;
     flex: 0 0 50%;
   }
 
