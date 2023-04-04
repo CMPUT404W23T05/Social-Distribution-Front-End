@@ -6,7 +6,7 @@
           <img :src="!!authorData.profileImage ? authorData.profileImage : defaultImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
           <span class="likers">
-            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"/>
+            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"  :title="'@' + like.author.displayName"/>
             <small><small v-if="overflowLikes > 0">+ {{overflowLikes}}</small>likes this post</small>
           </span>
         </section>
