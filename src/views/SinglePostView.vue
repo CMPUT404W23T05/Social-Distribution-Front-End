@@ -165,7 +165,10 @@ export default {
       isFollowing: false,
       friends: [], // Update when modal is opened
       friendsLoading: true,
+
       // Used for comment list
+      comments: [],
+      commentsLoading: true, // Lots of requests need to be made for comments (one per comment to get likes) so separate loading
       expandComments: false,
       currentCommentPage: 1,
       paginationSetting: 5, // This will acquired from user once they set their pagination
@@ -204,6 +207,18 @@ export default {
           console.log(err)
         })
     },
+
+    // async getComments () {
+    //   const postPath = new URL(this.postData.id).pathname
+    //   await this.postHost.get(`${postPath}/comments`)
+    //     .then((res) => {
+    //       this.comments = res.data.items
+    //     })
+    //     .catch((err) => {
+    //       console.log('Couldn\'t get comments.')
+    //       console.log(err)
+    //     })
+    // },
 
     toggleFollow () {
       this.isFollowing = !this.isFollowing
@@ -312,6 +327,7 @@ export default {
     width: 16pt;
     height: 16pt;
     border-radius: 50%;
+    margin: 0.1em;
   }
 
   .btn-list {
