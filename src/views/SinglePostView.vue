@@ -239,6 +239,7 @@ export default {
           .then((res) => {
             console.log('Like sent to ' + `${authorPath}/inbox/`)
             alert('Liked the post')
+            this.likes.push(newLike) // Update local
           })
           .catch((err) => {
             console.log(err)
