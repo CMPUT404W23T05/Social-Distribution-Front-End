@@ -23,8 +23,8 @@
         </div>
 
         <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
-          <p> {{ capitalizeFirstChar(getActor(notification.author))}} commented </p>
-          <p class="actual-comment"> {{ notification.comment }} </p>
+          <p> {{ capitalizeFirstChar(getActor(notification.author))}} commented on your post:</p>
+          <blockquote class="actual-comment"> {{ notification.comment }} </blockquote>
         </div>
 
         <!-- Yes, the casing is correct according to the spec -->
@@ -150,8 +150,21 @@ export default {
 <style scoped>
 
   .notification {
+    text-align: center;
     margin: 1em;
   }
+  .actual-comment {
+   color: var(--bs-blue);
+   text-align: center;
+   font-style: italic;
+   /* Handle text overflow */
+   -webkit-line-clamp: 3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+
+  /* font-style: italic; */
+}
 
   h6 {
     text-align: center;

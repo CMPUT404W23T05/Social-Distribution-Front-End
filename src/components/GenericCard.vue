@@ -79,6 +79,7 @@ export default {
     align-items: center;
     justify-content: space-evenly;
     box-sizing: content-box;
+    overflow: hidden;
   }
 
   .scrim {
