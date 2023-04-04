@@ -176,29 +176,17 @@ export default {
           alert(`${state} the Request`) // Computed pendingRequests should auto-update
           if (state === 'Accepted') {
             this.inbox.push(followToSend) // Update local version of allRequests
-            this.moveToFriendsOrFollower(followToSend.actor)
+            this.moveToFriendsOrFollower(followToSend)
           }
         })
         .catch((err) => {
           console.log(err)
         })
-
-      // For back-end purposes to track remote only posts
-      if (!followToSend.actor.host.includes('t30')) {
-        this.$localNode.post(`${this.basePath}/remote-requests`, followToSend)
-          .then(() => {
-            console.log('sent to backend')
-          })
-          .catch(() => {
-            console.log('Couldn\'t send to backend')
-          })
-      }
     },
 
     moveToFriendsOrFollower (acceptedFollow) {
       // Helper function to move people from the requests to the appropriate field for the local
 
-      // Sheesh this funciton is incredibly inefficient but that's web dev for you am I right?
       const allRequests = this.inbox.filter(item => item.type === 'Follow')
 
       const recipricalFollow = acceptedFollow
@@ -206,9 +194,9 @@ export default {
       recipricalFollow.actor = acceptedFollow.author
 
       if (allRequests.includes(acceptedFollow) && allRequests.includes(recipricalFollow)) {
-        this.friendliesProxy.friends.push(acceptedFollow.actor)
+        this.friendliesProxy.friends.items.push(acceptedFollow.actor)
       } else {
-        this.friendliesProxy.followers.push(acceptedFollow.actor)
+        this.friendliesProxy.followers.items.push(acceptedFollow.actor)
       }
     },
 
