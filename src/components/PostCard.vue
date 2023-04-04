@@ -66,17 +66,13 @@ export default {
   },
   computed: {
     markdownEnabled () {
-      if (this.postContentType) {
-        return this.post.contentType.includes('text/markdown')
-      } else {
-        return false
-      }
+      return this.post.contentType?.includes('text/markdown')
     },
     hasImage () {
-      return this.post.contentType.includes('image')
+      return this.post.contentType?.includes('image')
     },
     hasContent () {
-      return this.post.contentType.includes('text')
+      return this.post.contentType?.includes('text')
     },
     imageURL () {
       return `${pathOf(this.post.id)}/image`
