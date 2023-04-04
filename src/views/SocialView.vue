@@ -182,6 +182,17 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+
+      // For back-end purposes to track remote only posts
+      if (!followToSend.actor.host.includes('t30')) {
+        this.$localNode.post(`${this.basePath}/remote-requests`, followToSend)
+          .then(() => {
+            console.log('sent to backend')
+          })
+          .catch(() => {
+            console.log('Couldn\'t send to backend')
+          })
+      }
     },
 
     moveToFriendsOrFollower (acceptedFollow) {
@@ -223,6 +234,20 @@ export default {
         .catch(() => {
           alert(`Couldn't send the request to ${author.displayName}`)
         })
+
+      // Backend purposes
+      if (hostNode !== this.$localNode) {
+        console.log(`${this.basePath}/remote-requests`)
+        console.log(followToSend)
+
+        this.$localNode.put(`${this.basePath}/remote-requests/`, followToSend)
+          .then(() => {
+            console.log('sent to backend')
+          })
+          .catch(() => {
+            console.log('Couldn\'t send to backend')
+          })
+      }
     },
     async getRequests () {
       this.$localNode
