@@ -60,6 +60,7 @@ import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+import { pathOf } from '@/util/axiosUtil'
 
 export default {
   components: { ManagePostModal, Card, SlotModal },
@@ -77,19 +78,15 @@ export default {
     // Update, delete
     udEndPoint () {
       if (this.selected.post) {
-        // const endpoint = `/authors/${this.author._id}/posts/${this.selected.post.id}/`
-        const endpoint = `${this.post.id}/`
-        return endpoint
+        return (`${pathOf(this.selected.post.id)}/`)
       } else {
-        return null
+        return ''
       }
     },
 
     // Create, read
     crEndPoint () {
-      // const endpoint = String.raw`/authors/${this.author._id}/posts/`
-      const endpoint = `${this.author.id}/posts/`
-      return endpoint
+      return `${pathOf(this.author.id)}/posts/`
     }
   },
   methods: {
@@ -143,7 +140,7 @@ export default {
     },
 
     delPost () {
-      axios
+      this.$localNode
         .delete(this.udEndPoint)
         .then(() => {
           this.posts.splice(this.selected.index, 1)

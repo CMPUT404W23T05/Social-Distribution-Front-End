@@ -50,3 +50,5 @@ Creative Commons-Attribution-ShareAlike 4.0 (CC-BY-SA 4.0), found on Stack Overf
   * Link to author (in this case, the person who answered the question): https://stackoverflow.com/users/7386068/blackend
   * Link to author (in this case, the person who edited the answer): https://stackoverflow.com/users/2364044/sean-n
   * Link to license: https://creativecommons.org/licenses/by-sa/4.0/
+
+* Default Profle Image courtesy of Austin Baker, https://dribbble.com/austinmiles

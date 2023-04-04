@@ -2,6 +2,7 @@
 
 <template>
   <GenericCard
+  v-if="!loading"
   @hovered="hovered=true"
   @unhover="hovered=false"
   :title="post.title"
@@ -20,7 +21,7 @@
         class="image-content"
         :class="{singleton: isSingleton}"
         v-if="post.image"
-        :src="imageURL"
+        :src="imageSrc"
         :alt="post.description"
       />
     </template>
@@ -45,25 +46,59 @@
 <script>
 import VueMarkdown from 'vue-markdown-render'
 import GenericCard from './GenericCard.vue'
+import { getAxiosTarget, pathOf } from '@/util/axiosUtil'
 
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
   components: { VueMarkdown, GenericCard },
   props: ['author', 'post'],
+  async created () {
+    await this.getImage()
+    this.loading = false
+  },
+
   data () {
     return {
-      hovered: false
+      hovered: false,
+      loading: true,
+      imageSrc: null // Assign once created
     }
   },
   computed: {
     markdownEnabled () {
-      return this.post.contentType.includes('text/markdown')
+      return this.post.contentType?.includes('text/markdown')
+    },
+    hasImage () {
+      return this.post.contentType?.includes('image')
+    },
+    hasContent () {
+      return this.post.contentType?.includes('text')
     },
     imageURL () {
-      return `${this.post.id}/image`
+      return `${pathOf(this.post.id)}/image`
     },
     isSingleton () {
-      return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)
+      return (!!this.hasImage && !this.hasContent) || (!this.hasImage && !!this.hasContent)
+    }
+  },
+
+  methods: {
+    async getImage () {
+      if (this.hasImage) {
+        const hostNode = getAxiosTarget(this.post.id)
+
+        const postPath = new URL(this.post.id).pathname.replace(/^\/api\//, '')
+
+        hostNode.get(`${postPath}/image`, { responseType: 'blob' })
+          .then((res) => {
+            const blob = new Blob([res.data], { type: this.imageMime })
+            this.imageSrc = URL.createObjectURL(blob)
+          })
+          .catch((err) => {
+            console.log(err)
+            this.imageSrc = 'https://commons.wikimedia.org/wiki/File:No-Image-Placeholder.svg'
+          })
+      }
     }
   }
 }
@@ -74,6 +109,7 @@ export default {
     max-width: 100%;
     min-height: 100%;
     object-fit: cover;
+    overflow: hidden;
     flex: 0 0 50%;
   }
 

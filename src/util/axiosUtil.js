@@ -48,12 +48,19 @@ for (const node of nodes) {
   node.interceptors.request.use((config) => {
     if (config.url.startsWith('/api/')) {
       // Remove /api/ prefix
-      config.url = config.url.replace('/api/')
+      config.url = config.url.replace('/api/', '')
     }
     return config
   })
 }
 
+// Node specific interceptors
+node10.interceptors.request.use((config) => {
+  if (!config.url.endsWith('/')) {
+    config.url += '/'
+  }
+  return config
+})
 // These are not configured in app; import them as you need them per component.
 // e.g in <script>: import {queryAllNodes} from 'axiosUtil.js'
 
@@ -102,6 +109,11 @@ export async function queryAllNodes (method = 'get', endpoint, data = null, para
   console.log(responses)
   // Output: {node7: {...}, node10: {...}, ...}
   return responses
+}
+
+export function pathOf (objectID) {
+  const path = new URL(objectID).pathname.replace('/api/', '') // Shouldn't have this, but just to be extra sure.
+  return path
 }
 
 // Makes these globally available
