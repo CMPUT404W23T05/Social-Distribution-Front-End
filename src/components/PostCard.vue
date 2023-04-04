@@ -45,6 +45,7 @@
 <script>
 import VueMarkdown from 'vue-markdown-render'
 import GenericCard from './GenericCard.vue'
+import { pathOf } from '@/util/axiosUtil'
 
 export default {
   // doAction is an optional event handler (i.e edit post, open as view, etc.)
@@ -57,10 +58,14 @@ export default {
   },
   computed: {
     markdownEnabled () {
-      return this.post.contentType.includes('text/markdown')
+      if (this.postContentType) {
+        return this.post.contentType.includes('text/markdown')
+      } else {
+        return false
+      }
     },
     imageURL () {
-      return `${this.post.id}/image`
+      return `${pathOf(this.post.id)}/image`
     },
     isSingleton () {
       return (!!this.post.image && !this.post.content) || (!this.post.image && !!this.post.content)

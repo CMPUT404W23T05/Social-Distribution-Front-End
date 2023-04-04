@@ -104,6 +104,11 @@ export async function queryAllNodes (method = 'get', endpoint, data = null, para
   return responses
 }
 
+export function pathOf (objectID) {
+  const path = new URL(objectID).pathname.replace('/api/', '') // Shouldn't have this, but just to be extra sure.
+  return path
+}
+
 // Makes these globally available
 export default {
   install (app) {
