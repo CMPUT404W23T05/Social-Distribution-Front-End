@@ -33,20 +33,15 @@
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div
-        class="request-notif-content notification"
-        v-else-if="notification.type==='Follow' && '!notification.state'"
-        >
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && !notification.state">
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
         <!-- Notice that request was rejected/accepted -->
         <!-- Jane accepted your follow request -->
-        <div class="request-notif-content notification"
-         v-else-if="notification.type==='Follow' && 'notification.state'"
-        >
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && !!notification.state">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
-          <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
+          <p class="request-notif-message"> {{ getActor(notification.object) }} {{ notification.state.toString().toLowerCase() }} {{ getActor(notification.actor) }}'s follow request </p>
         </div>
       </template>
 
