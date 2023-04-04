@@ -15,6 +15,10 @@
       <span class="post-icons">
         <i v-for="content in post.contentType.split(',')" :key="content" class="bi" :class=getIcon(content)></i>
       </span>
+
+      <span class="tags">
+        <span v-for="tag, index in post?.categories" :key="index" class="tag badge rounded-pill border border-primary text-primary mx-1"> {{ tag }} </span>
+      </span>
     </div>
 
     <section v-if="hasImage" class="image-content">

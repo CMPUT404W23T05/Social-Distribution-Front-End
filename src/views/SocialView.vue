@@ -301,14 +301,4 @@ export default {
   .btn {
     border: none;
   }
-  .authors{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 2% 2% 2% 2%;
-    justify-content: space-around;
-    row-gap: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
-  }
 </style>
