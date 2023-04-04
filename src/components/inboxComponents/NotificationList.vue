@@ -18,12 +18,12 @@
 
         <!-- Followed by relevant summary, if any. -->
         <div class="post-notif-content notification" v-if="notification.type==='post'">
-          <p> {{ notification.author.displayName }} posted <strong>{{ notification.title }}</strong></p>
+          <p> {{ capitalizeFirstChar(getActor(notification.author)) }} posted <strong>{{ notification.title }}</strong></p>
           <!-- Post summary stuff here? -->
         </div>
 
         <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
-          <p> {{ notification.author.displayName }} commented </p>
+          <p> {{ capitalizeFirstChar(getActor(notification.author))}} commented </p>
           <p class="actual-comment"> {{ notification.comment }} </p>
         </div>
 
@@ -41,7 +41,7 @@
         <!-- Jane accepted your follow request -->
         <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && !!notification.state">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
-          <p class="request-notif-message"> {{ getActor(notification.object) }} {{ notification.state.toString().toLowerCase() }} {{ getActor(notification.actor) }}'s follow request </p>
+          <p class="request-notif-message"> {{  capitalizeFirstChar(getActor(notification.object)) }} {{ notification.state.toString().toLowerCase() }} {{ getActor(notification.actor) }}'s follow request </p>
         </div>
       </template>
 
@@ -116,7 +116,7 @@ export default {
       // An author object
       return this.author.id === user.id
         ? 'you'
-        : user.displayName
+        : '@' + user.displayName
     },
     updateList () {
       this.feed = this.selectedNotifications
@@ -139,15 +139,15 @@ export default {
       const url = new URL(queryObject).pathname.replace('/api/', '').replace(/^\//)
       const parts = url.split('/')
       return { name: 'postpage', params: { aid: parts[1], pid: parts[3] }, query: { hostURL: queryObject } } // authors/[aid]/posts/[pid]
+    },
+    capitalizeFirstChar (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   }
 }
 
 </script>
 <style scoped>
-  .request-notif-message {
-    text-transform: capitalize;
-  }
 
   .notification {
     margin: 1em;
