@@ -1,11 +1,11 @@
 <template>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky_navbar px-5">
         <!-- Pass a default image if none is provided -->
-        <div>
+        <div class="d-flex align-items-center gap-2">
           <!-- Get profile picture from userStore - using any data variable breaks reactivity at the moment so this is the only way -->
           <img id = "profile-picture" v-if="user" class = "circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture' />
           <!-- Get username from userStore -->
-          <span id = 'display-name' v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
+          <span id = 'display-name' class="fw-bold" v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
         </div>
 
         <ul class="navbar-nav">
