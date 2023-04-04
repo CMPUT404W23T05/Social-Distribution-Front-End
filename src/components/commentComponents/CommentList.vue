@@ -3,7 +3,8 @@
     ref="infScrollCommentList"
     v-for="comment in comments"
     :key="comment.id"
-    :comment="comment">
+    :comment="comment"
+    :sessionUser="this.currentUser">
         <!-- A list of comments independent of a post will not show this information -->
         <template #flair>
             <span v-if="matchPost(comment)">OP<i class="bi bi-person-check-fill"></i></span>
@@ -41,7 +42,7 @@ export default {
   },
   computed: {
     exhausted () {
-      return (this.comments.length < this.pagination) && (this.page === this.pageTotal)
+      return (this.comments?.length < this.pagination) && (this.page === this.pageTotal)
     }
   },
   data () {
@@ -59,7 +60,8 @@ export default {
       return this.currentUser.id === comment.author.id || false
     },
     getComments () {
-      this.axiosTarget.get(this.post.comments,
+      const postPath = new URL(this.post.id).pathname
+      this.axiosTarget.get(`${postPath}/comments`,
         {
           params: {
             page: this.page,
@@ -70,7 +72,7 @@ export default {
           if (res.data.length === 0) {
             this.exhausted = true
           }
-          this.comments = res.data.comments // Replace existing comments
+          this.comments = res.data.items // Replace existing comments
           this.loading = false
         })
         .catch(err => {

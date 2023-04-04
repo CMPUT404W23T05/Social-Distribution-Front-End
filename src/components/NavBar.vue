@@ -24,10 +24,10 @@
             <li class = 'nav-item dropdown'>
                 <router-link to = "/social" class="nav-link"> Social </router-link>
                 <ul class="dropdown-menu">
-                    <router-link :to="{name: 'SocialPage', hash:'#requests'}"  class = "dropdown-item">Requests</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#friends'}" class = "dropdown-item">Friends</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#followers'}"  class = "dropdown-item">Followers</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#followees'}"  class = "dropdown-item">Followees</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#follows'}"  class = "dropdown-item">Your Social</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#localNode'}"  class = "dropdown-item">Local Authors</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#node7'}"  class = "dropdown-item">Node 7 Authors</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#node10'}"  class = "dropdown-item">Node 10 Authors</router-link>
                 </ul>
             </li>
             <li class = 'nav-item dropdown'>
