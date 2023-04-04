@@ -158,7 +158,7 @@ export default {
    text-align: center;
    font-style: italic;
    /* Handle text overflow */
-   -webkit-line-clamp: 3;
+   -webkit-line-clamp: 5;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
