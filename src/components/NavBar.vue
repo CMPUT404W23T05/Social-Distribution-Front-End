@@ -1,20 +1,17 @@
 <template>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky_navbar">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky_navbar px-5">
         <!-- Pass a default image if none is provided -->
-        <router-link to="/settings#profile" class = "user-info">
-            <div>
-              <!-- Get profile picture from userStore - using any data variable breaks reactivity at the moment so this is the only way -->
-                <img id = "profile-picture" v-if="user" class = "circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture' />
-                <!-- Get username from userStore -->
-                <span id = 'display-name'  v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
-            </div>
-        </router-link>
+        <div>
+          <!-- Get profile picture from userStore - using any data variable breaks reactivity at the moment so this is the only way -->
+          <img id = "profile-picture" v-if="user" class = "circle" :src="getAuthorPropertyIfDefined('profileImage')" alt = 'User profile picture' />
+          <!-- Get username from userStore -->
+          <span id = 'display-name' v-if="user">@{{ getAuthorPropertyIfDefined('displayName') }}</span>
+        </div>
 
         <ul class="navbar-nav">
             <li class = 'nav-item dropdown'>
                 <router-link :to="{ name: 'homepage' }" class = "nav-link">Home</router-link>
                 <ul class="dropdown-menu">
-                    <router-link to="/home/inbox" class = "dropdown-item"> Inbox </router-link>
                     <router-link :to="{ name: 'manageposts'}" class = "dropdown-item"> Manage Posts </router-link>
                 </ul>
             </li>
@@ -22,32 +19,28 @@
                 <router-link :to="{ name: 'browsepage' }" class="nav-link"> Browse </router-link>
             </li>
             <li class = 'nav-item dropdown'>
-                <router-link to = "/social" class="nav-link"> Social </router-link>
+                <router-link to = "/social" class="nav-link" exact> Social </router-link>
                 <ul class="dropdown-menu">
-                    <router-link :to="{name: 'SocialPage', hash:'#follows'}"  class = "dropdown-item">Your Social</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#localNode'}"  class = "dropdown-item">Local Authors</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#node7'}"  class = "dropdown-item">Node 7 Authors</router-link>
-                    <router-link :to="{name: 'SocialPage', hash:'#node10'}"  class = "dropdown-item">Node 10 Authors</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#follows'}" class = "dropdown-item">Your Social</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#localNode'}" class = "dropdown-item">Local Authors</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#node7'}" class = "dropdown-item">Node 7 Authors</router-link>
+                    <router-link :to="{name: 'SocialPage', hash:'#node10'}" class = "dropdown-item">Node 10 Authors</router-link>
                 </ul>
             </li>
             <li class = 'nav-item dropdown'>
-                <router-link to = "/Settings" class="nav-link"> Settings </router-link>
-                <ul class="dropdown-menu">
-                    <router-link to="/settings#profile" class = "dropdown-item">Profile</router-link>
-                    <router-link to="/settings#preferences" class = "dropdown-item">Preferences</router-link>
-                </ul>
+              <router-link to = "/Settings" class="nav-link"> Settings </router-link>
             </li>
         </ul>
         <!-- TODO: replace with actual logout -->
-        <span id="logout"><button class="btn btn-primary" @click="logout">Log out</button></span>
+        <span id="logout"><button class="btn btn-primary" @click="logout">Log out <i class="bi bi-door-closed"></i> </button></span>
 
     </nav>
 
     <div class="justify-content-center d-flex" v-if="alreadyLoggedIn">
       <!-- alert for redirect from login/signup page -->
-    <div class="alert alert-primary fade show w-50 p-2 m-3 d-flex justify-content-center login-alert position-absolute" role="alert">
-      <div class="flex-grow-1">You are already logged in. To switch accounts, please <a @click="logout" href="#" class="alert-link">log&nbsp;out</a>.</div>
-      <button type="button" class="btn-close py-1" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert alert-primary fade show w-50 p-2 m-0 d-flex justify-content-center login-alert position-absolute" role="alert">
+      <div class="flex-grow-1">You are already logged in. To switch accounts, please <a @click="logout" href="#" class="alert-link ">log&nbsp;out</a>.</div>
+      <button type="button" class="btn-close " data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   </div>
 </template>
@@ -111,27 +104,29 @@ export default {
     position: sticky;
     top: 0;
     z-index: 100;
+    border: none;
 }
 
 #profile-picture {
-    height: 32pt;
-    aspect-ratio: 1 / 1;
+    height: 30pt;
+    width: 30pt;
     object-fit: cover;
     border-radius: 50%;
 }
 
-.user-info {
-  margin: 0 3pt;
-}
-
 /* Whether link is active home/etc/etc/ or not */
-.active {
+li > .active {
   background-color: #4998f5;
 }
 
-/* When a dropdown item is active */
-.dropdown-item:active {
-  background-color: #4998f5;
+/* Force overwrite active sub-links */
+.dropdown-item.active {
+  background-color: #fff;
+  color: #000;
+}
+
+.dropdown-item.active:hover {
+  background-color: #efefef;
 }
 
 .nav-item {
@@ -165,10 +160,21 @@ export default {
   justify-content: center;
   margin: 0 auto;
   padding: 0;
+  border: none;
 }
+
+.btn {
+  background-color: transparent;
+  border: none;
+}
+
+.btn:hover {
+  background-color: transparent;
+  color: #4998f5;
+}
+
 span {
   color: #fff;
-  margin: 5pt;
   vertical-align: middle;
 }
 
