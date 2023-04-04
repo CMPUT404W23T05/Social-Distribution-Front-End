@@ -263,10 +263,11 @@ export default {
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
-      comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
-      // comment.comment = content
-      console.table(comment)
+      comment.content = this.newComment // Team 10 uses content property instead
+      comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
       const postPath = new URL(this.postData.id).pathname
+
+      console.log(comment)
       this.postHost.post(`${postPath}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
@@ -276,6 +277,7 @@ export default {
           this.newComment = '' // clear
         })
         .catch((err) => {
+          console.log(this.postHost.defaults)
           console.log(err)
           alert('Couldn\'t make comment!')
         })
