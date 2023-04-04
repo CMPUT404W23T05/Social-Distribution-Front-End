@@ -66,7 +66,7 @@
                 </span>
               </span>
             </div>
-            <input @keyup.enter="addTag($event)" placeholder="Add a tag" class="text-input form-control mt-2"/>
+            <input @keyup.enter="addTag($event)" placeholder="Add a tag (ENTER to save)" class="text-input form-control mt-2"/>
 
             <div class="modal-footer">
               <div v-if="invalidSubmit" class="error-container">
