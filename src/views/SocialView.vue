@@ -13,7 +13,7 @@
         <GenericCard v-for="person in category.items" :key="person.id" class="m-2">
           <template #card-content>
             <div v-if="category.type !== 'requests'" class="wrapper d-flex flex-column justify-content-center text-center">
-              <img :src='person.profileImage' class="profile-image"/>
+              <img :src="person.profileImage !== '' ? person.profileImage : defaultImage" class="profile-image"/>
               <h3 class="mt-1"> <strong>@{{person.displayName}}</strong></h3>
               <small>{{ person.host }}</small>
             </div>
@@ -46,7 +46,7 @@
         <GenericCard v-for="author in authorNodes[nodeName].data.items" :key="author.id" class="m-2">
           <template #card-content>
             <div class="wrapper d-flex flex-column justify-content-center text-center">
-              <img :src='author.profileImage' class="profile-image"/>
+              <img :src="author.profileImage !== '' ? author.profileImage : defaultImage" class="profile-image"/>
               <h3 class="mt-1"> <strong>@{{author.displayName}}</strong></h3>
             </div>
           </template>
@@ -120,6 +120,7 @@ export default {
   data () {
     return {
       // For stuff related to the current author logged in
+      defaultImage: '/defaultProfileImage.png',
 
       // Helper for holding properties since requests has to be computed
       friendliesProxy: {
