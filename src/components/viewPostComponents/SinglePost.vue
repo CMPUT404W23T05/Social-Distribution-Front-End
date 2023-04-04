@@ -1,5 +1,5 @@
 <template>
-  <div class="post-template container">
+  <div class="post-template">
     <section class="post-title">
       <h1 class = post-title>{{post.title}}</h1>
     </section>
@@ -45,7 +45,7 @@ export default {
       return this.post.contentType.split(',').includes('text/markdown')
     },
     imageSrc () {
-      return `http://localhost:8000/api/authors/${this.author._id}/posts/${this.post._id}/image`
+      return this.post.id + '/' + 'image'
     }
   },
   data () {
