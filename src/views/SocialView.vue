@@ -185,15 +185,14 @@ export default {
     },
 
     moveToFriendsOrFollower (acceptedFollow) {
-      // Helper function to move people from the requests to the appropriate field for the local
+      // Helper function to move people from the requests to the appropriate field for the local version
 
-      const allRequests = this.inbox.filter(item => item.type === 'Follow')
+      // const allRequests = this.inbox.filter(item => item.type === 'Follow')
+      const following = this.friendliesProxy.following.items
+      const intersect = following.filter(author => author.id === acceptedFollow.actor.id)
+      console.log(intersect)
 
-      const recipricalFollow = acceptedFollow
-      recipricalFollow.author = acceptedFollow.actor
-      recipricalFollow.actor = acceptedFollow.author
-
-      if (allRequests.includes(acceptedFollow) && allRequests.includes(recipricalFollow)) {
+      if (intersect?.length > 0) {
         this.friendliesProxy.friends.items.push(acceptedFollow.actor)
       } else {
         this.friendliesProxy.followers.items.push(acceptedFollow.actor)
