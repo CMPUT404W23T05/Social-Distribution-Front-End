@@ -22,12 +22,11 @@
 
 <script>
 import UserComment from '@/components/commentComponents/UserComment.vue'
-import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 
 export default {
   emits: ['addComment'],
-  props: { post: Object, page: Number, pageTotal: Number, pagination: Number },
+  props: { post: Object, page: Number, pageTotal: Number, pagination: Number, axiosTarget: Function },
   components: { UserComment },
   mounted () {
     const userStore = useUserStore()
@@ -60,7 +59,7 @@ export default {
       return this.currentUser.id === comment.author.id || false
     },
     getComments () {
-      axios.get(this.post.comments,
+      this.axiosTarget.get(this.post.comments,
         {
           params: {
             page: this.page,

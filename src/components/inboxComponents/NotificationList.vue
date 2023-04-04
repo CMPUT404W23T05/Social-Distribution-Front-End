@@ -89,7 +89,6 @@ export default {
   data () {
     return {
       feed: [],
-      supplementary: [],
       author: null
     }
   },
@@ -137,10 +136,10 @@ export default {
         return { name: 'SocialPage' }
       } else if (notification.type === 'comment' || notification.type === 'post') {
         const parts = notification.id.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { origin: notification.id } }
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.id } }
       } else if (notification.type === 'Like') {
         const parts = notification.object.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { origin: notification.object } }
+        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.object } }
       }
     }
   }

@@ -39,7 +39,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
+          <CommentList :post="postData" :axiosTarget=postHost :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
           <div class="move-page-wrapper">
             <div v-if="pageTotal > 1" class="move-page">
               <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
@@ -92,10 +92,10 @@
 import PostProper from '@/components/viewPostComponents/SinglePost.vue'
 import CommentList from '@/components/commentComponents/CommentList.vue'
 import SlotModal from '@/components/SlotModal.vue'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
+import { getAxiosTarget } from '@/util/axiosUtil.js'
 
 const commentTemplate = {
   type: 'comment',
@@ -114,7 +114,6 @@ export default {
     const aid = this.$route.params.aid
     this.getAuthorFromStore()
     this.getData(pid, aid)
-    this.getAxiosTarget()
   },
   computed: {
     ...mapStores(useUserStore),
@@ -146,62 +145,19 @@ export default {
 
       // Used for creating a new comment
       newComment: '',
-      markDownEnabled: false
+      markDownEnabled: false,
+
+      // Where does this post?
+      postHost: getAxiosTarget(this.$route.query.hostURL)
     }
   },
   methods: {
-    getAxiosTarget () {
-      // get origin from query
-      const origin = this.$route.query.origin
-      const theRealOrigin = origin.includes('http://anotherplaceholderurlfornow.yucky') ? 'https://social-t30.herokuapp.com' : origin // stop gap for old posts with bad origin
-      const hostname = new URL(theRealOrigin).hostname // get hostname from origin
-      const myBaseURL = 'https://' + hostname + '/api/' // append api
-      let remoteAuth = null
-      let axiosTarget = axios.create({
-        baseURL: myBaseURL
-      })
-      if (hostname !== 'social-t30.herokuapp.com') { // if the origin is different from our host, we need a token
-        console.log('Getting remote auth from ' + myBaseURL)
-        remoteAuth = this.getRemoteAuth(myBaseURL)
-        axiosTarget = axios.create({
-          baseURL: myBaseURL,
-          headers: { Authorization: remoteAuth }
-        })
-      }
-      console.log('a ' + myBaseURL + ' b ' + 'http://socialdistcmput404.herokuapp.com/api/')
-      console.log(remoteAuth)
-
-      return axiosTarget
-    },
-    getRemoteAuth (myBaseURL) {
-      // get token from remote server
-      const auths = { }
-      auths['http://socialdistcmput404.herokuapp.com/api/'] = 'Token d960c3dee9855f5f5df8207ce1cba7fc1876fedf'
-      auths['https://sd7-api.herokuapp.com/api/'] = 'Basic ' + btoa('node01:P*ssw0rd!')
-      // console.log(auths[myBaseURL])
-      return auths[myBaseURL]
-
-      // axios.get('/remotes/' + myBaseURL)
-      //   .then((res) => {
-      //     console.log(res.data)
-      //     for (const auths in Object.keys(res.data)) {
-      //       if (auths === 'token') {
-      //         return 'Token ' + res.data.token
-      //       } else if (auths === 'basic') {
-      //         return 'Basic ' + res.data.basic
-      //       }
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err)
-      //   })
-    },
     async getData (pid, aid) {
-      this.getAxiosTarget().get(`/authors/${aid}/posts/${pid}/`)
+      this.postHost.get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
           // get author's likes
-          this.getAxiosTarget().get(`${this.currentAuthor.id}/liked/`)
+          this.postHost.get(`${this.currentAuthor.id}/liked/`)
             .then((res) => {
               const likes = res.data.items
               for (const like of likes) {
@@ -217,22 +173,11 @@ export default {
         })
         .catch((err) => { console.log(err) })
 
-      this.getAxiosTarget().get(`/authors/${aid}/`)
+      this.postHost.get(`/authors/${aid}/`)
         .then((res) => {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
-
-      // this.getAxiosTarget().get(`/authors/${aid}/friends/`)
-      //   .then((res) => {
-      //     this.friends = res.data.items
-      //     this.friendsLoading = false
-      //   })
-      //   .catch((err) => {
-      //     this.friends = []
-      //     alert("Couldn't get friends list")
-      //     console.log(err)
-      //   })
     },
     toggleFollow () {
       this.isFollowing = !this.isFollowing
@@ -248,7 +193,7 @@ export default {
           summary: `${this.currentAuthor.displayName} likes your post`,
           object: this.postData.id
         }
-        this.getAxiosTarget().post(`${this.postData.author.id}/inbox/`, newLike)
+        this.postHost.post(`${this.postData.author.id}/inbox/`, newLike)
           .then((res) => {
             console.log('Like sent')
           })
@@ -278,7 +223,7 @@ export default {
       comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
       // comment.comment = content
       console.table(comment)
-      this.getAxiosTarget().post(`${this.postData.id}/comments`, comment)
+      this.postaHost.post(`${this.postData.id}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
@@ -292,7 +237,7 @@ export default {
         })
     },
     sharePost (friend) {
-      this.getAxiosTarget().post(`${friend.id}/inbox/`, this.postData)
+      this.postHost.post(`${friend.id}/inbox/`, this.postData)
         .then(() => {
           alert(`You shared the post with ${friend.displayName}`)
         })

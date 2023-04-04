@@ -108,7 +108,7 @@ export default {
       post.id = this.author.id + '/posts/' + post._id
       post.comments = post.id + '/comments'
       console.log(post)
-      axios
+      this.$localNode
         .post(this.crEndPoint, post)
         .then(() => {
           this.posts.unshift(post)
@@ -120,7 +120,7 @@ export default {
     },
 
     getPosts () {
-      axios
+      this.$localNode
         .get(this.crEndPoint)
         .then((res) => {
           this.posts = res.data
@@ -131,7 +131,7 @@ export default {
     },
 
     editPost (post) {
-      axios
+      this.$localNode
         .post(this.udEndPoint, post)
         .then(() => {
           this.posts[this.selected.index] = post

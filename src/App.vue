@@ -6,7 +6,6 @@
 <script>
 import NavBar from '@/components/NavBar.vue'
 import { useTokenStore } from '@/stores/token.js'
-import axios from 'axios'
 
 export default {
   name: 'App',
@@ -16,9 +15,9 @@ export default {
     const token = tokenStore.token // get the token from the store
     //  attach token to request header
     if (token) {
-      axios.defaults.headers.common.Authorization = `Token ${token}`
+      this.$localNode.defaults.headers.common.Authorization = `Token ${token}`
     } else {
-      axios.defaults.headers.common.Authorization = 'null'
+      this.$localNode.defaults.headers.common.Authorization = ''
     }
   },
   components: {
