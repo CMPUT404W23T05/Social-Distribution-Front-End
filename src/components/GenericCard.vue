@@ -120,6 +120,7 @@ export default {
     align-items: center;
     overflow: hidden;
     padding:0;
+    cursor: default;
   }
 
   .footer.open {
