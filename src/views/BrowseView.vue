@@ -1,5 +1,7 @@
 <template>
+  <div v-if='loading' class="load-spinner spinner-border text-info text-center" role="loading"></div>
   <div class="browse-posts pb-5">
+
     <h1 class="text-left">Browse <strong>Posts</strong></h1>
 
     <!-- Open that modal :) -->
@@ -183,7 +185,13 @@ export default {
 .filter-button {
   width: 20%;
 }
-
+.load-spinner {
+    position: fixed;
+    margin: 0 auto;
+    top: 40%;
+    width: 5vw;
+    height: 5vw;
+  }
 h1 strong {
   color: var(--bs-blue);
 }
