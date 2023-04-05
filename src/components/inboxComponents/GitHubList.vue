@@ -11,7 +11,7 @@
         >
 
         <template #card-content>
-        <div>
+        <div class="text-center">
           <p> {{ parseEvent(event) }}</p>
         </div>
 
