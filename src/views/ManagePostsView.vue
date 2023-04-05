@@ -69,7 +69,8 @@ export default {
       posts: [],
       selected: { post: null, index: -1 },
       showPrompt: false,
-      author: null // Load from user store
+      author: null, // Load from user store
+      test_posts: []
     }
   },
   computed: {
@@ -99,6 +100,7 @@ export default {
       userStore.initializeStore()
       this.author = userStore.user.author
     },
+
 
     createPrivatePost(post, authorss){
       post.author = this.author
@@ -177,7 +179,7 @@ export default {
     },
 
     delPost () {
-      axios
+      this.$localNode
         .delete(this.udEndPoint)
         .then(() => {
           this.posts.splice(this.selected.index, 1)

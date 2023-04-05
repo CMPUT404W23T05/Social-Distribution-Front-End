@@ -188,18 +188,7 @@ export default {
         const index = this.selected_auths.indexOf(auth);
         this.selected_auths.splice(index, 1)
       }
-
-      console.log(this.selected_auths)
-      
     },
-
-    // getSelectedAuths(){
-    //   for (var i =0; i < this.my_followers.length; i++){
-    //     if(this.my_followers[i].is_selected === true){
-    //       this.selected_auths.push(this.my_followers[i])
-    //     }
-    //   }
-    // },
 
     getFollowers() {
       this.$localNode.get(`/authors/${this.curr_auth._id}/followers/`)
@@ -279,10 +268,6 @@ export default {
           this.$emit('dismiss')
         }
         else if (this.post.visibility === "PRIVATE"){
-          // this.getSelectedAuths()
-          console.log(`selected auths are here`)
-          console.log(this.selected_auths)
-          console.log('ends here')
           this.$emit('createPrivatePost', this.post, this.selected_auths)
           this.$emit('dismiss')
         }
