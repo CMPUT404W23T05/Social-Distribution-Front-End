@@ -123,8 +123,8 @@ export default {
         // console.log(authorss[i])
         this.$localNode
           .post(`/authors/${id}/inbox/`, post)
-          .then(() => {
-            console.log(`sent`)
+          .then((res) => {
+            console.log(res)
           })
           .catch(() => {
             alert(`Couldn't send the post`)
@@ -173,6 +173,9 @@ export default {
           alert("Couldn't edit the post!")
         })
       this.showManage = false
+      if (post.visibility === 'PRIVATE'){
+
+      }
     },
 
     delPost () {
