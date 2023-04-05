@@ -47,18 +47,16 @@
               </div>
             </div>
 
-            <div v-if="post.visibility == 'PRIVATE'">
+            <div v-if="post.visibility == 'PRIVATE'" class="mb-2">
               <!-- <button type="button" class="btn btn-primary btn-sm" @click="selectAuthor(author)">select</button> -->
-              <h6 style="text-align: left; margin-left: 8%;">Select from your followers</h6>
-              <ul class="list-group">
-                <li class="list-group-item" v-for="sing_author in my_followers" :key="sing_author.id">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." @click="update_selected(sing_author)">
-                  {{ sing_author.displayName }}
+              <label for="follower-list" class="d-flex justify-content-left" aria-autocomplete="off">Share with your Followers</label>
+              <ul id="follower-list" class="list-group">
+                <li class="list-group-item d-flex justify-content-start" v-for="follower in my_followers" :key="follower.id">
+                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." :id="follower.id" @click="update_selected(follower)">
+                  <label :for="follower.id" class="mx-3"> <strong>{{ follower.displayName }}</strong> ({{ follower.host }})</label>
                 </li>
               </ul>
             </div>
-
-            
 
             <!-- Textbody -->
             <textarea v-model="post.content" @input="setText" class="text-input form-control" placeholder="Give your post some body text"></textarea>
@@ -97,7 +95,6 @@
 <script>
 
 import ImagePostBody from '@/components/ImagePostBody.vue'
-import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
@@ -113,7 +110,7 @@ export default {
       invalidSubmit: false,
       my_followers: [],
       curr_auth: [],
-      selected_auths: [],
+      selected_auths: []
     }
   },
   computed: {
@@ -190,31 +187,30 @@ export default {
       this.curr_auth = userStore.user.author
     },
 
-    update_selected(auth) {
-      if (auth.is_selected === false){
+    update_selected (auth) {
+      if (auth.is_selected === false) {
         auth.is_selected = true
         this.selected_auths.push(auth)
-      }
-      else{
+      } else {
         auth.is_selected = false
-        const index = this.selected_auths.indexOf(auth);
+        const index = this.selected_auths.indexOf(auth)
         this.selected_auths.splice(index, 1)
       }
     },
 
-    getFollowers() {
+    getFollowers () {
       this.$localNode.get(`/authors/${this.curr_auth._id}/followers/`)
-      .then(response => {
-          response.data.items.forEach(author =>
-          author.is_selected = false);
+        .then(response => {
           console.log(response)
+          for (const author of response.data.items) {
+            author.is_selected = false
+          }
           this.my_followers = response.data.items
-      })
-      .catch(function(err) {
-          console.log(err);
-      });
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
     },
-    
 
     addTag (event) {
       this.post.categories.push(event.target.value)
@@ -276,7 +272,6 @@ export default {
     },
 
     submitPost () {
-      console.log('emittting!')
       // Emit post back to parent for respective AJAX call
       if (this.errors.length === 0) {
         // Re-format to to spec format
@@ -287,16 +282,13 @@ export default {
         if ((this.existingPost)) {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
-        }
-        else if (this.post.visibility === "PRIVATE"){
+        } else if (this.post.visibility === 'PRIVATE') {
           this.$emit('createPrivatePost', this.post, this.selected_auths)
           this.$emit('dismiss')
-        }
-        else {
+        } else {
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
         }
-
       } else {
         this.invalidSubmit = true
       }
@@ -337,8 +329,8 @@ textarea.text-input:focus {
   padding: 1em 0;
 }
 
-h5 strong {
-  color: var(--bs-blue)
+strong {
+  color: #4998F5;
 }
 
 </style>

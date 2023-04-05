@@ -25,7 +25,7 @@ const node7 = axios.create({
 
 const node9 = axios.create({
   name: 'node9',
-  baseURL: 'http://ultimate-teapot.herokuapp.com/main/api/',
+  baseURL: 'https://ultimate-teapot.herokuapp.com/main/api/',
   headers: {
     Authorization: `Basic ${btoa('team5:jN2!42GUtCgB')}`
   },

@@ -59,9 +59,8 @@ import SlotModal from '@/components/SlotModal.vue'
 import ManagePostModal from '@/components/ManagePostModal.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
-import { pathOf } from '@/util/axiosUtil'
+import { pathOf, getAxiosTarget } from '@/util/axiosUtil'
 
 export default {
   components: { ManagePostModal, Card, SlotModal },
@@ -98,36 +97,26 @@ export default {
       this.author = userStore.user.author
     },
 
+    createPrivatePost (post, authors) {
+      this.createPost(post)
 
-    createPrivatePost(post, authorss){
-      post.author = this.author
-      post._id = uuidv4()
-      post.id = this.author.id + '/posts/' + post._id
-      post.comments = post.id + '/comments'
-      // console.log(post)
-      this.$localNode
-        .post(this.crEndPoint, post)
-        .then(() => {
-          this.posts.unshift(post)
-        })
-        .catch(() => {
-          alert("Couldn't add the post!")
-        })
-      this.showManage = false
-      
-      // console.log(authorss)
-      for (var i =0; i < authorss.length; i++){
-        let id_list = authorss[i].id.split('/')
-        let id = id_list[id_list.length - 1]
+      for (const recipient in authors) {
+        const hostNode = getAxiosTarget(recipient.id)
 
-        // console.log(authorss[i])
-        this.$localNode
-          .post(`/authors/${id}/inbox/`, post)
+        // Team 10 doesn't follow spec exactly so concessions must be made
+        if (hostNode === this.$node10) {
+          const node10post = post
+          node10post.description = node10post.description === '' ? 'something' : node10post.description
+          node10post.visibility = 'VISIBLE'
+        }
+
+        hostNode
+          .post(`${pathOf(recipient.id)}/inbox/`, post)
           .then((res) => {
             console.log(res)
           })
           .catch(() => {
-            alert(`Couldn't send the post`)
+            alert('Couldn\'t send the post')
           })
       }
     },
@@ -173,7 +162,7 @@ export default {
           alert("Couldn't edit the post!")
         })
       this.showManage = false
-      if (post.visibility === 'PRIVATE'){
+      if (post.visibility === 'PRIVATE') {
 
       }
     },
