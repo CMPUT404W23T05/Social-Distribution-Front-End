@@ -15,22 +15,22 @@
     </SlotModal>
     <NotificationList v-if="!loading && stream.items?.length > 0" :selectedNotifications="stream.items" class="list pb-2"></NotificationList>
     <p v-else-if="!loading && stream.items?.length === 0">There's nothing here for you yet</p>
-    <button v-if="!loading && stream.items?.length > 0 && !stream.noMore" type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" @click="getInbox(++stream.page)">
-      Show more
-          </button>
+    <ShowMoreButton v-if="!loading && stream.items?.length > 0 && !stream.noMore" @show-more="getInbox(++stream.page)">
+      Show more posts
+          </ShowMoreButton>
           <!-- if out of items -->
-    <p v-else-if="!loading && stream.noMore">No more notifications!</p>
+    <p v-else-if="!loading && stream.noMore">No more notifications to show!</p>
       <!-- GitHub Feed  -->
     <div class="github-container  w-100">
-        <h1 class="mt-5 text-left"> Your <strong>GitHub</strong> Events</h1>
+        <h1 class="mt-5 text-left"> Your <strong>GitHub Events Feed</strong> </h1>
         <GitHubList v-if="!loading && stream_gh.items?.length > 0" :selectedNotifications="stream_gh.items" class="list pb-2"></GitHubList>
         <!-- Show more button for GitHub feed -->
-        <button v-if="this.author?.github" type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" @click="getGitHubEvents(++stream_gh.page)">
-          <span v-if="stream_gh.items?.length == 0">Load stream</span>
-          <span v-else-if="stream_gh.items?.length > 0">Show more</span>
-          </button>
+        <ShowMoreButton v-if="this.author?.github" @show-more="getGitHubEvents(++stream_gh.page)">
+          <span v-if="stream_gh.items?.length == 0">Load feed</span>
+          <span v-else-if="stream_gh.items?.length > 0">Show more events</span>
+          </ShowMoreButton>
           <!-- If no github username set -->
-        <p v-else>No GitHub username set! Add your GitHub username in <RouterLink to="/settings">profile settings</RouterLink> to use this feature.</p>
+        <p v-if="!this.author?.github">No GitHub username set! Add your GitHub username in <RouterLink to="/settings">profile settings</RouterLink> to use this feature.</p>
     </div>
   </div>
 </template>
@@ -39,13 +39,14 @@
 import SlotModal from '@/components/SlotModal.vue'
 import NotificationList from '@/components/inboxComponents/NotificationList.vue'
 import InboxModalBody from '@/components/inboxComponents/InboxModalBody.vue'
+import ShowMoreButton from '@/components/ShowMoreButton.vue'
 import GitHubList from '@/components/inboxComponents/GitHubList.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import { pathOf } from '@/util/axiosUtil.js'
 
 export default {
-  components: { SlotModal, NotificationList, InboxModalBody, GitHubList },
+  components: { SlotModal, NotificationList, InboxModalBody, GitHubList, ShowMoreButton },
   computed: {
     ...mapStores(useUserStore)
   },
@@ -131,9 +132,6 @@ export default {
 
   h1 {
     text-align: left;
-  }
-  .btn-block {
-    width: 50%;
   }
 
 </style>

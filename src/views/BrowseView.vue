@@ -1,5 +1,5 @@
 <template>
-  <div class="browse-posts">
+  <div class="browse-posts pb-5">
     <h1 class="text-left">Browse <strong>Posts</strong></h1>
 
     <!-- Open that modal :) -->
@@ -47,7 +47,8 @@
           <Card v-for="post in posts" :key="post.id" :author="post.author" :post="post"/>
         </div>
       </div>
-      <ShowMoreButton :vIf="Boolean(!allPosts.noMore)" @showMore="getPosts(++allPosts.page)"></ShowMoreButton>
+      <ShowMoreButton v-if="!allPosts.noMore" @showMore="getPosts(++allPosts.page)"></ShowMoreButton>
+      <p v-else-if="allPosts.noMore" class="text-center">No more posts to show!</p>
     </div>
   </div>
 
@@ -69,7 +70,7 @@ export default {
     return {
       allPosts: {
         items: [],
-        size: 1,
+        size: 10,
         page: 1,
         noMore: false
       },
@@ -144,10 +145,14 @@ export default {
         })
         .then((res) => {
           this.allPosts.items = this.allPosts.items.concat(res.data.items)
+          if (res.data.items.length < this.allPosts.size) {
+            this.allPosts.noMore = true
+          }
           this.loading = false
         })
         .catch((err) => {
           console.log(err)
+          this.allPosts.noMore = true
         })
     }
   },

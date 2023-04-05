@@ -1,5 +1,5 @@
 <template>
-<button :v-if="vIf" type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" id="show-more" @click="myOnClick">
+<button type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" id="show-more" @click="myOnClick">
     <slot>Show more</slot>
         </button>
     </template>
