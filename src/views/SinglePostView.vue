@@ -44,14 +44,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :axiosTarget="postHost" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
-          <div class="move-page-wrapper">
-            <div v-if="pageTotal > 1" class="move-page">
-              <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
-              <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
-              <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage !== pageTotal}" @click="changeCommentPage(1)"></i>
-            </div>
-          </div>
+          <CommentList :post="postData" :comments="comments" pagination="5" @add-comment="($refs.commentButton.click())"></CommentList>
         </div>
       </aside>
 
@@ -137,15 +130,11 @@ export default {
     this.getAuthorFromStore()
     await this.getData(pid, aid)
     await this.getLikes()
+    await this.getComments()
+    this.loading = false
   },
   computed: {
     ...mapStores(useUserStore),
-    loading () {
-      return (!this.authorData || !this.postData)
-    },
-    pageTotal () {
-      return Math.ceil(this.postData.count / this.paginationSetting) || 1 // Atleast 1 page
-    },
     // Below are all for displaying liked status
     isLiked () {
       for (const like of this.likes) {
@@ -157,7 +146,7 @@ export default {
       return false
     },
     firstFewLikers () {
-      return this.likes.slice(0, likersToShow - 1) // Show the first n authors
+      return this.likes?.slice(0, likersToShow - 1) // Show the first n authors
     },
     overflowLikes () {
       // The number to append for the likers whose profile images were not shown
@@ -166,6 +155,8 @@ export default {
   },
   data () {
     return {
+      loading: true,
+
       // Basic information to load post stuff
       postData: null,
       authorData: null, // Get from post
@@ -238,17 +229,22 @@ export default {
         })
     },
 
-    // async getComments () {
-    //   const postPath = new URL(this.postData.id).pathname
-    //   await this.postHost.get(`${postPath}/comments`)
-    //     .then((res) => {
-    //       this.comments = res.data.items
-    //     })
-    //     .catch((err) => {
-    //       console.log('Couldn\'t get comments.')
-    //       console.log(err)
-    //     })
-    // },
+    async getComments () {
+      const postPath = new URL(this.postData.id).pathname
+      await this.postHost.get(`${postPath}/comments`)
+        .then((res) => {
+          if (this.postHost === this.$localNode) {
+            console.log('local')
+            this.comments = res.data.comments
+          } else {
+            this.comments = res.data.items
+          }
+        })
+        .catch((err) => {
+          console.log('Couldn\'t get comments.')
+          console.log(err)
+        })
+    },
 
     toggleFollow () {
       this.isFollowing = !this.isFollowing
@@ -278,14 +274,7 @@ export default {
     toggleComments () {
       this.expandComments = !this.expandComments
     },
-    changeCommentPage (n) {
-      // Check if the currentPage will put the user out of bounds
-      if (n < 0 && this.currentCommentPage + n > 0) {
-        this.currentCommentPage += n
-      } else if (n > 0 && this.currentCommentPage + n <= this.pageTotal) {
-        this.currentCommentPage += n
-      }
-    },
+
     submitComment () {
       // Form the content
       const comment = commentTemplate
@@ -293,18 +282,24 @@ export default {
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
-      comment.content = this.newComment // Team 10 uses content property instead
       comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
-      const postPath = new URL(this.postData.id).pathname
+      const postPath = pathOf(this.postData.id)
 
-      console.log(comment)
-      this.postHost.post(`${postPath}/comments`, comment)
+      // Decide which endpoint to send it to
+      let commentPath
+      if (this.postHost !== this.$localNode) {
+        commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff
+      } else {
+        commentPath = `${postPath}/comments` // Local stuff
+      }
+      this.postHost.post(commentPath, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
           this.currentCommentPage = this.pageTotal
           this.expandComments = true
           this.newComment = '' // clear
+          this.comments.push(comment) // Update live
         })
         .catch((err) => {
           console.log(this.postHost.defaults)
@@ -452,14 +447,6 @@ export default {
   }
   .post-right-bar.expanded {
     width: 33%
-  }
-
-  .scrollable {
-    overflow-y: scroll;
-    height: calc(100% - 11em);
-  }
-  .scrollable::-webkit-scrollbar {
-    display: none;
   }
 
   .right-aside-tab {

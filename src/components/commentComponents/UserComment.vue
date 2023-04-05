@@ -19,7 +19,7 @@
       </button>
       <img v-for="like, index in likes" :key="index" class="like-profile-picture d-inline" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"/>
       <small class="d-inline pl-2" v-if="likes?.length > 0">
-        <span v-if="overflowLikes > 0">+ {{overflowLikes}}</span>likes this post
+        <span v-if="overflowLikes > 0">+ {{overflowLikes}}</span>likes this
       </small>
     </span>
   </div>

@@ -17,7 +17,7 @@
       </span>
 
       <span class="tags">
-        <span v-for="tag, index in post?.categories" :key="index" class="tag badge rounded-pill border border-primary text-primary mx-1"> {{ tag }} </span>
+        <span v-for="tag, index in tags" :key="index" class="tag badge rounded-pill border border-primary text-primary mx-1"> {{ tag }} </span>
       </span>
     </div>
 
@@ -37,7 +37,6 @@
 <script>
 import { getAxiosTarget } from '@/util/axiosUtil'
 import VueMarkdown from 'vue-markdown-render'
-import axios from 'axios'
 
 export default {
   components: {
@@ -59,6 +58,9 @@ export default {
     },
     imageMime () {
       return this.post.contentType.match(/^image\/.+?(?=;base64|$)/)
+    },
+    tags () {
+      return typeof (this.post.categories) === 'string' ? this.post.categories.split(',') : this.post.categories
     }
   },
 
