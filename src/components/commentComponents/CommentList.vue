@@ -1,5 +1,5 @@
 <template>
-    <div class="comments-section">
+    <div class="comments-section scrollable">
       <UserComment
       v-for="comment in commentSection"
       :key="comment.id"
@@ -12,14 +12,15 @@
               <span v-else-if="matchSession(comment)">Me<i class="bi bi-rocket-takeoff-fill"></i></span>
           </template>
       </UserComment>
+
+      <!-- Bottom of the list when in loading/completed state-->
+      <small v-if="currentCommentPage === pageTotal" class="text-light mt-3">
+        There are no more comments.
+        <a class="text-primary" @click="$emit('addComment')">But you can add one</a>
+      </small>
     </div>
 
-    <!-- Bottom of the list when in loading/completed state-->
-    <hr v-if="commentSection.length < pagination" id="end-of-comments" class="text-primary">
-    <small class="text-light mt-3">There are no more comments.
-      <a class="text-primary" @click="$emit('addComment')">But you can add one</a>
-    </small>
-
+    <hr id="end-of-comments" class="text-primary">
     <div class="move-page-wrapper">
       <div v-if="pageTotal > 1" class="move-page">
         <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
@@ -36,6 +37,7 @@ import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
+  emits: ['addComment'],
   props: { comments: Array, pagination: Number, post: Object },
   components: { UserComment },
   mounted () {
@@ -85,8 +87,27 @@ export default {
 <!-- Styling of this list will be left up to whatever view renders this -->
 <style scoped>
   /* Colour of post flair */
+  .scrollable {
+    overflow-y: scroll;
+    height: calc(100vh - 7rem);
+  }
+  .scrollable::-webkit-scrollbar {
+    display: none;
+  }
+
+  .move-page-wrapper {
+    position: relative;
+    color: white;
+    z-index: 99;
+    height: 7rem;
+  }
+
   span {
     color: #4998F5;
+  }
+
+  bi {
+    cursor: pointer;
   }
 
   i {

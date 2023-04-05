@@ -45,7 +45,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :comments="comments" pagination="5"></CommentList>
+          <CommentList :post="postData" :comments="comments" pagination="5" @add-comment="($refs.commentButton.click())"></CommentList>
         </div>
       </aside>
 
@@ -264,6 +264,7 @@ export default {
           this.currentCommentPage = this.pageTotal
           this.expandComments = true
           this.newComment = '' // clear
+          this.comments.push(comment) // Update live
         })
         .catch((err) => {
           console.log(this.postHost.defaults)
@@ -399,14 +400,6 @@ export default {
   }
   .post-right-bar.expanded {
     width: 33%
-  }
-
-  .scrollable {
-    overflow-y: scroll;
-    height: calc(100% - 11em);
-  }
-  .scrollable::-webkit-scrollbar {
-    display: none;
   }
 
   .right-aside-tab {
