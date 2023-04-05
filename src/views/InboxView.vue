@@ -13,17 +13,18 @@
         </button>
       </template>
     </SlotModal>
-
     <NotificationList v-if="!loading && stream?.length > 0" :selectedNotifications="stream" class="list pb-2"></NotificationList>
     <p v-else-if="!loading && stream?.length == 0">There's nothing here for you yet</p>
-    <h1 class="mt-5 text-left"> Your <strong>GitHub</strong> Events</h1>
-    <GitHubList v-if="!loading && stream_gh.items?.length > 0" :selectedNotifications="stream_gh.items" class="list pb-2"></GitHubList>
-    <!-- Show more button for GitHub feed -->
-    <button v-if="this.author?.github" type="button" class="btn btn-outline-primary d-flex justify-self-start" @click="getGitHubEvents(++stream_gh.page)">
-      <span v-if="stream_gh.items?.length == 0">Load stream</span>
-      <span v-else-if="stream_gh?.length > 0">Show more</span>
-      </button>
-    <p v-else>No GitHub username provided! Set one in your <RouterLink to="/settings">profile settings</RouterLink> to continue.</p>
+      <div class="github-container mb-3">
+        <h1 class="mt-5 text-left"> Your <strong>GitHub</strong> Events</h1>
+        <GitHubList v-if="!loading && stream_gh.items?.length > 0" :selectedNotifications="stream_gh.items" class="list pb-2"></GitHubList>
+        <!-- Show more button for GitHub feed -->
+        <button v-if="this.author?.github" type="button" class="btn btn-outline-primary d-flex justify-self-start" @click="getGitHubEvents(++stream_gh.page)">
+          <span v-if="stream_gh.items?.length == 0">Load stream</span>
+          <span v-else-if="stream_gh?.length > 0">Show more</span>
+          </button>
+        <p v-else>No GitHub username set! Add your GitHub username in <RouterLink to="/settings">profile settings</RouterLink> to use this feature.</p>
+    </div>
   </div>
 </template>
 
@@ -74,8 +75,9 @@ export default {
       this.author = userStore.user.author
     },
     getGitHubEvents (page) {
+      const githubUsername = this.author.github.split('/').pop()
       this.$github
-        .get(this.author.github + '/received_events/public', {
+        .get(githubUsername + '/received_events/public', {
           params: {
             per_page: this.stream_gh.per_page,
             page: page
