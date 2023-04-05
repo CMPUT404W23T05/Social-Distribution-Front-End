@@ -8,7 +8,7 @@
     <div class="list-wrapper">
       <div class="card-list">
         <Card
-          v-for="(post, index) in posts"
+          v-for="(post, index) in posts.items"
           :key="post.id"
           :post="post"
           :author="author"
@@ -26,10 +26,11 @@
             </span>
           </template>
         </Card>
-        <div v-if="posts.length === 0">You haven't made any posts yet!</div>
+        <div v-if="posts.items.length === 0">You haven't made any posts yet!</div>
       </div>
     </div>
-
+    <ShowMoreButton v-if="!posts.noMore" @showMore="getPosts(++posts.page)"></ShowMoreButton>
+    <p v-else-if="posts.noMore" class="text-center mt-5">No more posts to show!</p>
     <ManagePostModal
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
@@ -56,17 +57,22 @@
 import Card from '@/components/PostCard.vue'
 import SlotModal from '@/components/SlotModal.vue'
 import ManagePostModal from '@/components/ManagePostModal.vue'
+import ShowMoreButton from '@/components/ShowMoreButton.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { pathOf } from '@/util/axiosUtil'
 
 export default {
-  components: { ManagePostModal, Card, SlotModal },
+  components: { ManagePostModal, Card, SlotModal, ShowMoreButton },
   data () {
     return {
-      posts: [],
+      posts: {
+        items: [],
+        size: 12,
+        page: 1,
+        noMore: false
+      },
       selected: { post: null, index: -1 },
       showPrompt: false,
       author: null // Load from user store
@@ -108,7 +114,7 @@ export default {
       this.$localNode
         .post(this.crEndPoint, post)
         .then(() => {
-          this.posts.unshift(post)
+          this.posts.items.unshift(post)
         })
         .catch(() => {
           alert("Couldn't add the post!")
@@ -116,14 +122,24 @@ export default {
       this.showManage = false
     },
 
-    getPosts () {
+    getPosts (page) {
       this.$localNode
-        .get(this.crEndPoint)
-        .then((res) => {
-          this.posts = res.data
+        .get(this.crEndPoint, {
+          params: {
+            size: this.posts.size,
+            page: page
+          }
         })
-        .catch(() => {
-          alert("Couldn't get any posts!")
+        .then((res) => {
+          this.posts.items = this.posts.items.concat(res.data)
+          if (res.data.length < this.posts.size) {
+            this.posts.noMore = true
+          }
+        })
+        .catch((e) => {
+          // alert("Couldn't get any posts!")
+          console.log(e)
+          this.posts.noMore = true
         })
     },
 
@@ -131,7 +147,7 @@ export default {
       this.$localNode
         .post(this.udEndPoint, post)
         .then(() => {
-          this.posts[this.selected.index] = post
+          this.posts.items[this.selected.index] = post
         })
         .catch(() => {
           alert("Couldn't edit the post!")
@@ -143,7 +159,7 @@ export default {
       this.$localNode
         .delete(this.udEndPoint)
         .then(() => {
-          this.posts.splice(this.selected.index, 1)
+          this.posts.items.splice(this.selected.index, 1)
         })
         .catch(() => {
           alert("Couldn't delete the post!")
@@ -152,7 +168,7 @@ export default {
   },
   mounted () {
     this.getAuthorFromStore()
-    this.getPosts()
+    this.getPosts(this.posts.page)
   }
 }
 </script>
