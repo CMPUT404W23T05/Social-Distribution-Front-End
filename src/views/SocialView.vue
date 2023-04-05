@@ -294,8 +294,8 @@ export default {
     position: fixed;
     margin: 0 auto;
     top: 40%;
-    width: 100pt;
-    height: 100pt;
+    width: 5vw;
+    height: 5vw;
   }
 
   .btn {

@@ -1,5 +1,7 @@
 <template>
-  <div class="browse-posts">
+  <div v-if='loading' class="load-spinner spinner-border text-info text-center" role="loading"></div>
+  <div class="browse-posts pb-5">
+
     <h1 class="text-left">Browse <strong>Posts</strong></h1>
 
     <!-- Open that modal :) -->
@@ -47,6 +49,8 @@
           <Card v-for="post in posts" :key="post.id" :author="post.author" :post="post"/>
         </div>
       </div>
+      <ShowMoreButton v-if="!allPosts.noMore" @showMore="getPosts(++allPosts.page)"></ShowMoreButton>
+      <p v-else-if="allPosts.noMore" class="text-center">No more posts to show!</p>
     </div>
   </div>
 
@@ -56,16 +60,22 @@
 import Card from '../components/PostCard.vue'
 import SlotModal from '../components/SlotModal.vue'
 import { useUserStore } from '@/stores/user'
+import ShowMoreButton from '@/components/ShowMoreButton.vue'
 import { mapStores } from 'pinia'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD'
 
 export default {
   name: 'BrowsePage',
-  components: { Card, SlotModal },
+  components: { Card, SlotModal, ShowMoreButton },
   data () {
     return {
-      allPosts: [],
+      allPosts: {
+        items: [],
+        size: 10,
+        page: 1,
+        noMore: false
+      },
       author: null,
       loading: true,
       active: { plain: true, markdown: true, image: true },
@@ -86,8 +96,8 @@ export default {
     },
 
     filteredPosts () {
-      if (this.allPosts?.length > 0) {
-        return this.allPosts.filter(post => { return this.matchesActive(post) })
+      if (this.allPosts.items?.length > 0) {
+        return this.allPosts.items.filter(post => { return this.matchesActive(post) })
       } else {
         return []
       }
@@ -100,7 +110,7 @@ export default {
 
     reversePosts () {
       this.reverse = !this.reverse
-      this.allPosts = this.allPosts.reverse()
+      this.allPosts.items = this.allPosts.items.reverse()
     },
 
     matchesActive (post) {
@@ -127,21 +137,30 @@ export default {
         return { ...acc, [key]: [...grouping, post] }
       }, {})
     },
-    async getPosts () {
+    async getPosts (page) {
       this.$localNode
-        .get('posts')
+        .get('posts', {
+          params: {
+            size: this.allPosts.size,
+            page: page
+          }
+        })
         .then((res) => {
-          this.allPosts = res.data.items
+          this.allPosts.items = this.allPosts.items.concat(res.data.items)
+          if (res.data.items.length < this.allPosts.size) {
+            this.allPosts.noMore = true
+          }
           this.loading = false
         })
         .catch((err) => {
           console.log(err)
+          this.allPosts.noMore = true
         })
     }
   },
   async mounted () {
     this.getAuthorFromStore()
-    await this.getPosts()
+    await this.getPosts(this.allPosts.page)
   }
 }
 </script>
@@ -166,7 +185,13 @@ export default {
 .filter-button {
   width: 20%;
 }
-
+.load-spinner {
+    position: fixed;
+    margin: 0 auto;
+    top: 40%;
+    width: 5vw;
+    height: 5vw;
+  }
 h1 strong {
   color: var(--bs-blue);
 }
