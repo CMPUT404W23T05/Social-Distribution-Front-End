@@ -260,7 +260,7 @@ export default {
       if (this.postHost !== this.$localNode) {
         commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff
       } else {
-        commentPath = `${postPath}/comments/` // Local stuff
+        commentPath = `${postPath}/comments` // Local stuff
       }
       this.postHost.post(commentPath, comment)
         .then(() => {
