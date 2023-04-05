@@ -7,6 +7,7 @@
       :key="notification.id"
       :anchor="getAnchor(notification)"
       class="m-2"
+      role="button"
     >
 
       <template #card-content>
@@ -18,13 +19,13 @@
 
         <!-- Followed by relevant summary, if any. -->
         <div class="post-notif-content notification" v-if="notification.type==='post'">
-          <p> {{ notification.author.displayName }} posted <strong>{{ notification.title }}</strong></p>
+          <p> {{ capitalizeFirstChar(getActor(notification.author)) }} posted <strong>{{ notification.title }}</strong></p>
           <!-- Post summary stuff here? -->
         </div>
 
         <div class="comment-notif-content notification" v-else-if="notification.type==='comment'">
-          <p> {{ notification.author.displayName }} commented </p>
-          <p class="actual-comment"> {{ notification.comment }} </p>
+          <p> {{ capitalizeFirstChar(getActor(notification.author))}} commented on your post:</p>
+          <blockquote class="actual-comment"> {{ notification.comment }} </blockquote>
         </div>
 
         <!-- Yes, the casing is correct according to the spec -->
@@ -33,20 +34,15 @@
         </div>
 
         <!-- The follow was sent, but not in an accepted or rejected state (i.e pending???) -->
-        <div
-        class="request-notif-content notification"
-        v-else-if="notification.type==='Follow' && '!notification.state'"
-        >
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && !notification.state">
           <p> {{ getActor(notification.actor) }} sent a follow request to {{ getActor(notification.object) }}</p>
         </div>
 
         <!-- Notice that request was rejected/accepted -->
         <!-- Jane accepted your follow request -->
-        <div class="request-notif-content notification"
-         v-else-if="notification.type==='Follow' && 'notification.state'"
-        >
+        <div class="request-notif-content notification" v-else-if="notification.type==='Follow' && !!notification.state">
           <!-- Note: there is an issue when another accepts your request: "X accepted you's follow request" -->
-          <p class="request-notif-message"> {{ getActor(notification.actor) }} {{ notification.state }} {{ getActor(notification.object) }}'s follow request </p>
+          <p class="request-notif-message"> {{  capitalizeFirstChar(getActor(notification.object)) }} {{ notification.state.toString().toLowerCase() }} {{ getActor(notification.actor) }}'s follow request </p>
         </div>
       </template>
 
@@ -121,7 +117,7 @@ export default {
       // An author object
       return this.author.id === user.id
         ? 'you'
-        : user.displayName
+        : '@' + user.displayName
     },
     updateList () {
       this.feed = this.selectedNotifications
@@ -135,25 +131,41 @@ export default {
       if (notification.type === 'Follow') {
         return { name: 'SocialPage' }
       } else if (notification.type === 'comment' || notification.type === 'post') {
-        const parts = notification.id.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.id } }
+        return this.anchorHelper(notification.id)
       } else if (notification.type === 'Like') {
-        const parts = notification.object.split('/')
-        return { name: 'postpage', params: { aid: parts[5], pid: parts[7] }, query: { hostURL: notification.object } }
+        return this.anchorHelper(notification.object)
       }
+    },
+    anchorHelper (queryObject) {
+      const url = new URL(queryObject).pathname.replace('/api/', '').replace(/^\//)
+      const parts = url.split('/')
+      return { name: 'postpage', params: { aid: parts[1], pid: parts[3] }, query: { hostURL: queryObject } } // authors/[aid]/posts/[pid]
+    },
+    capitalizeFirstChar (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1)
     }
   }
 }
 
 </script>
 <style scoped>
-  .request-notif-message {
-    text-transform: capitalize;
-  }
 
   .notification {
+    text-align: center;
     margin: 1em;
   }
+  .actual-comment {
+   color: var(--bs-blue);
+   text-align: center;
+   font-style: italic;
+   /* Handle text overflow */
+   -webkit-line-clamp: 5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+
+  /* font-style: italic; */
+}
 
   h6 {
     text-align: center;

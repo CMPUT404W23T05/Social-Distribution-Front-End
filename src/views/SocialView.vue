@@ -13,7 +13,7 @@
         <GenericCard v-for="person in category.items" :key="person.id" class="m-2">
           <template #card-content>
             <div v-if="category.type !== 'requests'" class="wrapper d-flex flex-column justify-content-center text-center">
-              <img :src='person.profileImage' class="profile-image"/>
+              <img :src="person.profileImage !== '' ? person.profileImage : defaultImage" class="profile-image"/>
               <h3 class="mt-1"> <strong>@{{person.displayName}}</strong></h3>
               <small>{{ person.host }}</small>
             </div>
@@ -46,7 +46,7 @@
         <GenericCard v-for="author in authorNodes[nodeName].data.items" :key="author.id" class="m-2">
           <template #card-content>
             <div class="wrapper d-flex flex-column justify-content-center text-center">
-              <img :src='author.profileImage' class="profile-image"/>
+              <img :src="author.profileImage !== '' ? author.profileImage : defaultImage" class="profile-image"/>
               <h3 class="mt-1"> <strong>@{{author.displayName}}</strong></h3>
             </div>
           </template>
@@ -120,6 +120,7 @@ export default {
   data () {
     return {
       // For stuff related to the current author logged in
+      defaultImage: '/defaultProfileImage.png',
 
       // Helper for holding properties since requests has to be computed
       friendliesProxy: {
@@ -176,7 +177,7 @@ export default {
           alert(`${state} the Request`) // Computed pendingRequests should auto-update
           if (state === 'Accepted') {
             this.inbox.push(followToSend) // Update local version of allRequests
-            this.moveToFriendsOrFollower(followToSend.actor)
+            this.moveToFriendsOrFollower(followToSend)
           }
         })
         .catch((err) => {
@@ -185,19 +186,17 @@ export default {
     },
 
     moveToFriendsOrFollower (acceptedFollow) {
-      // Helper function to move people from the requests to the appropriate field for the local
+      // Helper function to move people from the requests to the appropriate field for the local version
 
-      // Sheesh this funciton is incredibly inefficient but that's web dev for you am I right?
-      const allRequests = this.inbox.filter(item => item.type === 'Follow')
+      // const allRequests = this.inbox.filter(item => item.type === 'Follow')
+      const following = this.friendliesProxy.following.items
+      const intersect = following.filter(author => author.id === acceptedFollow.actor.id)
+      console.log(intersect)
 
-      const recipricalFollow = acceptedFollow
-      recipricalFollow.author = acceptedFollow.actor
-      recipricalFollow.actor = acceptedFollow.author
-
-      if (allRequests.includes(acceptedFollow) && allRequests.includes(recipricalFollow)) {
-        this.friendliesProxy.friends.push(acceptedFollow.actor)
+      if (intersect?.length > 0) {
+        this.friendliesProxy.friends.items.push(acceptedFollow.actor)
       } else {
-        this.friendliesProxy.followers.push(acceptedFollow.actor)
+        this.friendliesProxy.followers.items.push(acceptedFollow.actor)
       }
     },
 
@@ -223,6 +222,20 @@ export default {
         .catch(() => {
           alert(`Couldn't send the request to ${author.displayName}`)
         })
+
+      // Backend purposes
+      if (hostNode !== this.$localNode) {
+        console.log(`${this.basePath}/remote-requests`)
+        console.log(followToSend)
+
+        this.$localNode.put(`${this.basePath}/remote-requests/`, followToSend)
+          .then(() => {
+            console.log('sent to backend')
+          })
+          .catch(() => {
+            console.log('Couldn\'t send to backend')
+          })
+      }
     },
     async getRequests () {
       this.$localNode
@@ -288,15 +301,5 @@ export default {
 
   .btn {
     border: none;
-  }
-  .authors{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 2% 2% 2% 2%;
-    justify-content: space-around;
-    row-gap: 20px;
-    margin-left: 5%;
-    margin-right: 5%;
   }
 </style>

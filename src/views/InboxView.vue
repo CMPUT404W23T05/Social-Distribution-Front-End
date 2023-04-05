@@ -14,7 +14,8 @@
       </template>
     </SlotModal>
 
-    <NotificationList v-if="!loading" :selectedNotifications="stream" class="list"></NotificationList>
+    <NotificationList v-if="!loading && stream?.length > 0" :selectedNotifications="stream" class="list pb-2"></NotificationList>
+    <p v-else-if="!loading && stream?.length == 0">There's nothing here for you yet</p>
 
   </div>
 </template>
@@ -25,7 +26,7 @@ import NotificationList from '@/components/inboxComponents/NotificationList.vue'
 import InboxModalBody from '@/components/inboxComponents/InboxModalBody.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import axios from 'axios'
+import { pathOf } from '@/util/axiosUtil.js'
 
 export default {
   components: { SlotModal, NotificationList, InboxModalBody },
@@ -36,8 +37,9 @@ export default {
   created () {
     this.getAuthorFromStore()
     this.$localNode
-      .get(this.author.id + '/inbox/')
+      .get(`${pathOf(this.author.id)}/inbox/`)
       .then((res) => {
+        console.log(res)
         this.stream = res.data.items.reverse()
         this.loading = false
       })
