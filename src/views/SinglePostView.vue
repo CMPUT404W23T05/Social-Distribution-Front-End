@@ -86,7 +86,7 @@
               <li class="list-group-item" v-for="friend in friends" :key="friend.id">
               <div class="d-flex w-100 h-100 align-items-center justify-content-between">
                 <div class="d-flex">
-                  <img :src="friend.profileImage" class="rounded-circle follower-pic" >
+                  <img :src="!!friend.profileImage ? friend.profileImage : defaultImage" class="rounded-circle follower-pic" >
                   <div>
                     <h5 class="mb-1">@{{ friend.displayName }}</h5>
                     <small>{{ friend.host }}</small>
@@ -115,7 +115,7 @@ import SlotModal from '@/components/SlotModal.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import { getAxiosTarget } from '@/util/axiosUtil.js'
+import { getAxiosTarget, pathOf } from '@/util/axiosUtil.js'
 
 const commentTemplate = {
   type: 'comment',
@@ -210,8 +210,9 @@ export default {
         .catch((err) => { console.log(err) })
 
       // Get friends
-      this.$localNode.get(`${this.currentAuthor.id}/followers/`)
+      this.$localNode.get(`${pathOf(this.currentAuthor.id)}/followers/`)
         .then((res) => {
+          console.log(res.data)
           this.friends = res.data.items// .concat(res.data.items).concat(res.data.items).concat(res.data.items).concat(res.data.items)
           // add sent property to each friend
           for (const friend of this.friends) {
@@ -312,7 +313,8 @@ export default {
         })
     },
     sharePost (friend) {
-      this.postHost.post(`${friend.id}/inbox/`, this.postData)
+      const friendHost = getAxiosTarget(friend.id)
+      friendHost.post(`${pathOf(friend.id)}/inbox/`, this.postData)
         .then(() => {
           friend.shareStatus = 'Shared'
         })
