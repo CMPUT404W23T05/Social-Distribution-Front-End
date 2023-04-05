@@ -34,7 +34,7 @@
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
       @create-post="(post) => createPost(post)"
-      @create-private-post="(post, authors) => createPrivatePost(post, authors)">
+      @create-private-post="(post, authors) => sendPrivatePost(post, authors)">
     </ManagePostModal>
 
     <SlotModal modal-name="deletePrompt" v-if="selected.post">
@@ -97,11 +97,11 @@ export default {
       this.author = userStore.user.author
     },
 
-    createPrivatePost (post, authors) {
-      this.createPost(post)
-
-      for (const recipient in authors) {
+    sendPrivatePost (emit) {
+      const post = emit.post
+      for (const recipient of emit.authors) {
         const hostNode = getAxiosTarget(recipient.id)
+        console.log('Going to ' + hostNode.defaults.name)
 
         // Team 10 doesn't follow spec exactly so concessions must be made
         if (hostNode === this.$node10) {
@@ -110,13 +110,15 @@ export default {
           node10post.visibility = 'VISIBLE'
         }
 
+        console.table(post)
+
         hostNode
           .post(`${pathOf(recipient.id)}/inbox/`, post)
           .then((res) => {
             console.log(res)
           })
-          .catch(() => {
-            alert('Couldn\'t send the post')
+          .catch((err) => {
+            err.response.status === 409 ? alert(`You already shared with ${recipient.displayName}`) : alert('Couldn\'t send the post')
           })
       }
     },
@@ -162,9 +164,6 @@ export default {
           alert("Couldn't edit the post!")
         })
       this.showManage = false
-      if (post.visibility === 'PRIVATE') {
-
-      }
     },
 
     delPost () {

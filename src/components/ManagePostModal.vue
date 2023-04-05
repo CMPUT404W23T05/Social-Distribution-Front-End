@@ -51,8 +51,8 @@
               <!-- <button type="button" class="btn btn-primary btn-sm" @click="selectAuthor(author)">select</button> -->
               <label for="follower-list" class="d-flex justify-content-left" aria-autocomplete="off">Share with your Followers</label>
               <ul id="follower-list" class="list-group">
-                <li class="list-group-item d-flex justify-content-start" v-for="follower in my_followers" :key="follower.id">
-                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." :id="follower.id" @click="update_selected(follower)">
+                <li class="list-group-item d-flex justify-content-start" v-for="follower, index in followers" :key="follower.id">
+                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." :id="follower.id" @change="updateSelected(follower, index)">
                   <label :for="follower.id" class="mx-3"> <strong>{{ follower.displayName }}</strong> ({{ follower.host }})</label>
                 </li>
               </ul>
@@ -108,9 +108,9 @@ export default {
       post: null,
       markDownEnabled: false,
       invalidSubmit: false,
-      my_followers: [],
-      curr_auth: [],
-      selected_auths: []
+      followers: [],
+      sessionAuthor: [],
+      selectedFollowers: []
     }
   },
   computed: {
@@ -184,28 +184,18 @@ export default {
     getAuthorFromStore () {
       const userStore = this.userStore
       userStore.initializeStore()
-      this.curr_auth = userStore.user.author
+      this.sessionAuthor = userStore.user.author
     },
 
-    update_selected (auth) {
-      if (auth.is_selected === false) {
-        auth.is_selected = true
-        this.selected_auths.push(auth)
-      } else {
-        auth.is_selected = false
-        const index = this.selected_auths.indexOf(auth)
-        this.selected_auths.splice(index, 1)
-      }
+    updateSelected (author, index) {
+      !this.selectedFollowers.includes(author) ? this.selectedFollowers.push(author) : this.selectedFollowers.splice(index, 1)
     },
 
     getFollowers () {
-      this.$localNode.get(`/authors/${this.curr_auth._id}/followers/`)
+      this.$localNode.get(`/authors/${this.sessionAuthor._id}/followers/`)
         .then(response => {
           console.log(response)
-          for (const author of response.data.items) {
-            author.is_selected = false
-          }
-          this.my_followers = response.data.items
+          this.followers = response.data.items
         })
         .catch(function (err) {
           console.log(err)
@@ -276,18 +266,19 @@ export default {
       if (this.errors.length === 0) {
         // Re-format to to spec format
         this.post.contentType = this.post.contentType.toString()
-        console.table(this.post)
+        // console.table(this.post)
 
         this.$refs.Close.click()
         if ((this.existingPost)) {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
-        } else if (this.post.visibility === 'PRIVATE') {
-          this.$emit('createPrivatePost', this.post, this.selected_auths)
-          this.$emit('dismiss')
         } else {
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
+        }
+        if (this.post.visibility === 'PRIVATE') {
+          console.log('private post made')
+          this.$emit('createPrivatePost', { post: this.post, authors: this.selectedFollowers })
         }
       } else {
         this.invalidSubmit = true
