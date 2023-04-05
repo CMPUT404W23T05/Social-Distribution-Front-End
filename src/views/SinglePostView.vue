@@ -94,7 +94,7 @@ import SlotModal from '@/components/SlotModal.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import { getAxiosTarget } from '@/util/axiosUtil.js'
+import { getAxiosTarget, pathOf } from '@/util/axiosUtil.js'
 
 const commentTemplate = {
   type: 'comment',
@@ -252,12 +252,17 @@ export default {
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
-      comment.content = this.newComment // Team 10 uses content property instead
       comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
-      const postPath = new URL(this.postData.id).pathname
+      const postPath = pathOf(this.postData.id)
 
-      console.log(comment)
-      this.postHost.post(`${postPath}/comments`, comment)
+      // Decide which endpoint to send it to
+      let commentPath
+      if (this.postHost !== this.$localNode) {
+        commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff
+      } else {
+        commentPath = `${postPath}/comments/` // Local stuff
+      }
+      this.postHost.post(commentPath, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
