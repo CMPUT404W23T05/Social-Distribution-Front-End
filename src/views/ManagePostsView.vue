@@ -99,25 +99,28 @@ export default {
 
     sendPrivatePost (emit) {
       const post = emit.post
+      let node10post
+
       for (const recipient of emit.authors) {
         const hostNode = getAxiosTarget(recipient.id)
         console.log('Going to ' + hostNode.defaults.name)
 
         // Team 10 doesn't follow spec exactly so concessions must be made
         if (hostNode === this.$node10) {
-          const node10post = post
+          node10post = post
           node10post.description = node10post.description === '' ? 'something' : node10post.description
           node10post.visibility = 'VISIBLE'
+          node10post.categories = post.categories.toString()
+          node10post.author = post.author.displayName
         }
 
-        console.table(post)
-
         hostNode
-          .post(`${pathOf(recipient.id)}/inbox/`, post)
+          .post(`${pathOf(recipient.id)}/inbox/`, hostNode === this.$node10 ? node10post : post)
           .then((res) => {
             console.log(res)
           })
           .catch((err) => {
+            console.table(node10post)
             err.response.status === 409 ? alert(`You already shared with ${recipient.displayName}`) : alert('Couldn\'t send the post')
           })
       }
