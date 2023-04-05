@@ -47,6 +47,7 @@
           <Card v-for="post in posts" :key="post.id" :author="post.author" :post="post"/>
         </div>
       </div>
+      <ShowMoreButton :vIf="Boolean(!allPosts.noMore)" @showMore="getPosts(++allPosts.page)"></ShowMoreButton>
     </div>
   </div>
 
@@ -56,16 +57,22 @@
 import Card from '../components/PostCard.vue'
 import SlotModal from '../components/SlotModal.vue'
 import { useUserStore } from '@/stores/user'
+import ShowMoreButton from '@/components/ShowMoreButton.vue'
 import { mapStores } from 'pinia'
 import moment from 'moment'
 const dateFormat = 'YYYY-MM-DD'
 
 export default {
   name: 'BrowsePage',
-  components: { Card, SlotModal },
+  components: { Card, SlotModal, ShowMoreButton },
   data () {
     return {
-      allPosts: [],
+      allPosts: {
+        items: [],
+        size: 1,
+        page: 1,
+        noMore: false
+      },
       author: null,
       loading: true,
       active: { plain: true, markdown: true, image: true },
@@ -86,8 +93,8 @@ export default {
     },
 
     filteredPosts () {
-      if (this.allPosts?.length > 0) {
-        return this.allPosts.filter(post => { return this.matchesActive(post) })
+      if (this.allPosts.items?.length > 0) {
+        return this.allPosts.items.filter(post => { return this.matchesActive(post) })
       } else {
         return []
       }
@@ -100,7 +107,7 @@ export default {
 
     reversePosts () {
       this.reverse = !this.reverse
-      this.allPosts = this.allPosts.reverse()
+      this.allPosts.items = this.allPosts.items.reverse()
     },
 
     matchesActive (post) {
@@ -127,11 +134,16 @@ export default {
         return { ...acc, [key]: [...grouping, post] }
       }, {})
     },
-    async getPosts () {
+    async getPosts (page) {
       this.$localNode
-        .get('posts')
+        .get('posts', {
+          params: {
+            size: this.allPosts.size,
+            page: page
+          }
+        })
         .then((res) => {
-          this.allPosts = res.data.items
+          this.allPosts.items = this.allPosts.items.concat(res.data.items)
           this.loading = false
         })
         .catch((err) => {
@@ -141,7 +153,7 @@ export default {
   },
   async mounted () {
     this.getAuthorFromStore()
-    await this.getPosts()
+    await this.getPosts(this.allPosts.page)
   }
 }
 </script>
