@@ -86,13 +86,14 @@ export default {
     },
 
     filteredPosts () {
-      return this.allPosts.filter(post => {
-        return this.matchesActive(post)
-      })
+      if (this.allPosts?.length > 0) {
+        return this.allPosts.filter(post => { return this.matchesActive(post) })
+      } else {
+        return []
+      }
     }
   },
   methods: {
-
     toggle (file) {
       this.active[file] = !this.active[file]
     },
@@ -112,18 +113,6 @@ export default {
       }
       return true
     },
-
-    getPosts () {
-      this.$localNode
-        .get('/posts/')
-        .then((res) => {
-          this.allPosts = res.data
-          this.loading = false
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-    },
     getAuthorFromStore () {
       const userStore = this.userStore
       userStore.initializeStore()
@@ -137,11 +126,22 @@ export default {
 
         return { ...acc, [key]: [...grouping, post] }
       }, {})
+    },
+    async getPosts () {
+      this.$localNode
+        .get('posts')
+        .then((res) => {
+          this.allPosts = res.data.items
+          this.loading = false
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   },
-  mounted () {
+  async mounted () {
     this.getAuthorFromStore()
-    this.getPosts()
+    await this.getPosts()
   }
 }
 </script>

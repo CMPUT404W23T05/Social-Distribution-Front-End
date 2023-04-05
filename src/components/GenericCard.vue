@@ -79,6 +79,7 @@ export default {
     align-items: center;
     justify-content: space-evenly;
     box-sizing: content-box;
+    overflow: hidden;
   }
 
   .scrim {
@@ -119,6 +120,7 @@ export default {
     align-items: center;
     overflow: hidden;
     padding:0;
+    cursor: default;
   }
 
   .footer.open {

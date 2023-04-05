@@ -4,7 +4,7 @@
     <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
       <template #titleText><h2>Inbox</h2></template>
       <template #body>
-        <InboxModalBody :allNotifications="stream.items"/>
+        <InboxModalBody :allNotifications="stream"/>
       </template>
       <template #closeButtonText>Done</template>
       <template #openModalButton>
@@ -14,7 +14,8 @@
       </template>
     </SlotModal>
 
-    <NotificationList v-if="!loading" :selectedNotifications="stream.items" class="list"></NotificationList>
+    <NotificationList v-if="!loading && stream?.length > 0" :selectedNotifications="stream" class="list pb-2"></NotificationList>
+    <p v-else-if="!loading && stream?.length == 0">There's nothing here for you yet</p>
 
   </div>
 </template>
@@ -25,7 +26,7 @@ import NotificationList from '@/components/inboxComponents/NotificationList.vue'
 import InboxModalBody from '@/components/inboxComponents/InboxModalBody.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import axios from 'axios'
+import { pathOf } from '@/util/axiosUtil.js'
 
 export default {
   components: { SlotModal, NotificationList, InboxModalBody },
@@ -36,9 +37,10 @@ export default {
   created () {
     this.getAuthorFromStore()
     this.$localNode
-      .get(this.author.id + '/inbox/')
+      .get(`${pathOf(this.author.id)}/inbox/`)
       .then((res) => {
-        this.stream = res.data
+        console.log(res)
+        this.stream = res.data.items.reverse()
         this.loading = false
       })
       .catch((err) => {

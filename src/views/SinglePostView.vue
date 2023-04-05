@@ -1,24 +1,27 @@
 <template>
-    <div class="d-flex flex-column flex-shrink-0" id="single-post-container">
-      <!-- Components: Post, Comments list, profile picture -->
-      <PostProper v-if="!loading" :post="postData" :author="authorData" class="col-9"></PostProper>
-
+    <div class="d-flex flex-shrink-0" id="single-post-container">
       <!--Left sidebar w/ features and author stuff-->
       <aside v-if="!loading" class="post-left-bar">
         <section class="author-info">
-          <img :src="authorData.profileImage" class="author-picture">
+          <img :src="!!authorData.profileImage ? authorData.profileImage : defaultImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
-          <!-- TODO: Do NOT display follow-status if the post author matches session author -->
-          <span class="follow-status">
-            <!-- Will always encourage person to follow through colour contrast -->
-            <small :class="{activated: isFollowing}"> {{ isFollowing ? "Following" : "Not Following" }} </small>
-            <small :class="{activated: !isFollowing}" @click="toggleFollow"> {{ isFollowing ? "Unfollow" : "Follow" }} </small>
+          <span class="likers">
+            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"  :title="'@' + like.author.displayName"/>
+            <small><small v-if="overflowLikes > 0">+ {{overflowLikes}}</small>likes this post</small>
           </span>
         </section>
 
         <ul class="btn-list">
           <li class="btn-with-label">
-            <button id="like-post-button" type="button" class="btn btn-light action-button" @click="addLike"><i class="bi bi-heart-fill" :class="{liked: isLiked}"></i></button>
+            <button
+            id="like-post-button"
+            type="button"
+            class="btn btn-light action-button"
+            @click="addLike"
+            >
+              <i class="bi bi-heart-fill"  :class="{liked: isLiked}"></i>
+            </button>
+            <label for="like-post-button">{{ likes?.length }}</label>
           </li>
           <li class="btn-with-label">
             <button id="comment-button" type="button" ref="commentButton" data-bs-toggle="modal" data-bs-target="#makeCommentModal" class="btn btn-light action-button">
@@ -31,6 +34,8 @@
           </li>
         </ul>
       </aside>
+      <!-- Components: Post, Comments list, profile picture -->
+      <PostProper v-if="!loading" :post="postData" :author="authorData" class="col-9"></PostProper>
 
       <!-- Right comment aside -->
       <aside v-if="!loading" class="post-right-bar" :class="{expanded: expandComments}">
@@ -39,7 +44,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :axiosTarget=postHost :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
+          <CommentList :post="postData" :axiosTarget="postHost" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
           <div class="move-page-wrapper">
             <div v-if="pageTotal > 1" class="move-page">
               <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
@@ -121,14 +126,17 @@ const commentTemplate = {
   published: '2023-03-01T21:18:38.908794Z' // Placeholder (maybe re-added on backend?)
 }
 
+const likersToShow = 3 // How many profile pictures to show before giving a +x for the remainder
+
 export default {
   components: { PostProper, CommentList, SlotModal },
-  mounted () {
+  async mounted () {
     // Get the post and author
     const pid = this.$route.params.pid
     const aid = this.$route.params.aid
     this.getAuthorFromStore()
-    this.getData(pid, aid)
+    await this.getData(pid, aid)
+    await this.getLikes()
   },
   computed: {
     ...mapStores(useUserStore),
@@ -137,6 +145,23 @@ export default {
     },
     pageTotal () {
       return Math.ceil(this.postData.count / this.paginationSetting) || 1 // Atleast 1 page
+    },
+    // Below are all for displaying liked status
+    isLiked () {
+      for (const like of this.likes) {
+        console.log(like)
+        if (like?.author?.id === this.currentAuthor.id) {
+          return true
+        }
+      }
+      return false
+    },
+    firstFewLikers () {
+      return this.likes.slice(0, likersToShow - 1) // Show the first n authors
+    },
+    overflowLikes () {
+      // The number to append for the likers whose profile images were not shown
+      return this.likes?.length <= likersToShow ? 0 : this.likes?.length - likersToShow
     }
   },
   data () {
@@ -145,15 +170,19 @@ export default {
       postData: null,
       authorData: null, // Get from post
       currentAuthor: null, // Load from store
+      defaultImage: '/defaultProfileImage.png',
 
       // Used for seeing likes
-      isLiked: false,
+      likes: [],
 
       // Used for social stuff
       isFollowing: false,
       friends: [], // Update when modal is opened
       friendsLoading: true,
+
       // Used for comment list
+      comments: [],
+      commentsLoading: true, // Lots of requests need to be made for comments (one per comment to get likes) so separate loading
       expandComments: false,
       currentCommentPage: 1,
       paginationSetting: 5, // This will acquired from user once they set their pagination
@@ -168,27 +197,13 @@ export default {
   },
   methods: {
     async getData (pid, aid) {
-      this.postHost.get(`/authors/${aid}/posts/${pid}/`)
+      await this.postHost.get(`/authors/${aid}/posts/${pid}/`)
         .then((res) => {
           this.postData = res.data
-          // get author's likes
-          this.postHost.get(`${this.currentAuthor.id}/liked/`)
-            .then((res) => {
-              const likes = res.data.items
-              for (const like of likes) {
-                if (like.object === this.postData.id) { // If this post is liked
-                  this.isLiked = true // Set liked to true
-                  break
-                }
-              }
-            })
-            .catch((err) => {
-              console.log(err)
-            })
         })
         .catch((err) => { console.log(err) })
 
-      this.postHost.get(`/authors/${aid}/`)
+      await this.postHost.get(`/authors/${aid}/`)
         .then((res) => {
           this.authorData = res.data
         })
@@ -209,13 +224,37 @@ export default {
           this.friendsLoading = false
         })
     },
+
+    async getLikes () {
+      const postPath = new URL(this.postData.id).pathname
+      this.postHost.get(`${postPath}/likes`)
+        .then((res) => {
+          this.likes = res.data.items
+        }
+        )
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+
+    // async getComments () {
+    //   const postPath = new URL(this.postData.id).pathname
+    //   await this.postHost.get(`${postPath}/comments`)
+    //     .then((res) => {
+    //       this.comments = res.data.items
+    //     })
+    //     .catch((err) => {
+    //       console.log('Couldn\'t get comments.')
+    //       console.log(err)
+    //     })
+    // },
+
     toggleFollow () {
       this.isFollowing = !this.isFollowing
       alert('Sorry! You can\'t follow people yet')
     },
     addLike () {
       if (!this.isLiked) {
-        this.isLiked = true
         const newLike = {
           type: 'Like',
           context: 'https://www.w3.org/ns/activitystreams',
@@ -223,9 +262,12 @@ export default {
           summary: `@${this.currentAuthor.displayName} liked your post`,
           object: this.postData.id
         }
-        this.postHost.post(`${this.postData.author.id}/inbox/`, newLike)
+        const authorPath = new URL(this.authorData.id).pathname
+        console.log(authorPath)
+        this.postHost.post(`${authorPath}/inbox/`, newLike)
           .then((res) => {
-            console.log('Like sent')
+            console.log('Like sent to ' + `${authorPath}/inbox/`)
+            this.likes.push(newLike) // Update local
           })
           .catch((err) => {
             console.log(err)
@@ -250,10 +292,12 @@ export default {
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
-      comment.contentType = this.markDownEnabled ? 'text-markdown' : 'text-plain'
-      // comment.comment = content
-      console.table(comment)
-      this.postaHost.post(`${this.postData.id}/comments`, comment)
+      comment.content = this.newComment // Team 10 uses content property instead
+      comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
+      const postPath = new URL(this.postData.id).pathname
+
+      console.log(comment)
+      this.postHost.post(`${postPath}/comments`, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
@@ -262,6 +306,7 @@ export default {
           this.newComment = '' // clear
         })
         .catch((err) => {
+          console.log(this.postHost.defaults)
           console.log(err)
           alert('Couldn\'t make comment!')
         })
@@ -310,10 +355,18 @@ export default {
   /* Left aside */
 
   .post-left-bar {
+
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     margin: 2em 4em;
+  }
+
+  .like-profile-picture {
+    width: 16pt;
+    height: 16pt;
+    border-radius: 50%;
+    margin: 0.1em;
   }
 
   .btn-list {
@@ -326,8 +379,8 @@ export default {
   }
   .author-picture {
     border-radius: 50%;
-    width: 144pt;
-    height: 144pt;
+    width: 128pt;
+    height: 128pt;
   }
 
   .btn-with-label {
@@ -373,7 +426,7 @@ export default {
   }
 
   aside {
-    position: fixed;
+    position: relative;
     width: min(20%, fit-content);
   }
 
@@ -387,6 +440,7 @@ export default {
 
   /* Right aside */
   .post-right-bar {
+    position: fixed;
     right: 0;
     background-color: rgba(0,0,0,0.7);
     height: 100%;
