@@ -15,11 +15,12 @@
     </SlotModal>
     <NotificationList v-if="!loading && stream?.length > 0" :selectedNotifications="stream" class="list pb-2"></NotificationList>
     <p v-else-if="!loading && stream?.length == 0">There's nothing here for you yet</p>
-      <div class="github-container  w-100">
+      <!-- GitHub Feed  -->
+    <div class="github-container  w-100">
         <h1 class="mt-5 text-left"> Your <strong>GitHub</strong> Events</h1>
         <GitHubList v-if="!loading && stream_gh.items?.length > 0" :selectedNotifications="stream_gh.items" class="list pb-2"></GitHubList>
         <!-- Show more button for GitHub feed -->
-        <button v-if="this.author?.github" type="button" class="btn  btn-outline-primary btn-lg btn-block mt-5" @click="getGitHubEvents(++stream_gh.page)">
+        <button v-if="this.author?.github" type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" @click="getGitHubEvents(++stream_gh.page)">
           <span v-if="stream_gh.items?.length == 0">Load stream</span>
           <span v-else-if="stream_gh.items?.length > 0">Show more</span>
           </button>
