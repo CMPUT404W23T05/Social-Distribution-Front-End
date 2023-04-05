@@ -7,6 +7,7 @@
       :key="notification.id"
       :anchor="getAnchor(notification)"
       class="m-2"
+      role="button"
     >
 
       <template #card-content>
