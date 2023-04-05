@@ -21,7 +21,7 @@
         <!-- Show more button for GitHub feed -->
         <button v-if="this.author?.github" type="button" class="btn btn-outline-primary d-flex justify-self-start" @click="getGitHubEvents(++stream_gh.page)">
           <span v-if="stream_gh.items?.length == 0">Load stream</span>
-          <span v-else-if="stream_gh?.length > 0">Show more</span>
+          <span v-else-if="stream_gh.items?.length > 0">Show more</span>
           </button>
         <p v-else>No GitHub username set! Add your GitHub username in <RouterLink to="/settings">profile settings</RouterLink> to use this feature.</p>
     </div>
