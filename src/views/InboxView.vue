@@ -4,7 +4,7 @@
     <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
       <template #titleText><h2>Inbox</h2></template>
       <template #body>
-        <InboxModalBody :allNotifications="stream"/>
+        <InboxModalBody :allNotifications="stream.items"/>
       </template>
       <template #closeButtonText>Done</template>
       <template #openModalButton>
@@ -13,8 +13,13 @@
         </button>
       </template>
     </SlotModal>
-    <NotificationList v-if="!loading && stream?.length > 0" :selectedNotifications="stream" class="list pb-2"></NotificationList>
-    <p v-else-if="!loading && stream?.length == 0">There's nothing here for you yet</p>
+    <NotificationList v-if="!loading && stream.items?.length > 0" :selectedNotifications="stream.items" class="list pb-2"></NotificationList>
+    <p v-else-if="!loading && stream.items?.length === 0">There's nothing here for you yet</p>
+    <button v-if="!loading && stream.items?.length > 0 && !stream.noMore" type="button" class="btn btn-outline-primary btn-lg btn-block mt-5" @click="getInbox(++stream.page)">
+      Show more
+          </button>
+          <!-- if out of items -->
+    <p v-else-if="!loading && stream.noMore">No more notifications!</p>
       <!-- GitHub Feed  -->
     <div class="github-container  w-100">
         <h1 class="mt-5 text-left"> Your <strong>GitHub</strong> Events</h1>
@@ -24,6 +29,7 @@
           <span v-if="stream_gh.items?.length == 0">Load stream</span>
           <span v-else-if="stream_gh.items?.length > 0">Show more</span>
           </button>
+          <!-- If no github username set -->
         <p v-else>No GitHub username set! Add your GitHub username in <RouterLink to="/settings">profile settings</RouterLink> to use this feature.</p>
     </div>
   </div>
@@ -46,23 +52,19 @@ export default {
 
   created () {
     this.getAuthorFromStore()
-    this.$localNode
-      .get(`${pathOf(this.author.id)}/inbox/`)
-      .then((res) => {
-        console.log(res)
-        this.stream = res.data.items.reverse()
-        this.loading = false
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    this.getInbox(this.stream.page) // start at page 1
   },
   data () {
     return {
-      stream: [],
+      stream: {
+        items: [],
+        size: 12,
+        page: 1,
+        noMore: false
+      },
       stream_gh: {
         items: [],
-        per_page: 10,
+        size: 10,
         page: 0
       },
       author: null,
@@ -80,7 +82,7 @@ export default {
       this.$github
         .get(githubUsername + '/received_events/public', {
           params: {
-            per_page: this.stream_gh.per_page,
+            per_page: this.stream_gh.size,
             page: page
           }
         })
@@ -88,6 +90,26 @@ export default {
           console.log(page)
           console.log(res)
           this.stream_gh.items = this.stream_gh.items.concat(res.data)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    getInbox (page) {
+      this.$localNode
+        .get(`${pathOf(this.author.id)}/inbox/`, {
+          params: {
+            size: this.stream.size,
+            page: page
+          }
+        })
+        .then((res) => {
+          console.log(res)
+          this.stream.items = this.stream.items.concat(res.data.items.reverse())
+          this.loading = false
+          if (res.data.items.length < this.stream.size) { // if we got less than the max size, we're at the end
+            this.stream.noMore = true
+          }
         })
         .catch((err) => {
           console.log(err)
