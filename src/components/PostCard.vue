@@ -6,7 +6,8 @@
   @hovered="hovered=true"
   @unhover="hovered=false"
   :title="post.title"
-  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id}, query : { hostURL: this.post.id} }">
+  :anchor="{ name: 'postpage', params: { aid: this.author._id, pid: this.post._id}, query : { hostURL: this.post.id} }"
+  role="button">
 
     <template #card-content>
       <vue-markdown
