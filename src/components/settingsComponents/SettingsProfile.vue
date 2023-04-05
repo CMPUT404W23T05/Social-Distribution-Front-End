@@ -81,6 +81,25 @@
     </template>
       <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
   </SlotModal></div>
+  <!-- GitHub username field with clickable edit icon -->
+  <div><span class="github-username"><span class="field-name">GitHub username:</span> {{ this.userStore.user.author.github?this.userStore.user.author.github.split('/').pop():"Not set" }}</span>&nbsp;<!-- Edit GitHub username modal -->
+  <SlotModal :modal-name="'githubModal'" @submit-my-form="submitGithubForm" @clear-fields="prefillGithub">
+    <template #titleText>Edit GitHub username</template>
+    <template #body="scoped">
+      <form @submit.prevent="scoped.submitMethod" id="githubForm">
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="basic-addon1">https://github.com/</span>
+          <input class="form-control" type="text" id="newGithub" v-model="fields.githubUsername">
+        </div>
+          </form>
+    </template>
+    <template #submitButton>
+      <button type="submit" class="btn btn-primary" form="githubForm">Submit</button>
+    </template>
+    <template #openModalButton>
+      <i class="bi bi-pencil-fill" title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#githubModal" @click="prefillGithub"></i>
+    </template>
+      </SlotModal></div>
   <!-- Show user's UUID -->
   <div><span class="field-name">User ID:</span> {{ this.userStore.user.author._id }}&nbsp;<i class="bi bi-clipboard2-fill" role="button" title="Copy to clipboard" @click="copyUUIDToClipboard"></i></div>
 <!-- Change password modal -->
@@ -123,7 +142,6 @@
 import { useUserStore } from '@/stores/user'
 import SlotModal from '../SlotModal.vue'
 import { mapStores } from 'pinia'
-import axios from 'axios'
 import { errorToString } from '@/util/authErrorHandler'
 export default {
   name: 'SettingsProfile',
@@ -143,10 +161,15 @@ export default {
         newPassword: '',
         confirmNewPassword: '',
         newDisplayName: '',
-        newProfileImageURL: ''
+        newProfileImageURL: '',
+        githubUsername: ''
       }
 
     }
+  },
+  mounted () {
+    this.fields.newDisplayName = this.userStore.user.author.displayName
+    this.fields.githubUsername = this.userStore.user.author.github.split('/').pop()
   },
   methods: {
     showAlert (msg, type) {
@@ -165,7 +188,8 @@ export default {
       // update author field with newValue in backend and local storage
       const readableFieldNames = {
         displayName: 'Display name',
-        profileImage: 'Profile image'
+        profileImage: 'Profile image',
+        github: 'GitHub username'
       }
       this.userStore.initializeStore()
       const user = this.userStore.user
@@ -271,6 +295,11 @@ export default {
     prefillProfileImageURL () {
       this.fields.newProfileImageURL = this.getAuthorPropertyIfDefined('profileImage')
       console.log(this.fields.newProfileImageURL)
+    },
+    // methods for github change modal
+    submitGithubForm ({ done, e }) {
+      const githubURL = this.fields.githubUsername ? 'https://github.com/' + this.fields.githubUsername : '' // if github username is empty, set github url to empty string
+      this.updateAuthorField('github', githubURL, { done, e })
     }
   },
   computed: {

@@ -30,7 +30,6 @@
             <label for="comment-button">{{ postData.count }}</label>
           </li>
           <li>
-            <!-- TODO: Implement share functionality -->
             <button type="button" class="btn btn-light action-button" data-bs-toggle="modal" data-bs-target="#sharePostModal"><i class="bi bi-share-fill "></i></button>
           </li>
         </ul>
@@ -70,14 +69,29 @@
       </SlotModal>
 
       <!-- v-if so that we don't make API calls when this isn't open -->
-      <SlotModal modalName="sharePostModal" sizing="modal-lg" justification="modal-dialog-centered">
-        <template #titleText>Share the <strong>Post</strong></template>
+      <SlotModal modalName="sharePostModal" justification="modal-dialog-centered">
+        <template #titleText>Share <strong>Post</strong></template>
         <template #body>
-          <h4>Your <strong>Friends</strong></h4>
-          <hr/>
+          <h4>Your <strong>Followers</strong></h4>
           <!-- Switch w/ cards later on -->
-          <p v-for="friend in friends" :key="friend.id" @click="sharePost(friend)">{{ friend.displayName }}</p>
-          <p v-if="friends.length === 0 ">You have no friends :C</p>
+          <div id="followers-container">
+              <ul class="list-group">
+              <li class="list-group-item" v-for="friend in friends" :key="friend.id">
+              <div class="d-flex w-100 h-100 align-items-center justify-content-between">
+                <div class="d-flex">
+                  <img :src="!!friend.profileImage ? friend.profileImage : defaultImage" class="rounded-circle follower-pic" >
+                  <div>
+                    <h5 class="mb-1">@{{ friend.displayName }}</h5>
+                    <small>{{ friend.host }}</small>
+                  </div>
+                </div>
+              <button v-if="!friend.shareStatus" class="btn btn-primary" @click="sharePost(friend)">Share</button>
+              <button disabled v-else class="btn btn-outline-primary">{{friend.shareStatus}}</button>
+              </div>
+              </li>
+              <p v-if="friends.length === 0 ">You have no followers :C</p>
+            </ul>
+          </div>
         </template>
         <!-- Overwrite openModalButton with my own -->
         <template #openModalButton><br/></template>
@@ -185,6 +199,22 @@ export default {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
+
+      // Get friends
+      this.$localNode.get(`${pathOf(this.currentAuthor.id)}/followers/`)
+        .then((res) => {
+          console.log(res.data)
+          this.friends = res.data.items// .concat(res.data.items).concat(res.data.items).concat(res.data.items).concat(res.data.items)
+          // add sent property to each friend
+          for (const friend of this.friends) {
+            friend.shareStatus = ''
+          }
+          this.friendsLoading = false
+        })
+        .catch((err) => {
+          console.log(err)
+          this.friendsLoading = false
+        })
     },
 
     async getLikes () {
@@ -226,7 +256,7 @@ export default {
           type: 'Like',
           context: 'https://www.w3.org/ns/activitystreams',
           author: this.currentAuthor,
-          summary: `${this.currentAuthor.displayName} likes your post`,
+          summary: `@${this.currentAuthor.displayName} liked your post`,
           object: this.postData.id
         }
         const authorPath = new URL(this.authorData.id).pathname
@@ -278,12 +308,18 @@ export default {
         })
     },
     sharePost (friend) {
-      this.postHost.post(`${friend.id}/inbox/`, this.postData)
+      const friendHost = getAxiosTarget(friend.id)
+      friendHost.post(`${pathOf(friend.id)}/inbox/`, this.postData)
         .then(() => {
-          alert(`You shared the post with ${friend.displayName}`)
+          friend.shareStatus = 'Shared'
         })
-        .catch(() => {
-          alert(`Couldn't share the post with ${friend.displayName}`)
+        .catch((e) => {
+          if (e.response.status === 409) {
+            friend.shareStatus = 'Already shared'
+          } else {
+            friend.shareStatus = 'Error'
+            console.log(e)
+          }
         })
     },
     getAuthorFromStore () {
@@ -300,7 +336,10 @@ export default {
     padding: 0;
     margin: 0;
   }
-
+  #followers-container {
+    max-height: 20vw;
+    overflow-y: auto;
+  }
   .liked {
     color: #FF0000;
   }
@@ -392,6 +431,9 @@ export default {
     resize: none;
     min-height: 10em;
   }
+  small {
+    color: grey;
+  }
 
   /* Right aside */
   .post-right-bar {
@@ -439,5 +481,11 @@ export default {
   .pages-count {
     color: #FFF;
     font-size: 1.2em;
+  }
+  .follower-pic {
+    width: 4em;
+    height: 4em;
+    margin: 0;
+    margin-right: 2em;
   }
 </style>
