@@ -110,8 +110,9 @@ export default {
           node10post = post
           node10post.description = node10post.description === '' ? 'something' : node10post.description
           node10post.visibility = 'VISIBLE'
-          node10post.categories = post.categories.toString()
-          node10post.author = post.author.displayName
+          post.categories.length > 0
+            ? node10post.categories = post.categories.toString()
+            : delete node10post.categories
         }
 
         hostNode
