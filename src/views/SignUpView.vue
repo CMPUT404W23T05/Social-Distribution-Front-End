@@ -48,7 +48,7 @@ export default {
         this.$localNode
           .post('/users/', formData)
           .then(response => {
-            this.$router.push('/login') // redirect to login page
+            this.$router.push({ path: '/login', query: { signedup: true } }) // redirect to login page
             console.log(response)
           })
           .catch(error => {
