@@ -27,7 +27,7 @@
         <!-- If error loading GitHub feed -->
         <div v-if="gh_error" class="alert alert-danger" role="alert">{{gh_error}}</div>
         <!-- Show more button for GitHub feed -->
-        <ShowMoreButton v-if="this.author?.github" @show-more="getGitHubEvents(++stream_gh.page)">
+        <ShowMoreButton v-if="this.author?.github && !this.stream_gh.noMore" @show-more="getGitHubEvents(++stream_gh.page)">
           <span v-if="stream_gh.items?.length == 0">Load feed</span>
           <span v-else-if="stream_gh.items?.length > 0">Show more events</span>
           </ShowMoreButton>
@@ -68,7 +68,8 @@ export default {
       stream_gh: {
         items: [],
         size: 10,
-        page: 0
+        page: 0,
+        noMore: false
       },
       author: null,
       loading: true,
@@ -94,10 +95,16 @@ export default {
           console.log(page)
           console.log(res)
           this.stream_gh.items = this.stream_gh.items.concat(res.data)
+          if (res.data.length < this.stream_gh.size) { // if we got less than the max size, we're at the end
+            this.stream_gh.noMore = true
+          }
+          if (this.stream_gh.items.length === 0) {
+            this.gh_error = 'No GitHub events found for this user.'
+          }
         })
         .catch((err) => {
           console.log(err)
-          if (err.response.status === 404) {
+          if (err.response.status === 404 && this.stream_gh.items.length === 0) {
             this.gh_error = 'GitHub user not found, please check your GitHub username and try again.'
           } else if (err.response.status === 403) {
             this.gh_error = 'GitHub API rate limit exceeded, please try again later.'
