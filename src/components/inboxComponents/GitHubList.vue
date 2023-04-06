@@ -64,9 +64,12 @@ export default {
     parseEvent (event) {
       const parseGithubEvent = require('parse-github-event')
       const parsedEvent = parseGithubEvent.parse(event)
+      if (parsedEvent) {
       const eventText = parseGithubEvent.compile(parsedEvent)
+        return eventText
+      }
+      return `${event.actor.display_login} did a ${event.type.replace('Event', '')} in ${event.repo.name}`
       // console.log(parsedEvent)
-      return eventText
     }
   }
 }
