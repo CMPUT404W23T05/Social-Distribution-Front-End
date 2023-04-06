@@ -25,7 +25,7 @@
         <h1 class="mt-5 text-left"> Your <strong>GitHub Events Feed</strong> </h1>
         <GitHubList v-if="!loading && stream_gh.items?.length > 0" :selectedNotifications="stream_gh.items" class="list pb-2"></GitHubList>
         <!-- If error loading GitHub feed -->
-        <p v-if="gh_error" class="mt-3 mb-1 text-danger">{{gh_error}}</p>
+        <div v-if="gh_error" class="alert alert-danger" role="alert">{{gh_error}}</div>
         <!-- Show more button for GitHub feed -->
         <ShowMoreButton v-if="this.author?.github" @show-more="getGitHubEvents(++stream_gh.page)">
           <span v-if="stream_gh.items?.length == 0">Load feed</span>
