@@ -23,7 +23,7 @@ router.beforeEach((to, from) => {
   if (!token.isAuthenticated && !exceptions.includes(to.name)) {
     return '/login'
   } else if (token.isAuthenticated && exceptions.includes(to.name)) {
-    return '/home#loggedin' // if the user is logged in and tries to access login or signup, redirect to home
+    return '/home?loggedin=1' // if the user is logged in and tries to access login or signup, redirect to home
   }
 })
 router.afterEach((to, from) => {
