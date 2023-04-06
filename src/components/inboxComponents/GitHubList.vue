@@ -12,20 +12,23 @@
 
         <template #card-content>
         <div class="text-center">
-          <p> {{ parseEvent(event) }}</p>
+          <p class="gh-event-text"> {{ parseEvent(event) }}</p>
         </div>
 
         </template>
         <template #footer>
-          <img class="profile-image ms-2" :src="event.actor.avatar_url" :class="{ open: hovered }" :title="event.actor.display_login + '\'s GitHub image'" />
+          <a :href = "'https://github.com/' + event.actor.display_login" target="_blank">
+            <img class="profile-image ms-2" :src="event.actor.avatar_url" :class="{ open: hovered }" :title="event.actor.display_login + '\'s GitHub image'" />
+          </a>
           <div class="d-flex align-items-center justify-content-between w-100 h-100 px-3 overflow-hidden">
-
           <div>
-          {{ event.actor.display_login }}
+            <a :href = "'https://github.com/' + event.actor.display_login" target="_blank">{{ event.actor.display_login }}</a>
           </div>
-          <a :href = "'https://github.com/' + event.actor.login" target="_blank">
-          <i class="bi bi-github" title="Visit GitHub profile"></i>
-            </a>
+          <div class="d-flex gap-2">
+          <a :href = "'https://github.com/' + event.repo.name" target="_blank"><i class="bi bi-journal-code gh-card-icon"></i>
+         </a>
+
+          </div>
         </div>
 
         </template>
@@ -65,10 +68,12 @@ export default {
       const parseGithubEvent = require('parse-github-event')
       const parsedEvent = parseGithubEvent.parse(event)
       if (parsedEvent) {
-      const eventText = parseGithubEvent.compile(parsedEvent)
+        const eventText = parseGithubEvent.compile(parsedEvent)
         return eventText
       }
-      return `${event.actor.display_login} did a ${event.type.replace('Event', '')} in ${event.repo.name}`
+      // handle unknown events
+      const humanReadableEvent = event.type.replace('Event', '').replace(/([A-Z])/g, ' $1').toLowerCase() // add spaces before capital letters and convert to lowercase
+      return `${event.actor.display_login} did a ${humanReadableEvent} in ${event.repo.name}`
       // console.log(parsedEvent)
     }
   }
@@ -93,7 +98,7 @@ export default {
   a:hover {
     color: #4998f5
   }
-  .bi-github {
+  .bi {
     font-size: 1.5em;
   }
 
