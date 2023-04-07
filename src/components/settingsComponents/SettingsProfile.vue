@@ -1,6 +1,6 @@
 <template>
   <div class="child-root">
-  <div class="alert fade show alert-dismissible" :class="[alert.type]" role="alert" v-if="alert.msg">
+  <div class="alert fade show alert-dismissible" id="settings-alert" :class="[alert.type]" role="alert" v-if="alert.msg">
     {{ alert.msg }}
     <button type="button" class="btn-close" @click="alert.msg = ''" aria-label="Close"></button></div>
   <h1>Profile</h1>
@@ -33,10 +33,10 @@
   <!-- Settings for names and password, with lvl 4 gap between each item -->
   <div class="d-flex flex-column gap-3 text-start">
     <!-- Display name field with clickable edit icon -->
-  <div><span class="display-name"><span class="field-name">Display Name:</span> @{{ getAuthorPropertyIfDefined('displayName') }}</span>&nbsp;<!-- Edit display name modal -->
+  <div><span class="display-name"><span class="field-name">Display Name:</span> <span id="display-name-text">@{{ getAuthorPropertyIfDefined('displayName') }}</span></span>&nbsp;<!-- Edit display name modal -->
     <SlotModal :modal-name="'displaynameModal'" @submit-my-form="submitDisplaynameForm" @clear-fields="prefillDisplayName" >
     <template #openModalButton>
-      <i class="bi bi-pencil-fill" title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="prefillDisplayName"></i>
+      <i class="bi bi-pencil-fill" id="edit-display-name-button" title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#displaynameModal" @click="prefillDisplayName"></i>
     </template>
     <template #titleText>Edit display name</template>
     <template #body="scoped">
@@ -56,7 +56,7 @@
     ></SlotModal>
   </div>
   <!-- Username field with clickable edit icon -->
-  <div><span class="username"><span class="field-name">Username:</span> {{ this.userStore.user.username }}</span>&nbsp;<!-- Edit username modal -->
+  <div><span class="username"><span class="field-name">Username:</span> <span id="username-text">{{ this.userStore.user.username }}</span></span>&nbsp;<!-- Edit username modal -->
   <SlotModal
     :modal-name="'usernameModal'"
      @submit-my-form="submitUsernameForm" @clear-fields="clearFields">
@@ -77,12 +77,12 @@
       <button type="submit" class="btn btn-primary" form="usernameForm">Change username</button>
     </template>
     <template #openModalButton>
-      <i class="bi bi-pencil-fill" title="Edit"  role="button" data-bs-toggle="modal" data-bs-target="#usernameModal"></i>
+      <i class="bi bi-pencil-fill" title="Edit" id="edit-username-button" role="button" data-bs-toggle="modal" data-bs-target="#usernameModal"></i>
     </template>
       <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @click="clearFields" ref="closeModalButton"></button> -->
   </SlotModal></div>
   <!-- GitHub username field with clickable edit icon -->
-  <div><span class="github-username"><span class="field-name">GitHub username:</span> {{ this.userStore.user.author.github?this.userStore.user.author.github.split('/').pop():"Not set" }}</span>&nbsp;<!-- Edit GitHub username modal -->
+  <div><span class="github-username"><span class="field-name">GitHub username:</span> <span id="gh-name-text">{{ this.userStore.user.author.github?this.userStore.user.author.github.split('/').pop():"Not set" }}</span></span>&nbsp;<!-- Edit GitHub username modal -->
   <SlotModal :modal-name="'githubModal'" @submit-my-form="submitGithubForm" @clear-fields="prefillGithub">
     <template #titleText>Edit GitHub username</template>
     <template #body="scoped">
@@ -97,11 +97,11 @@
       <button type="submit" class="btn btn-primary" form="githubForm">Submit</button>
     </template>
     <template #openModalButton>
-      <i class="bi bi-pencil-fill" title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#githubModal" @click="prefillGithub"></i>
+      <i class="bi bi-pencil-fill" id='edit-github-button' title="Edit" role="button" data-bs-toggle="modal" data-bs-target="#githubModal" @click="prefillGithub"></i>
     </template>
       </SlotModal></div>
   <!-- Show user's UUID -->
-  <div><span class="field-name">User ID:</span> {{ this.userStore.user.author._id }}&nbsp;<i class="bi bi-clipboard2-fill" role="button" title="Copy to clipboard" @click="copyUUIDToClipboard"></i></div>
+  <div><span class="field-name">User ID:</span> <span id="uuid-text">{{ this.userStore.user.author._id }}</span>&nbsp;<i class="bi bi-clipboard2-fill" role="button" title="Copy to clipboard" @click="copyUUIDToClipboard"></i></div>
 <!-- Change password modal -->
 <SlotModal :modal-name="'passwordModal'" @submit-my-form="submitPasswordForm" @clear-fields="clearFields">
   <template #titleText>Change password</template>
@@ -122,10 +122,10 @@
         </form>
   </template>
   <template #submitButton>
-    <button type="submit" class="btn btn-primary" form="passwordForm">Change password</button>
+    <button type="submit" id="submit-password-button" class="btn btn-primary" form="passwordForm">Change password</button>
   </template>
   <template #openModalButton>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#passwordModal">
+    <button type="button" class="btn btn-primary" id="edit-password-button" data-bs-toggle="modal" data-bs-target="#passwordModal">
   <i class="bi bi-lock-fill"></i> Change password
 </button>
   </template>
