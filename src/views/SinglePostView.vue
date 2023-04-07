@@ -140,6 +140,10 @@ export default {
     await this.getData(pid, aid)
     await this.getLikes()
     await this.getComments()
+
+    if (this.postData.visibility === 'FRIENDS') {
+      this.privateEnabled = true
+    }
     this.loading = false
   },
   computed: {
