@@ -47,6 +47,17 @@
               </div>
             </div>
 
+            <div v-if="post.visibility == 'PRIVATE'" class="mb-2">
+              <!-- <button type="button" class="btn btn-primary btn-sm" @click="selectAuthor(author)">select</button> -->
+              <label for="follower-list" class="d-flex justify-content-left" aria-autocomplete="off">Share with your Followers</label>
+              <ul id="follower-list" class="list-group">
+                <li class="list-group-item d-flex justify-content-start" v-for="follower, index in followers" :key="follower.id">
+                  <input class="form-check-input me-1" type="checkbox" value="" aria-label="..." :id="follower.id" @change="updateSelected(follower, index)">
+                  <label :for="follower.id" class="mx-3"> <strong>{{ follower.displayName }}</strong> ({{ follower.host }})</label>
+                </li>
+              </ul>
+            </div>
+
             <!-- Textbody -->
             <textarea v-model="post.content" @input="setText" class="text-input form-control" placeholder="Give your post some body text"></textarea>
 
@@ -84,20 +95,27 @@
 <script>
 
 import ImagePostBody from '@/components/ImagePostBody.vue'
+import { useUserStore } from '@/stores/user'
+import { mapStores } from 'pinia'
 
 export default {
   components: { ImagePostBody },
   props: ['existingPost'], // Create pass-by-value copy to avoid mutating original post
-  emits: ['createPost', 'editPost', 'dismiss'],
+  emits: ['createPost', 'editPost', 'dismiss', 'createPrivatePost'],
   data () {
     return {
       // Initialize a default post
       post: null,
       markDownEnabled: false,
-      invalidSubmit: false
+      invalidSubmit: false,
+      followers: [],
+      sessionAuthor: [],
+      selectedFollowers: []
     }
   },
   computed: {
+    ...mapStores(useUserStore),
+
     modalTitleMode () {
       return this.existingPost
         ? 'Edit'
@@ -141,6 +159,8 @@ export default {
 
   mounted () {
     const modalEl = this.$refs.managePost
+    this.getAuthorFromStore()
+    this.getFollowers()
     modalEl.addEventListener('show.bs.modal', () => {
       // Load a copy of an existing post if supplied
       if (this.existingPost) {
@@ -161,6 +181,26 @@ export default {
     })
   },
   methods: {
+    getAuthorFromStore () {
+      const userStore = this.userStore
+      userStore.initializeStore()
+      this.sessionAuthor = userStore.user.author
+    },
+
+    updateSelected (author, index) {
+      !this.selectedFollowers.includes(author) ? this.selectedFollowers.push(author) : this.selectedFollowers.splice(index, 1)
+    },
+
+    getFollowers () {
+      this.$localNode.get(`/authors/${this.sessionAuthor._id}/followers/`)
+        .then(response => {
+          console.log(response)
+          this.followers = response.data.items
+        })
+        .catch(function (err) {
+          console.log(err)
+        })
+    },
 
     addTag (event) {
       this.post.categories.push(event.target.value)
@@ -222,20 +262,23 @@ export default {
     },
 
     submitPost () {
-      console.log('emittting!')
       // Emit post back to parent for respective AJAX call
       if (this.errors.length === 0) {
         // Re-format to to spec format
         this.post.contentType = this.post.contentType.toString()
-        console.table(this.post)
+        // console.table(this.post)
 
         this.$refs.Close.click()
-        if (this.existingPost) {
+        if ((this.existingPost)) {
           this.$emit('editPost', this.post)
           this.$emit('dismiss')
         } else {
           this.$emit('createPost', this.post)
           this.$emit('dismiss')
+        }
+        if (this.post.visibility === 'PRIVATE') {
+          console.log('private post made')
+          this.$emit('createPrivatePost', { post: this.post, authors: this.selectedFollowers })
         }
       } else {
         this.invalidSubmit = true
@@ -277,8 +320,8 @@ textarea.text-input:focus {
   padding: 1em 0;
 }
 
-h5 strong {
-  color: var(--bs-blue)
+strong {
+  color: #4998F5;
 }
 
 </style>

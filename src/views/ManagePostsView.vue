@@ -34,7 +34,8 @@
     <ManagePostModal
       :existingPost="selected.post"
       @edit-post="(post) => editPost(post)"
-      @create-post="(post) => createPost(post)">
+      @create-post="(post) => createPost(post)"
+      @create-private-post="(post, authors) => sendPrivatePost(post, authors)">
     </ManagePostModal>
 
     <SlotModal modal-name="deletePrompt" v-if="selected.post">
@@ -61,7 +62,7 @@ import ShowMoreButton from '@/components/ShowMoreButton.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
-import { pathOf } from '@/util/axiosUtil'
+import { pathOf, getAxiosTarget } from '@/util/axiosUtil'
 
 export default {
   components: { ManagePostModal, Card, SlotModal, ShowMoreButton },
@@ -75,7 +76,8 @@ export default {
       },
       selected: { post: null, index: -1 },
       showPrompt: false,
-      author: null // Load from user store
+      author: null, // Load from user store
+      test_posts: []
     }
   },
   computed: {
@@ -100,6 +102,36 @@ export default {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+
+    sendPrivatePost (emit) {
+      const post = emit.post
+      let node10post
+
+      for (const recipient of emit.authors) {
+        const hostNode = getAxiosTarget(recipient.id)
+        console.log('Going to ' + hostNode.defaults.name)
+
+        // Team 10 doesn't follow spec exactly so concessions must be made
+        if (hostNode === this.$node10) {
+          node10post = post
+          node10post.description = node10post.description === '' ? 'something' : node10post.description
+          node10post.visibility = 'VISIBLE'
+          post.categories.length > 0
+            ? node10post.categories = post.categories.toString()
+            : delete node10post.categories
+        }
+
+        hostNode
+          .post(`${pathOf(recipient.id)}/inbox/`, hostNode === this.$node10 ? node10post : post)
+          .then((res) => {
+            console.log(res)
+          })
+          .catch((err) => {
+            console.table(node10post)
+            err.response.status === 409 ? alert(`You already shared with ${recipient.displayName}`) : alert('Couldn\'t send the post')
+          })
+      }
     },
 
     // This view handles all CRUD Operations
