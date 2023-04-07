@@ -6,7 +6,7 @@
           <img :src="!!authorData.profileImage ? authorData.profileImage : defaultImage" class="author-picture">
           <div class="name">@{{ authorData.displayName }}</div>
           <span class="likers">
-            <img v-for="like in likes" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"  :title="'@' + like.author.displayName"/>
+            <img v-for="like in firstFewLikers" :key = "like" class="like-profile-picture" :src="!!like.author.profileImage ? like.author.profileImage : defaultImage"  :title="'@' + like.author.displayName"/>
             <small><small v-if="overflowLikes > 0">+ {{overflowLikes}}</small>likes this post</small>
           </span>
         </section>
@@ -162,7 +162,7 @@ export default {
       return false
     },
     firstFewLikers () {
-      return this.likes?.slice(0, likersToShow - 1) // Show the first n authors
+      return this.likes?.slice(0, likersToShow) // Show the first n authors
     },
     overflowLikes () {
       // The number to append for the likers whose profile images were not shown
