@@ -145,6 +145,9 @@ export default {
       this.privateEnabled = true
     }
     this.loading = false
+    if (this.postData?.visibility === 'FRIENDS') { // private comments by default on friends posts
+      this.privateEnabled = true
+    }
   },
   computed: {
     ...mapStores(useUserStore),
