@@ -6,12 +6,6 @@
 
 <script>
 export default {
-  props: {
-    vIf: {
-      type: Boolean,
-      required: true
-    }
-  },
   methods: {
     myOnClick () {
       this.$emit('showMore')
