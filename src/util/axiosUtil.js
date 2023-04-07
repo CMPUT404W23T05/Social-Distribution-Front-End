@@ -40,6 +40,13 @@ const node10 = axios.create({
   },
   defaults: {}
 })
+const github = axios.create({
+  name: 'GitHub',
+  baseURL: 'https://api.github.com/users/',
+  headers: {
+    Accept: 'application/vnd.github+json'
+  }
+})
 
 const nodes = [localNode, node7, node9, node10]
 
@@ -123,5 +130,6 @@ export default {
     app.config.globalProperties.$node7 = node7
     app.config.globalProperties.$node9 = node9
     app.config.globalProperties.$node10 = node10
+    app.config.globalProperties.$github = github
   }
 }

@@ -1,9 +1,8 @@
 // Components to render the views go here
 import ManagePost from '@/views/ManagePostsView.vue'
-import Home from '../views/Home.vue'
 import BrowsePage from '../views/BrowseView.vue'
-import LogIn from '../views/Login.vue'
-import SignUp from '../views/SignUp.vue'
+import LogIn from '../views/LoginView.vue'
+import SignUp from '../views/SignUpView.vue'
 import SocialView from '../views/SocialView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import InboxView from '../views/InboxView.vue'

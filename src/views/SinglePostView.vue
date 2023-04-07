@@ -30,7 +30,6 @@
             <label for="comment-button">{{ postData.count }}</label>
           </li>
           <li>
-            <!-- TODO: Implement share functionality -->
             <button type="button" class="btn btn-light action-button" data-bs-toggle="modal" data-bs-target="#sharePostModal"><i class="bi bi-share-fill "></i></button>
           </li>
         </ul>
@@ -45,14 +44,7 @@
           <i v-if="expandComments" class="right-aside-tab-icon bi bi-caret-right-fill"></i>
         </div>
         <div class="scrollable">
-          <CommentList :post="postData" :axiosTarget="postHost" :page="currentCommentPage" :pageTotal="pageTotal" :pagination="paginationSetting" @add-comment="$refs.commentButton.click()"></CommentList>
-          <div class="move-page-wrapper">
-            <div v-if="pageTotal > 1" class="move-page">
-              <i class="bi bi-caret-left-fill" :class="{activated: currentCommentPage > 1}" @click="changeCommentPage(-1)"></i>
-              <span class="pages-count">{{ currentCommentPage }}/{{ pageTotal }}</span>
-              <i class="bi bi-caret-right-fill" :class="{activated: currentCommentPage !== pageTotal}" @click="changeCommentPage(1)"></i>
-            </div>
-          </div>
+          <CommentList :post="postData" :comments="comments" pagination="5" @add-comment="($refs.commentButton.click())"></CommentList>
         </div>
       </aside>
 
@@ -77,14 +69,29 @@
       </SlotModal>
 
       <!-- v-if so that we don't make API calls when this isn't open -->
-      <SlotModal modalName="sharePostModal" sizing="modal-lg" justification="modal-dialog-centered">
-        <template #titleText>Share the <strong>Post</strong></template>
+      <SlotModal modalName="sharePostModal" justification="modal-dialog-centered">
+        <template #titleText>Share <strong>Post</strong></template>
         <template #body>
-          <h4>Your <strong>Friends</strong></h4>
-          <hr/>
+          <h4>Your <strong>Followers</strong></h4>
           <!-- Switch w/ cards later on -->
-          <p v-for="friend in friends" :key="friend.id" @click="sharePost(friend)">{{ friend.displayName }}</p>
-          <p v-if="friends.length === 0 ">You have no friends :C</p>
+          <div id="followers-container">
+              <ul class="list-group">
+              <li class="list-group-item" v-for="friend in friends" :key="friend.id">
+              <div class="d-flex w-100 h-100 align-items-center justify-content-between">
+                <div class="d-flex">
+                  <img :src="!!friend.profileImage ? friend.profileImage : defaultImage" class="rounded-circle follower-pic" >
+                  <div>
+                    <h5 class="mb-1">@{{ friend.displayName }}</h5>
+                    <small>{{ friend.host }}</small>
+                  </div>
+                </div>
+              <button v-if="!friend.shareStatus" class="btn btn-primary" @click="sharePost(friend)">Share</button>
+              <button disabled v-else class="btn btn-outline-primary">{{friend.shareStatus}}</button>
+              </div>
+              </li>
+              <p v-if="friends.length === 0 ">You have no followers :C</p>
+            </ul>
+          </div>
         </template>
         <!-- Overwrite openModalButton with my own -->
         <template #openModalButton><br/></template>
@@ -101,7 +108,7 @@ import SlotModal from '@/components/SlotModal.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
-import { getAxiosTarget } from '@/util/axiosUtil.js'
+import { getAxiosTarget, pathOf } from '@/util/axiosUtil.js'
 
 const commentTemplate = {
   type: 'comment',
@@ -123,15 +130,11 @@ export default {
     this.getAuthorFromStore()
     await this.getData(pid, aid)
     await this.getLikes()
+    await this.getComments()
+    this.loading = false
   },
   computed: {
     ...mapStores(useUserStore),
-    loading () {
-      return (!this.authorData || !this.postData)
-    },
-    pageTotal () {
-      return Math.ceil(this.postData.count / this.paginationSetting) || 1 // Atleast 1 page
-    },
     // Below are all for displaying liked status
     isLiked () {
       for (const like of this.likes) {
@@ -143,7 +146,7 @@ export default {
       return false
     },
     firstFewLikers () {
-      return this.likes.slice(0, likersToShow - 1) // Show the first n authors
+      return this.likes?.slice(0, likersToShow - 1) // Show the first n authors
     },
     overflowLikes () {
       // The number to append for the likers whose profile images were not shown
@@ -152,6 +155,8 @@ export default {
   },
   data () {
     return {
+      loading: true,
+
       // Basic information to load post stuff
       postData: null,
       authorData: null, // Get from post
@@ -194,6 +199,22 @@ export default {
           this.authorData = res.data
         })
         .catch((err) => { console.log(err) })
+
+      // Get friends
+      this.$localNode.get(`${pathOf(this.currentAuthor.id)}/followers/`)
+        .then((res) => {
+          console.log(res.data)
+          this.friends = res.data.items// .concat(res.data.items).concat(res.data.items).concat(res.data.items).concat(res.data.items)
+          // add sent property to each friend
+          for (const friend of this.friends) {
+            friend.shareStatus = ''
+          }
+          this.friendsLoading = false
+        })
+        .catch((err) => {
+          console.log(err)
+          this.friendsLoading = false
+        })
     },
 
     async getLikes () {
@@ -208,17 +229,22 @@ export default {
         })
     },
 
-    // async getComments () {
-    //   const postPath = new URL(this.postData.id).pathname
-    //   await this.postHost.get(`${postPath}/comments`)
-    //     .then((res) => {
-    //       this.comments = res.data.items
-    //     })
-    //     .catch((err) => {
-    //       console.log('Couldn\'t get comments.')
-    //       console.log(err)
-    //     })
-    // },
+    async getComments () {
+      const postPath = new URL(this.postData.id).pathname
+      await this.postHost.get(`${postPath}/comments`)
+        .then((res) => {
+          if (this.postHost === this.$localNode) {
+            console.log('local')
+            this.comments = res.data.comments
+          } else {
+            this.comments = res.data.items
+          }
+        })
+        .catch((err) => {
+          console.log('Couldn\'t get comments.')
+          console.log(err)
+        })
+    },
 
     toggleFollow () {
       this.isFollowing = !this.isFollowing
@@ -230,7 +256,7 @@ export default {
           type: 'Like',
           context: 'https://www.w3.org/ns/activitystreams',
           author: this.currentAuthor,
-          summary: `${this.currentAuthor.displayName} likes your post`,
+          summary: `@${this.currentAuthor.displayName} liked your post`,
           object: this.postData.id
         }
         const authorPath = new URL(this.authorData.id).pathname
@@ -248,14 +274,7 @@ export default {
     toggleComments () {
       this.expandComments = !this.expandComments
     },
-    changeCommentPage (n) {
-      // Check if the currentPage will put the user out of bounds
-      if (n < 0 && this.currentCommentPage + n > 0) {
-        this.currentCommentPage += n
-      } else if (n > 0 && this.currentCommentPage + n <= this.pageTotal) {
-        this.currentCommentPage += n
-      }
-    },
+
     submitComment () {
       // Form the content
       const comment = commentTemplate
@@ -263,18 +282,24 @@ export default {
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
-      comment.content = this.newComment // Team 10 uses content property instead
       comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
-      const postPath = new URL(this.postData.id).pathname
+      const postPath = pathOf(this.postData.id)
 
-      console.log(comment)
-      this.postHost.post(`${postPath}/comments`, comment)
+      // Decide which endpoint to send it to
+      let commentPath
+      if (this.postHost !== this.$localNode) {
+        commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff
+      } else {
+        commentPath = `${postPath}/comments` // Local stuff
+      }
+      this.postHost.post(commentPath, comment)
         .then(() => {
           // Navigate to last page to display the comment
           this.postData.count++
           this.currentCommentPage = this.pageTotal
           this.expandComments = true
           this.newComment = '' // clear
+          this.comments.push(comment) // Update live
         })
         .catch((err) => {
           console.log(this.postHost.defaults)
@@ -283,12 +308,18 @@ export default {
         })
     },
     sharePost (friend) {
-      this.postHost.post(`${friend.id}/inbox/`, this.postData)
+      const friendHost = getAxiosTarget(friend.id)
+      friendHost.post(`${pathOf(friend.id)}/inbox/`, this.postData)
         .then(() => {
-          alert(`You shared the post with ${friend.displayName}`)
+          friend.shareStatus = 'Shared'
         })
-        .catch(() => {
-          alert(`Couldn't share the post with ${friend.displayName}`)
+        .catch((e) => {
+          if (e.response.status === 409) {
+            friend.shareStatus = 'Already shared'
+          } else {
+            friend.shareStatus = 'Error'
+            console.log(e)
+          }
         })
     },
     getAuthorFromStore () {
@@ -305,7 +336,10 @@ export default {
     padding: 0;
     margin: 0;
   }
-
+  #followers-container {
+    max-height: 20vw;
+    overflow-y: auto;
+  }
   .liked {
     color: #FF0000;
   }
@@ -397,6 +431,9 @@ export default {
     resize: none;
     min-height: 10em;
   }
+  small {
+    color: grey;
+  }
 
   /* Right aside */
   .post-right-bar {
@@ -410,14 +447,6 @@ export default {
   }
   .post-right-bar.expanded {
     width: 33%
-  }
-
-  .scrollable {
-    overflow-y: scroll;
-    height: calc(100% - 11em);
-  }
-  .scrollable::-webkit-scrollbar {
-    display: none;
   }
 
   .right-aside-tab {
@@ -452,5 +481,11 @@ export default {
   .pages-count {
     color: #FFF;
     font-size: 1.2em;
+  }
+  .follower-pic {
+    width: 4em;
+    height: 4em;
+    margin: 0;
+    margin-right: 2em;
   }
 </style>

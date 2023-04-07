@@ -1,12 +1,14 @@
 <template>
   <div class="d-flex min-vh-100">
     <div class="form-group authForm">
-      <h1>Sign Up</h1>
+      <h1><i class="bi bi-people-fill"></i></h1>
+      <h2>Social Distribution</h2>
+      <h3>Sign Up</h3>
       <form @submit.prevent="submitForm" >
         <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
-        <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
-      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔒</span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div>
-      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔐</span></div><input class="form-control" type="password" name="password" v-model="confirmPassword"  placeholder="Confirm password"></div>
+        <div class="input-group mb-3"><div class="input-group-text"><span class="field-icon" id="username-icon"><i class="bi bi-person-fill"></i></span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
+      <div class="input-group mb-3"><div class="input-group-text"><span class="field-icon" id="password-icon"><i class="bi bi-lock-fill"></i></span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div>
+      <div class="input-group mb-3"><div class="input-group-text"><span class="field-icon" id="password-icon"><i class="bi bi-lock-fill"></i></span></div><input class="form-control" type="password" name="password" v-model="confirmPassword"  placeholder="Confirm password"></div>
         <button class="btn btn-primary" type="submit">Sign Up</button>
       </form>
 <br>Already have an account? <router-link to="/login">Log in</router-link>
@@ -46,7 +48,7 @@ export default {
         this.$localNode
           .post('/users/', formData)
           .then(response => {
-            this.$router.push('/login') // redirect to login page
+            this.$router.push({ path: '/login', query: { signedup: true } }) // redirect to login page
             console.log(response)
           })
           .catch(error => {
@@ -63,4 +65,4 @@ export default {
 
 </script>
 
-<style>@import "@/styles/auth.css";</style>
+<style scoped>@import "@/styles/auth.css";</style>
