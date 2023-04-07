@@ -285,6 +285,7 @@ export default {
     width: 128pt;
     height: 128pt;
     border-radius: 50%;
+    object-fit: cover;
   }
 
   strong {

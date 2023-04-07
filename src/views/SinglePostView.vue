@@ -405,6 +405,7 @@ export default {
     border-radius: 50%;
     width: 128pt;
     height: 128pt;
+    object-fit: cover;
   }
 
   .btn-with-label {

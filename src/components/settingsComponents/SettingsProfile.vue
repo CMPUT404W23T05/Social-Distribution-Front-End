@@ -338,6 +338,7 @@ export default {
   height: 8rem;
   width: 8rem;
   margin: 0;
+  object-fit: cover;
 }
 .overlay-icon {
   line-height: 8rem;
