@@ -23,20 +23,24 @@
   </div>
 
   <!-- What things are we getting? Posts, comments, all, etc -->
+  <div class="d-flex flex-column align-items-center">
   <NotificationList :selectedNotifications="selectedNotifications"/>
-
+  <ShowMoreButton v-if="!noMore" @show-more="showMore"></ShowMoreButton>
+  <p v-else>No more notifications to show!</p>
+</div>
 </template>
 
 <script>
 
 import NotificationList from '@/components/inboxComponents/NotificationList.vue'
+import ShowMoreButton from '../ShowMoreButton.vue'
 import { useUserStore } from '@/stores/user'
 import { mapStores } from 'pinia'
 
 export default {
-  components: { NotificationList },
-  props: ['allNotifications'],
-
+  components: { NotificationList, ShowMoreButton },
+  props: ['allNotifications', 'noMore'],
+  emits: ['showMore'],
   computed: {
     ...mapStores(useUserStore),
     selectedNotifications () {
@@ -68,6 +72,10 @@ export default {
       const userStore = this.userStore
       userStore.initializeStore()
       this.author = userStore.user.author
+    },
+    showMore () {
+      this.$emit('showMore')
+      console.log('show more')
     }
   }
 }

@@ -4,7 +4,7 @@
     <SlotModal v-if="!loading" modalName="inboxModal" sizing="modal-xl" justification="modal-dialog-centered">
       <template #titleText><h2>Inbox</h2></template>
       <template #body>
-        <InboxModalBody :allNotifications="stream.items"/>
+        <InboxModalBody :allNotifications="stream.items" :no-more="stream.noMore" @show-more="getInbox(++stream.page)"/>
       </template>
       <template #closeButtonText>Done</template>
       <template #openModalButton>
@@ -16,7 +16,7 @@
     <NotificationList v-if="!loading && stream.items?.length > 0" :selectedNotifications="stream.items" class="list pb-2"></NotificationList>
     <p v-else-if="!loading && stream.items?.length === 0">There's nothing here for you yet</p>
     <ShowMoreButton v-if="!loading && stream.items?.length > 0 && !stream.noMore" @show-more="getInbox(++stream.page)">
-      Show more posts
+      Show more
           </ShowMoreButton>
           <!-- if out of items -->
     <p v-else-if="!loading && stream.noMore">No more notifications to show!</p>
