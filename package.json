@@ -83,6 +83,9 @@
     ],
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
-    }
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": ["**/*.{js,vue}", "!**/node_modules/**"],
+    "coverageReporters" : ["text", "text-summary"]
   }
 }
