@@ -38,7 +38,7 @@
 
     <div class="justify-content-center d-flex" v-if="alreadyLoggedIn">
       <!-- alert for redirect from login/signup page -->
-    <div class="alert alert-primary fade show w-50 p-2 m-0 d-flex justify-content-center login-alert position-absolute" role="alert">
+    <div class="alert alert-primary fade show w-50 p-2 m-0 mt-3 d-flex justify-content-center login-alert position-absolute" role="alert">
       <div class="flex-grow-1">You are already logged in. To switch accounts, please <a @click="logout" href="#" class="alert-link ">log&nbsp;out</a>.</div>
       <button type="button" class="btn-close " data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -52,10 +52,17 @@ import axios from 'axios'
 import { mapStores, mapState } from 'pinia'
 export default {
   name: 'NavBar',
-  // Author json object
+  data () {
+    return {
+      alreadyLoggedIn: false
+    }
+  },
   beforeMount () {
     // this.getProfilePicture()
     this.userStore.initializeStore() // initialize user store
+  },
+  updated () {
+    this.alreadyLoggedIn = this.alreadyLoggedInQuery()
   },
   methods: {
     logout () {
@@ -81,19 +88,14 @@ export default {
     },
     getAuthorPropertyIfDefined (prop) {
       return this.userStore.user.author ? this.userStore.user.author[prop] : '' // return an author property only if author exists else return empty string
+    },
+    alreadyLoggedInQuery () {
+      return !!this.$route.query.loggedin // if query param loggedin set, return true
     }
   },
   computed: {
     ...mapStores(useTokenStore, useUserStore),
-    ...mapState(useUserStore, ['user']),
-    alreadyLoggedIn () {
-      const defined = typeof this.$route !== 'undefined' && this.$route !== null
-      if (defined && 'hash' in this.$route) {
-        return this.$route.hash === '#loggedin'
-      } else {
-        return false
-      }
-    }
+    ...mapState(useUserStore, ['user'])
   }
 }
 

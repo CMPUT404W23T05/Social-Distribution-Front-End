@@ -1,11 +1,19 @@
 <template>
+
   <div class="d-flex min-vh-100">
   <div class="form-group authForm">
-    <h1>Login</h1>
+    <div v-if="justSignedUp" class="alert alert-success alert-dismissible fade show" role="alert">
+      Signup successful! Please login.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <h1><i class="bi bi-people-fill"></i></h1>
+    <h2>Social Distribution</h2>
+    <h3>Login</h3>
+
     <form @submit.prevent="submitForm">
       <div class="alert alert-danger" role="alert" v-if="authError">{{ authError }}</div>
-      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="username-icon">👤</span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
-      <div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="password-icon">🔒</span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div>
+      <div class="input-group mb-3"><div class="input-group-text"><span class="field-icon" id="username-icon"><i class="bi bi-person-fill"></i></span></div><input class="form-control" type="text" name="username" v-model="username" placeholder="Username"></div>
+      <div class="input-group mb-3"><div class="input-group-text"><span class="field-icon" id="password-icon"><i class="bi bi-lock-fill"></i></span></div><input class="form-control" type="password" name="password" v-model="password"  placeholder="Password"></div>
       <button class="btn btn-primary" type="submit">Login</button>
     </form>
     <br>Don't have an account? <router-link to="/signup">Sign up</router-link>
@@ -76,12 +84,20 @@ export default {
 
   },
   computed: {
-    ...mapStores(useTokenStore, useUserStore)
+    ...mapStores(useTokenStore, useUserStore),
+    justSignedUp () {
+      return this.$route.query.signedup
+    }
   }
 }
 
 </script>
 
-<style>
+<style scoped>
 @import "@/styles/auth.css";
+.alert {
+  position:absolute;
+    width: 20em;
+    transform: translateY(-150%);
+    z-index:2;}
 </style>
