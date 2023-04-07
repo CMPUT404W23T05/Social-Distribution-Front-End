@@ -336,7 +336,18 @@ export default {
     },
     sharePost (friend) {
       const friendHost = getAxiosTarget(friend.id)
-      friendHost.post(`${pathOf(friend.id)}/inbox/`, this.postData)
+      const nodePost = this.postData
+
+      // Special concessions just for team 10
+      if (friendHost === this.$node10) {
+        nodePost.description = nodePost.description === '' ? 'something' : nodePost.description
+        nodePost.visibility = nodePost.visibility === 'PRIVATE' || nodePost.visibility === 'FRIENDS' ? 'PRIVATE' : 'VISIBLE'
+        nodePost.categories.length > 0
+          ? nodePost.categories = nodePost.categories.toString()
+          : delete nodePost.categories
+      }
+
+      friendHost.post(`${pathOf(friend.id)}/inbox/`, nodePost)
         .then(() => {
           friend.shareStatus = 'Shared'
         })
