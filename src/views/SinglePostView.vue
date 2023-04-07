@@ -141,6 +141,9 @@ export default {
     await this.getLikes()
     await this.getComments()
     this.loading = false
+    if (this.postData?.visibility === 'FRIENDS') { // private comments by default on friends posts
+      this.privateEnabled = true
+    }
   },
   computed: {
     ...mapStores(useUserStore),
