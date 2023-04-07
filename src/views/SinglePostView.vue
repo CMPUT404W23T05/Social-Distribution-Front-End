@@ -52,12 +52,21 @@
       <SlotModal modalName="makeCommentModal" sizing="modal-lg" justification="modal-dialog-centered">
         <template #titleText>Add a <strong>Comment</strong></template>
         <template #body>
-          <div class="form-check form-switch d-flex justify-content-center gap-3 mb-2">
-            <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
-            <label class="form-check-label" for="markdown-toggle">
-              <i class="bi-markdown-fill"></i>
-              Use Markdown
-            </label>
+          <div class="form-check form-switch d-flex justify-content-around gap-3 mb-2 align-middle">
+            <span class="md-toggle">
+              <input v-model="markDownEnabled" @change="setText" id="markdown-toggle" class="form-check-input pr-2" type="checkbox"/>
+              <label class="form-check-label" for="markdown-toggle">
+                <i class="bi-markdown-fill"></i>
+                Use Markdown
+              </label>
+            </span>
+            <span class="private-toggle">
+              <input v-model="privateEnabled" id="private-toggle" class="form-check-input pr-2" type="checkbox"/>
+              <label class="form-check-label" for="private-toggle">
+                <i class="bi bi-incognito"></i>
+                Private to Poster
+              </label>
+            </span>
           </div>
           <textarea class="form-control" v-model="newComment" placeholder="Write a comment"/>
         </template>
@@ -180,6 +189,7 @@ export default {
 
       // Used for creating a new comment
       newComment: '',
+      privateEnabled: false,
       markDownEnabled: false,
 
       // Where does this post?
@@ -279,9 +289,14 @@ export default {
       // Form the content
       const comment = commentTemplate
       const generatedId = uuidv4()
+
+      if (this.privateEnabled) {
+        comment.private = true
+      }
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
+
       comment.contentType = this.markDownEnabled ? 'text/markdown' : 'text/plain'
       const postPath = pathOf(this.postData.id)
 
@@ -300,6 +315,7 @@ export default {
           this.expandComments = true
           this.newComment = '' // clear
           this.comments.push(comment) // Update live
+          console.table(comment)
         })
         .catch((err) => {
           console.log(this.postHost.defaults)
