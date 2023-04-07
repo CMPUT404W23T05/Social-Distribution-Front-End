@@ -141,7 +141,7 @@ export default {
     await this.getLikes()
     await this.getComments()
 
-    if (this.postData.visibility === 'FRIENDS') {
+    if (this.postData.visibility === 'FRIENDS' || this.postData.visibility === 'PRIVATE') {
       this.privateEnabled = true
     }
     this.loading = false
