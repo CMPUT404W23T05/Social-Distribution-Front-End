@@ -192,7 +192,10 @@ export default {
         .then((res) => {
           this.postData = res.data
         })
-        .catch((err) => { console.log(err) })
+        .catch((err) => {
+          console.log(err)
+          this.$router.push({ name: '404' })
+        })
 
       await this.postHost.get(`/authors/${aid}/`)
         .then((res) => {
