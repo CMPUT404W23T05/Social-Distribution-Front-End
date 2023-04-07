@@ -14,7 +14,7 @@
         <!-- Modal body -->
         <div class="modal-body text-start">
           <!-- Alert dialog -->
-          <div class="alert alert-danger" v-show="errorMsg">{{ errorMsg }}</div>
+          <div class="alert alert-danger" :id="this.modalName + '-alert'" v-show="errorMsg">{{ errorMsg }}</div>
           <!-- Start of content, can be a form -->
           <slot name="body" :submitMethod="submitForm"></slot>
         </div>
