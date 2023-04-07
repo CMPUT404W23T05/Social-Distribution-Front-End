@@ -6,6 +6,7 @@
 
 <script>
 export default {
+  emits: ['showMore'],
   methods: {
     myOnClick () {
       this.$emit('showMore')
