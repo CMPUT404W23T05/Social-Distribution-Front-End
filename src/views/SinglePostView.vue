@@ -293,6 +293,7 @@ export default {
       if (this.privateEnabled) {
         comment.private = true
       }
+
       comment.author = this.currentAuthor
       comment.id = `${this.postData.id}/comments/${generatedId}` // postID includes the author as well
       comment.comment = this.newComment
@@ -302,8 +303,8 @@ export default {
 
       // Decide which endpoint to send it to
       let commentPath
-      if (this.postHost !== this.$localNode) {
-        commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff
+      if (this.postHost !== this.$localNode || this.privateEnabled) {
+        commentPath = `${pathOf(this.authorData.id)}/inbox/` // Remote stuff OR comment is private
       } else {
         commentPath = `${postPath}/comments` // Local stuff
       }
